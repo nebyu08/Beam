@@ -102,13 +102,13 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
     const index = books.findIndex((b) => b.id === selectedBook.id);
     if (index === -1) return;
 
-    const cols = 18;
+    const cols = 20;
     const col = index % cols;
     const row = Math.floor(index / cols);
 
-    const targetZoom = 1.05;
-    const stepX = 56 * targetZoom;
-    const stepY = 80 * targetZoom;
+    const targetZoom = 1.0;
+    const stepX = 74 * targetZoom;
+    const stepY = 108 * targetZoom;
 
     const targetX = -(col * stepX + ((row % 2) * stepX * 0.5));
     const targetY = -(row * stepY);
@@ -300,17 +300,17 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
         return;
       }
 
-      // Stacked Hexagonal Grid Parameters
-      const cols = 18;
+      // Seamless poster mosaic grid (inspired by Nothing To Watch)
+      const cols = 20;
       const rows = Math.ceil(booksCount / cols);
 
-      // Card dimensions
-      const cardW = 68 * cam.zoom;
-      const cardH = 100 * cam.zoom;
+      // Clean poster dimensions (standard 1:1.48 poster ratio)
+      const cardW = 72 * cam.zoom;
+      const cardH = 106 * cam.zoom;
 
-      // Tight steps so cards overlap like shingles / stacked decks
-      const stepX = 56 * cam.zoom;
-      const stepY = 80 * cam.zoom;
+      // Clean mosaic tile spacing with subtle 2px gap
+      const stepX = 74 * cam.zoom;
+      const stepY = 108 * cam.zoom;
 
       // Spherical fisheye lens radius
       const lensRadius = Math.min(width, height) * 0.44 * Math.sqrt(cam.zoom);
@@ -378,17 +378,17 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
               const normDist = dist / lensRadius;
               z = Math.sqrt(Math.max(0, 1.0 - normDist * normDist));
 
-              const pushFactor = 1.0 + 0.45 * Math.pow(1.0 - normDist, 1.5);
+              const pushFactor = 1.0 + 0.55 * Math.pow(1.0 - normDist, 1.6);
               const curvedDist = dist * pushFactor;
 
               screenX = cam.lensX + Math.cos(angle) * curvedDist;
               screenY = cam.lensY + Math.sin(angle) * curvedDist;
 
-              scale = 0.95 + Math.pow(z, 1.4) * 1.25;
-              opacity = 0.75 + z * 0.25;
+              scale = 1.0 + Math.pow(z, 1.3) * 1.5;
+              opacity = 0.85 + z * 0.15;
             } else {
-              scale = 0.94;
-              opacity = 0.85;
+              scale = 1.0;
+              opacity = 0.88;
             }
           } else {
             scale = 0.94;
@@ -476,20 +476,27 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
 
         const halfW = w / 2;
         const halfH = h / 2;
-        const cornerRadius = Math.max(3, 7 * (w / cardW));
+        const cornerRadius = Math.max(2, 4.5 * (w / cardW));
 
-        // Physical stacked card drop shadow
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.85)';
-        ctx.shadowBlur = Math.min(30, 8 + 18 * z);
-        ctx.shadowOffsetX = 2 + 3 * z;
-        ctx.shadowOffsetY = 3 + 6 * z;
+        // Clean poster rendering (inspired by Nothing To Watch): flat mosaic in background, elevation only on active/hovered poster
+        if (z > 0.35 || isFocused || isHovered) {
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+          ctx.shadowBlur = Math.min(32, 10 + 20 * z);
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 3 + 6 * z;
+        } else {
+          ctx.shadowColor = 'transparent';
+          ctx.shadowBlur = 0;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
+        }
 
-        // Rounded card boundary
+        // Clean rectangular poster boundary with subtle rounded corners
         ctx.beginPath();
         ctx.roundRect(-halfW, -halfH, w, h, cornerRadius);
         ctx.clip();
 
-        // Draw book cover or fallback
+        // Draw poster cover
         const src = book.cover || book.cover_url;
         const img = imagesRef.current.get(src);
 
@@ -498,41 +505,37 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
         } else {
           const hash = book.id * 47;
           const hue = hash % 360;
-          ctx.fillStyle = `hsl(${hue}, 28%, 15%)`;
+          ctx.fillStyle = `hsl(${hue}, 24%, 14%)`;
           ctx.fillRect(-halfW, -halfH, w, h);
-
-          // Spine groove
-          ctx.fillStyle = `hsl(${hue}, 38%, 24%)`;
-          ctx.fillRect(-halfW, -halfH, Math.max(3, w * 0.12), h);
 
           if (w > 40) {
             ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
             ctx.font = `600 ${Math.max(8, Math.floor(w * 0.11))}px sans-serif`;
             ctx.textAlign = 'center';
-            ctx.fillText(book.title.slice(0, 16), 0, 0);
+            ctx.fillText(book.title.slice(0, 18), 0, 0);
           }
         }
 
-        // Spherical surface shading
-        if (z < 0.88) {
-          const shade = (1.0 - z) * 0.42;
+        // Ambient depth shading
+        if (z < 0.85 && !isFocused && !isHovered) {
+          const shade = (1.0 - z) * 0.38;
           ctx.fillStyle = `rgba(0, 0, 0, ${shade})`;
           ctx.fillRect(-halfW, -halfH, w, h);
         }
 
         ctx.restore();
 
-        // Radiant focus border ring on active card
+        // Radiant focus border ring on active poster
         if (isFocused || isHovered) {
           ctx.save();
           ctx.translate(screenX, screenY);
-          ctx.strokeStyle = isFocused ? '#ffffff' : 'rgba(255, 255, 255, 0.7)';
+          ctx.strokeStyle = isFocused ? '#ffffff' : 'rgba(255, 255, 255, 0.75)';
           ctx.lineWidth = isFocused ? 2.5 : 1.5;
           ctx.shadowColor = '#ffffff';
-          ctx.shadowBlur = isFocused ? 22 : 10;
+          ctx.shadowBlur = isFocused ? 20 : 10;
 
           ctx.beginPath();
-          ctx.roundRect(-halfW - 2, -halfH - 2, w + 4, h + 4, cornerRadius + 2);
+          ctx.roundRect(-halfW - 1.5, -halfH - 1.5, w + 3, h + 3, cornerRadius + 1.5);
           ctx.stroke();
           ctx.restore();
         }
