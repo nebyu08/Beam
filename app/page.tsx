@@ -110,6 +110,11 @@ export default function Home() {
     setActiveModal('details');
   }, [setSelectedBook]);
 
+  const handleLoadingFinished = useCallback(() => {
+    // Cinematic random zoom in to a book right after loading finishes
+    selectRandomBook();
+  }, [selectRandomBook]);
+
   return (
     <main className="relative w-screen h-screen overflow-hidden bg-[#060608] text-zinc-100">
       {/* Interactive 3D Book Sphere Canvas with Near-Book Floating Details */}
@@ -143,7 +148,7 @@ export default function Home() {
       />
 
       {/* Intro Loading Screen with sequential dot ellipsis */}
-      <LoadingScreen isReady={isReady} />
+      <LoadingScreen isReady={isReady} onFinished={handleLoadingFinished} />
     </main>
   );
 }

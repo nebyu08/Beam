@@ -35,8 +35,10 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
     vy: 0,
     targetVx: 0,
     targetVy: 0,
-    zoom: 0.65,
-    targetZoom: 0.65,
+    targetX: null as number | null,
+    targetY: null as number | null,
+    zoom: 0.45,
+    targetZoom: 0.45,
     isDragging: false,
     dragStartX: 0,
     dragStartY: 0,
@@ -107,13 +109,11 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
     const targetX = -(col * stepX + ((row % 2) * stepX * 0.5));
     const targetY = -(row * stepY);
 
-    cameraRef.current.x = targetX;
-    cameraRef.current.y = targetY;
-    cameraRef.current.vx = 0;
-    cameraRef.current.vy = 0;
+    cameraRef.current.targetX = targetX;
+    cameraRef.current.targetY = targetY;
     cameraRef.current.targetVx = 0;
     cameraRef.current.targetVy = 0;
-    cameraRef.current.targetZoom = 0.9;
+    cameraRef.current.targetZoom = 1.05;
   }, [selectedBook]);
 
   // Handle Resize using ResizeObserver
@@ -206,6 +206,26 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
         cam.targetVy = 0;
       }
 
+      // If manual dragging or edge-flying, cancel auto-swoop
+      if (cam.isDragging || Math.abs(cam.targetVx) > 0.05 || Math.abs(cam.targetVy) > 0.05) {
+        cam.targetX = null;
+        cam.targetY = null;
+      }
+
+      // Smooth camera swoop towards target book coordinates
+      if (cam.targetX !== null && cam.targetY !== null && !cam.isDragging) {
+        const diffX = cam.targetX - cam.x;
+        const diffY = cam.targetY - cam.y;
+        cam.x += diffX * 0.06;
+        cam.y += diffY * 0.06;
+        if (Math.hypot(diffX, diffY) < 1.0) {
+          cam.x = cam.targetX;
+          cam.y = cam.targetY;
+          cam.targetX = null;
+          cam.targetY = null;
+        }
+      }
+
       // Physics integration with fluid damping
       if (!cam.isDragging) {
         cam.vx += (cam.targetVx - cam.vx) * 0.08;
@@ -219,8 +239,8 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
         if (Math.abs(cam.targetVy) < 0.01 && Math.abs(cam.vy) < 0.02) cam.vy = 0;
       }
 
-      // Smooth zoom interpolation
-      cam.zoom += (cam.targetZoom - cam.zoom) * 0.1;
+      // Smooth zoom interpolation with cinematic easing
+      cam.zoom += (cam.targetZoom - cam.zoom) * 0.055;
 
       // Deep dark canvas background
       ctx.fillStyle = '#060608';

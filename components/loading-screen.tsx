@@ -41,9 +41,9 @@ export default function LoadingScreen({ isReady, onFinished }: LoadingScreenProp
   useEffect(() => {
     if ((isReady && minTimeElapsed) || (minTimeElapsed && !isReady)) {
       setIsFading(true);
+      onFinished?.();
       const fadeTimer = setTimeout(() => {
         setIsDone(true);
-        onFinished?.();
       }, 700);
       return () => clearTimeout(fadeTimer);
     }
@@ -61,9 +61,9 @@ export default function LoadingScreen({ isReady, onFinished }: LoadingScreenProp
       <div className="absolute w-96 h-96 rounded-full bg-emerald-500/5 blur-3xl pointer-events-none" />
 
       <div className="relative z-10 flex flex-col items-center px-6 text-center">
-        {/* Main "nothing to read..." Title with Sequential Dot Animation */}
+        {/* Main "there's nothing to read..." Title with Sequential Dot Animation */}
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white italic drop-shadow-2xl">
-          <span>"nothing to read</span>
+          <span>"there's nothing to read</span>
           <span className="inline-flex tracking-wider not-italic text-emerald-400 font-mono pl-1">
             <span
               className={`inline-block transition-opacity duration-150 ${
