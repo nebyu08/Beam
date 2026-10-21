@@ -39,10 +39,8 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
     targetVy: 0,
     targetX: null as number | null,
     targetY: null as number | null,
-    panX: 0,
-    panY: 0,
-    zoom: 0.45,
-    targetZoom: 0.45,
+    zoom: 0.46,
+    targetZoom: 0.46,
     isDragging: false,
     dragStartX: 0,
     dragStartY: 0,
@@ -108,9 +106,9 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
     const col = index % cols;
     const row = Math.floor(index / cols);
 
-    const targetZoom = 1.0;
-    const stepX = 74 * targetZoom;
-    const stepY = 108 * targetZoom;
+    const targetZoom = 0.95;
+    const stepX = 78 * targetZoom;
+    const stepY = 112 * targetZoom;
 
     const targetX = -(col * stepX + ((row % 2) * stepX * 0.5));
     const targetY = -(row * stepY);
@@ -125,14 +123,14 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
     const w = canvas?.width || 800;
     const h = canvas?.height || 600;
 
-    // Center lens directly onto the book so it is actively magnified with focus halo
+    // Center lens directly onto the book
     cameraRef.current.hasActiveMouse = true;
     cameraRef.current.lensX = w / 2;
-    cameraRef.current.lensY = h * 0.52;
+    cameraRef.current.lensY = h / 2;
     cameraRef.current.mouseX = w / 2;
-    cameraRef.current.mouseY = h * 0.52;
+    cameraRef.current.mouseY = h / 2;
     cameraRef.current.targetMouseX = w / 2;
-    cameraRef.current.targetMouseY = h * 0.52;
+    cameraRef.current.targetMouseY = h / 2;
   }, [selectedBook]);
 
   // Handle Resize using ResizeObserver
@@ -155,7 +153,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
 
       if (!cameraRef.current.hasActiveMouse) {
         cameraRef.current.mouseX = (w * dpr) / 2;
-        cameraRef.current.mouseY = (h * dpr) * 0.52;
+        cameraRef.current.mouseY = (h * dpr) / 2;
         cameraRef.current.targetMouseX = cameraRef.current.mouseX;
         cameraRef.current.targetMouseY = cameraRef.current.mouseY;
         cameraRef.current.lensX = cameraRef.current.mouseX;
@@ -190,57 +188,40 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
       const width = canvas.width || 800;
       const height = canvas.height || 600;
 
-      // Dynamic Viewport Perspective: viewport shifts toward cursor direction so view is never rigidly centered
+      const screenCenterX = width / 2;
+      const screenCenterY = height / 2;
+
+      // Unify Camera & Mouse: smooth mouse and lens tracking
       if (cam.hasActiveMouse) {
-        cam.mouseX += (cam.targetMouseX - cam.mouseX) * 0.16;
-        cam.mouseY += (cam.targetMouseY - cam.mouseY) * 0.16;
-        cam.lensX += (cam.mouseX - cam.lensX) * 0.18;
-        cam.lensY += (cam.mouseY - cam.lensY) * 0.18;
+        cam.mouseX += (cam.targetMouseX - cam.mouseX) * 0.18;
+        cam.mouseY += (cam.targetMouseY - cam.mouseY) * 0.18;
+        cam.lensX += (cam.mouseX - cam.lensX) * 0.22;
+        cam.lensY += (cam.mouseY - cam.lensY) * 0.22;
 
-        // Viewport moves smoothly towards where you are looking (up to 40% screen shift)
-        const targetPanX = (cam.mouseX - width / 2) * 0.42;
-        const targetPanY = (cam.mouseY - height / 2) * 0.42;
-        cam.panX += (targetPanX - cam.panX) * 0.1;
-        cam.panY += (targetPanY - cam.panY) * 0.1;
-
-        // Continuous streaming flight ONLY when reaching actual window boundary (outer 8%)
+        // Continuous fluid gliding whenever pointer leaves center deadzone
+        // Moves seamlessly towards corners, far-left, far-right with no edge dead-ends
         if (!cam.isDragging) {
-          const edgeMarginX = width * 0.08;
-          const edgeMarginY = height * 0.08;
-          let edgeVx = 0;
-          let edgeVy = 0;
+          const normX = (cam.mouseX - screenCenterX) / screenCenterX; // -1 to +1
+          const normY = (cam.mouseY - screenCenterY) / screenCenterY; // -1 to +1
+          const distFromCenter = Math.hypot(normX, normY);
 
-          if (cam.mouseX > width - edgeMarginX) {
-            const intensity = (cam.mouseX - (width - edgeMarginX)) / edgeMarginX;
-            edgeVx = -intensity * 14.0 * Math.max(0.6, cam.zoom);
-          } else if (cam.mouseX < edgeMarginX) {
-            const intensity = (edgeMarginX - cam.mouseX) / edgeMarginX;
-            edgeVx = intensity * 14.0 * Math.max(0.6, cam.zoom);
+          if (distFromCenter > 0.08) {
+            const speedFactor = Math.pow(Math.min(1.0, (distFromCenter - 0.08) / 0.92), 1.25);
+            const maxSpeed = 17.0 * Math.max(0.65, cam.zoom);
+            cam.targetVx = -(normX / distFromCenter) * speedFactor * maxSpeed;
+            cam.targetVy = -(normY / distFromCenter) * speedFactor * maxSpeed;
+          } else {
+            cam.targetVx = 0;
+            cam.targetVy = 0;
           }
-
-          if (cam.mouseY > height - edgeMarginY) {
-            const intensity = (cam.mouseY - (height - edgeMarginY)) / edgeMarginY;
-            edgeVy = -intensity * 14.0 * Math.max(0.6, cam.zoom);
-          } else if (cam.mouseY < edgeMarginY) {
-            const intensity = (edgeMarginY - cam.mouseY) / edgeMarginY;
-            edgeVy = intensity * 14.0 * Math.max(0.6, cam.zoom);
-          }
-
-          cam.targetVx = edgeVx;
-          cam.targetVy = edgeVy;
         }
       } else {
         cam.targetVx = 0;
         cam.targetVy = 0;
-        cam.panX += (0 - cam.panX) * 0.05;
-        cam.panY += (0 - cam.panY) * 0.05;
       }
 
-      const screenCenterX = width / 2 + cam.panX;
-      const screenCenterY = height * 0.52 + cam.panY;
-
       // If manual dragging or edge-flying, cancel auto-swoop
-      if (cam.isDragging || Math.abs(cam.targetVx) > 0.05 || Math.abs(cam.targetVy) > 0.05) {
+      if (cam.isDragging || Math.abs(cam.targetVx) > 0.1 || Math.abs(cam.targetVy) > 0.1) {
         cam.targetX = null;
         cam.targetY = null;
       }
@@ -261,35 +242,34 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
 
       // Physics integration with fluid damping
       if (!cam.isDragging) {
-        cam.vx += (cam.targetVx - cam.vx) * 0.08;
-        cam.vy += (cam.targetVy - cam.vy) * 0.08;
+        cam.vx += (cam.targetVx - cam.vx) * 0.09;
+        cam.vy += (cam.targetVy - cam.vy) * 0.09;
 
         cam.x += cam.vx * (dt / 16);
         cam.y += cam.vy * (dt / 16);
 
-        // If targetVx is 0, softly bring vx to pure 0
         if (Math.abs(cam.targetVx) < 0.01 && Math.abs(cam.vx) < 0.02) cam.vx = 0;
         if (Math.abs(cam.targetVy) < 0.01 && Math.abs(cam.vy) < 0.02) cam.vy = 0;
       }
 
-      // Smooth zoom interpolation with cinematic easing
+      // Smooth zoom interpolation
       cam.zoom += (cam.targetZoom - cam.zoom) * 0.055;
 
-      // Deep dark canvas background
+      // Dark basalt ground background
       ctx.fillStyle = '#060608';
       ctx.fillRect(0, 0, width, height);
 
-      // Subtle atmospheric radial ambient
+      // Atmospheric radial ambient centered directly at the lens / cursor position
       const bgGrad = ctx.createRadialGradient(
-        screenCenterX,
-        screenCenterY,
-        60,
-        screenCenterX,
-        screenCenterY,
+        cam.lensX,
+        cam.lensY,
+        40,
+        cam.lensX,
+        cam.lensY,
         Math.max(width, height) * 0.85
       );
       bgGrad.addColorStop(0, '#151522');
-      bgGrad.addColorStop(0.5, '#0a0a10');
+      bgGrad.addColorStop(0.5, '#090910');
       bgGrad.addColorStop(1, '#050507');
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
@@ -302,46 +282,44 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
         return;
       }
 
-      // Seamless poster mosaic grid (inspired by Nothing To Watch)
+      // Organic molded pebble dimensions (standard 1:1.46 ratio)
       const cols = 20;
       const rows = Math.ceil(booksCount / cols);
 
-      // Clean poster dimensions (standard 1:1.48 poster ratio)
-      const cardW = 72 * cam.zoom;
-      const cardH = 106 * cam.zoom;
+      const cardW = 74 * cam.zoom;
+      const cardH = 108 * cam.zoom;
 
-      // Clean mosaic tile spacing with subtle 2px gap
-      const stepX = 74 * cam.zoom;
-      const stepY = 108 * cam.zoom;
+      // Tight pebble spacing for interlocking molten stone mosaic
+      const stepX = 77 * cam.zoom;
+      const stepY = 111 * cam.zoom;
 
-      // Spherical fisheye lens radius
-      const lensRadius = Math.min(width, height) * 0.44 * Math.sqrt(cam.zoom);
+      // Wide elastic lens radius that smoothly encompasses screen corners
+      const lensRadius = Math.max(width, height) * 0.58 * Math.sqrt(cam.zoom);
 
       let closestBook: Book | null = null;
       let closestCoords = { screenX: 0, screenY: 0, w: 0, h: 0 };
       let directHitBook: Book | null = null;
       let directHitCoords = { screenX: 0, screenY: 0, w: 0, h: 0 };
-      let highestDirectZ = -1;
-      let minDistanceToCenter = Infinity;
+      let highestDirectBulge = -1;
+      let minDistanceToLens = Infinity;
       let lensBook: Book | null = null;
       let lensCoords = { screenX: 0, screenY: 0, w: 0, h: 0 };
 
-      interface StackedBook {
+      interface MoldedPebble {
         book: Book;
         screenX: number;
         screenY: number;
         w: number;
         h: number;
-        z: number;
-        angle: number;
+        totalBulge: number;
         dist: number;
         opacity: number;
       }
 
-      const drawList: StackedBook[] = [];
+      const drawList: MoldedPebble[] = [];
 
-      // Truly endless grid buffer covering generous margins around all 4 sides
-      const bufferPadding = Math.max(width, height) * 0.45;
+      // Truly endless grid buffer covering wide margins
+      const bufferPadding = Math.max(width, height) * 0.5;
       const minCol = Math.floor((-cam.x - screenCenterX - bufferPadding) / stepX) - 3;
       const maxCol = Math.ceil((width - cam.x - screenCenterX + bufferPadding) / stepX) + 3;
       const minRow = Math.floor((-cam.y - screenCenterY - bufferPadding) / stepY) - 3;
@@ -349,7 +327,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
 
       for (let r = minRow; r <= maxRow; r++) {
         const rowWrapped = ((r % rows) + rows) % rows;
-        // Hexagonal offset: alternate rows offset by 50%
+        // Hexagonal / staggered stone offset for natural stone matrix
         const offsetX = (r % 2) * (stepX * 0.5);
 
         for (let c = minCol; c <= maxCol; c++) {
@@ -358,74 +336,74 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
           const book = books[bookIndex % booksCount];
           if (!book) continue;
 
-          // Undistorted screen position
+          // Undistorted grid position
           const baseX = screenCenterX + c * stepX + offsetX + cam.x;
           const baseY = screenCenterY + r * stepY + cam.y;
 
           let screenX = baseX;
           let screenY = baseY;
-          let z = 0;
           let scale = 1.0;
-          let opacity = 0.88;
-          let angle = 0;
+          let totalBulge = 0;
+          let opacity = 0.92;
           let dist = 9999;
 
           if (cam.hasActiveMouse) {
             const dx = baseX - cam.lensX;
             const dy = baseY - cam.lensY;
             dist = Math.hypot(dx, dy);
-            angle = Math.atan2(dy, dx);
 
             if (dist < lensRadius) {
-              const normDist = dist / lensRadius;
-              z = Math.sqrt(Math.max(0, 1.0 - normDist * normDist));
+              const normDist = dist / lensRadius; // 0 to 1
 
-              const pushFactor = 1.0 + 0.55 * Math.pow(1.0 - normDist, 1.6);
-              const curvedDist = dist * pushFactor;
+              // Smooth elastic bulge falloff (Nothing to Watch formula)
+              const bulge = Math.pow(Math.max(0, 1.0 - normDist), 1.8);
 
-              screenX = cam.lensX + Math.cos(angle) * curvedDist;
-              screenY = cam.lensY + Math.sin(angle) * curvedDist;
+              // Fluid harmonic ripple wave (Nothing to Watch RIPPLE formula)
+              const ripple = Math.sin(normDist * 16.0 - time * 0.0032) * 0.06 * (1.0 - normDist);
+              totalBulge = Math.max(0, bulge + ripple);
 
-              scale = 1.0 + Math.pow(z, 1.3) * 1.5;
-              opacity = 0.85 + z * 0.15;
-            } else {
-              scale = 1.0;
-              opacity = 0.88;
+              // Organic radial displacement: molds cells away from lens center like liquid stones
+              const push = totalBulge * (cardW * 0.44);
+              if (dist > 0.01) {
+                screenX = baseX + (dx / dist) * push;
+                screenY = baseY + (dy / dist) * push;
+              }
+
+              // Smooth magnification
+              scale = 1.0 + totalBulge * 0.54;
+              opacity = 0.90 + totalBulge * 0.1;
             }
-          } else {
-            scale = 0.94;
-            opacity = 0.88;
           }
 
           const w = cardW * scale;
           const h = cardH * scale;
 
-          // Frustum culling with safety margin
+          // Frustum culling
           if (
-            screenX + w < -80 ||
-            screenX - w > width + 80 ||
-            screenY + h < -80 ||
-            screenY - h > height + 80
+            screenX + w < -100 ||
+            screenX - w > width + 100 ||
+            screenY + h < -100 ||
+            screenY - h > height + 100
           ) {
             continue;
           }
 
-          // Active card under cursor: prioritize physical bounding box, then fallback to lens proximity
+          // Active pebble under cursor
           if (cam.hasActiveMouse && !cam.isDragging) {
             const isInside =
-              Math.abs(screenX - cam.lensX) <= (w / 2) * 1.08 &&
-              Math.abs(screenY - cam.lensY) <= (h / 2) * 1.08;
+              Math.abs(screenX - cam.lensX) <= (w / 2) * 1.05 &&
+              Math.abs(screenY - cam.lensY) <= (h / 2) * 1.05;
 
-            if (isInside && z > highestDirectZ) {
-              highestDirectZ = z;
+            if (isInside && totalBulge > highestDirectBulge) {
+              highestDirectBulge = totalBulge;
               directHitBook = book;
               directHitCoords = { screenX, screenY, w, h };
             }
 
             if (dist < lensRadius) {
               const distToLens = Math.hypot(screenX - cam.lensX, screenY - cam.lensY);
-              if (distToLens < minDistanceToCenter && z > 0.35) {
-                minDistanceToCenter = distToLens;
+              if (distToLens < minDistanceToLens && totalBulge > 0.3) {
+                minDistanceToLens = distToLens;
                 lensBook = book;
                 lensCoords = { screenX, screenY, w, h };
               }
@@ -438,16 +416,12 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
             screenY,
             w,
             h,
-            z,
-            angle,
+            totalBulge,
             dist,
             opacity,
           });
         }
       }
-
-      // Sort by depth so closer / higher z cards are drawn ON TOP of further cards
-      drawList.sort((a, b) => a.z - b.z);
 
       if (directHitBook) {
         closestBook = directHitBook;
@@ -457,48 +431,32 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
         closestCoords = lensCoords;
       }
 
-      // Render each stacked book card
+      // Render Molded Liquid Stone Tiles
+      // No separate drop-shadow card stacking: seamless continuous molten pebble mosaic
       for (let i = 0; i < drawList.length; i++) {
         const item = drawList[i];
-        const { book, screenX, screenY, w, h, z, angle, opacity } = item;
+        const { book, screenX, screenY, w, h, totalBulge, opacity } = item;
 
-        const isFocused = (focusedBookRef.current?.id === book.id || selectedBookRef.current?.id === book.id);
+        const isFocused =
+          focusedBookRef.current?.id === book.id || selectedBookRef.current?.id === book.id;
         const isHovered = closestBook?.id === book.id;
 
         ctx.save();
         ctx.globalAlpha = opacity;
-
         ctx.translate(screenX, screenY);
-
-        // Subtle 3D tilt
-        if (z > 0 && z < 0.95) {
-          const tiltAmount = (1.0 - z) * 0.05;
-          ctx.rotate(angle * 0.15 * tiltAmount);
-        }
 
         const halfW = w / 2;
         const halfH = h / 2;
-        const cornerRadius = Math.max(2, 4.5 * (w / cardW));
 
-        // Clean poster rendering (inspired by Nothing To Watch): flat mosaic in background, elevation only on active/hovered poster
-        if (z > 0.35 || isFocused || isHovered) {
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
-          ctx.shadowBlur = Math.min(32, 10 + 20 * z);
-          ctx.shadowOffsetX = 0;
-          ctx.shadowOffsetY = 3 + 6 * z;
-        } else {
-          ctx.shadowColor = 'transparent';
-          ctx.shadowBlur = 0;
-          ctx.shadowOffsetX = 0;
-          ctx.shadowOffsetY = 0;
-        }
+        // Generous pillowed pebble squircle contour (like molten melting stone)
+        const cornerRadius = Math.min(halfW, halfH) * 0.34;
 
-        // Clean rectangular poster boundary with subtle rounded corners
+        // Clip to organic rounded pebble boundary
         ctx.beginPath();
         ctx.roundRect(-halfW, -halfH, w, h, cornerRadius);
         ctx.clip();
 
-        // Draw poster cover
+        // 1. Draw book cover
         const src = book.cover || book.cover_url;
         const img = imagesRef.current.get(src);
 
@@ -507,7 +465,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
         } else {
           const hash = book.id * 47;
           const hue = hash % 360;
-          ctx.fillStyle = `hsl(${hue}, 24%, 14%)`;
+          ctx.fillStyle = `hsl(${hue}, 22%, 12%)`;
           ctx.fillRect(-halfW, -halfH, w, h);
 
           if (w > 40) {
@@ -518,32 +476,58 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
           }
         }
 
-        // Ambient depth shading
-        if (z < 0.85 && !isFocused && !isHovered) {
-          const shade = (1.0 - z) * 0.38;
-          ctx.fillStyle = `rgba(0, 0, 0, ${shade})`;
+        // 2. Molten rock inner vignette: dark molten edge melting into the dark basalt matrix
+        const innerVignette = ctx.createRadialGradient(
+          0,
+          0,
+          halfW * 0.45,
+          0,
+          0,
+          Math.max(halfW, halfH)
+        );
+        innerVignette.addColorStop(0, 'rgba(0, 0, 0, 0)');
+        innerVignette.addColorStop(0.75, 'rgba(0, 0, 0, 0.28)');
+        innerVignette.addColorStop(1, 'rgba(0, 0, 0, 0.7)');
+        ctx.fillStyle = innerVignette;
+        ctx.fillRect(-halfW, -halfH, w, h);
+
+        // 3. Tactile 3D molten sheen: smooth rounded liquid stone bevel lighting
+        const stoneSheen = ctx.createLinearGradient(-halfW, -halfH, halfW, halfH);
+        stoneSheen.addColorStop(0, 'rgba(255, 255, 255, 0.14)');
+        stoneSheen.addColorStop(0.4, 'rgba(255, 255, 255, 0)');
+        stoneSheen.addColorStop(0.7, 'rgba(0, 0, 0, 0.12)');
+        stoneSheen.addColorStop(1, 'rgba(0, 0, 0, 0.45)');
+        ctx.fillStyle = stoneSheen;
+        ctx.fillRect(-halfW, -halfH, w, h);
+
+        // 4. Subtle distance ambient dampening for stones far from the cursor
+        if (totalBulge < 0.2 && !isFocused && !isHovered) {
+          const dim = (0.2 - totalBulge) * 2.2;
+          ctx.fillStyle = `rgba(0, 0, 0, ${dim * 0.35})`;
           ctx.fillRect(-halfW, -halfH, w, h);
         }
 
         ctx.restore();
 
-        // Radiant focus border ring on active poster
+        // Focused / Hovered Liquid Halo that hugs the molded pebble shape
         if (isFocused || isHovered) {
           ctx.save();
           ctx.translate(screenX, screenY);
-          ctx.strokeStyle = isFocused ? '#ffffff' : 'rgba(255, 255, 255, 0.75)';
-          ctx.lineWidth = isFocused ? 2.5 : 1.5;
-          ctx.shadowColor = '#ffffff';
-          ctx.shadowBlur = isFocused ? 20 : 10;
+          ctx.strokeStyle = isFocused
+            ? 'rgba(52, 211, 153, 0.95)'
+            : 'rgba(255, 255, 255, 0.85)';
+          ctx.lineWidth = isFocused ? 2.5 : 1.8;
+          ctx.shadowColor = isFocused ? '#34d399' : '#ffffff';
+          ctx.shadowBlur = isFocused ? 18 : 12;
 
           ctx.beginPath();
-          ctx.roundRect(-halfW - 1.5, -halfH - 1.5, w + 3, h + 3, cornerRadius + 1.5);
+          ctx.roundRect(-halfW - 1, -halfH - 1, w + 2, h + 2, cornerRadius + 1);
           ctx.stroke();
           ctx.restore();
         }
       }
 
-      // Update floating preview position with hardware-accelerated 3D transforms
+      // Update sleek floating near-pebble preview tag
       const floatingEl = floatingPreviewElRef.current;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       if (floatingEl) {
@@ -560,18 +544,17 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
           const containerW = width / dpr;
           const containerH = height / dpr;
 
-          const previewW = 280;
-          const previewH = 110;
+          const previewW = 270;
+          const previewH = 95;
 
-          // Default: float to the right side of card
+          // Default: float to right of pebble
           let posX = cardCenterX + cardHalfW + 16;
-          // Flip to left side if overflowing right edge
+          // Flip to left if overflowing
           if (posX + previewW > containerW - 14) {
             posX = cardCenterX - cardHalfW - previewW - 16;
           }
           posX = Math.max(14, Math.min(containerW - previewW - 14, posX));
 
-          // Align vertically near card top-center
           let posY = cardCenterY - previewH * 0.45;
           posY = Math.max(14, Math.min(containerH - previewH - 14, posY));
 
@@ -593,16 +576,14 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
         if (pos.opacity > 0.02) {
           floatingEl.style.transform = `translate3d(${pos.x.toFixed(1)}px, ${pos.y.toFixed(1)}px, 0)`;
           floatingEl.style.opacity = pos.opacity.toFixed(3);
-          floatingEl.style.pointerEvents = pos.opacity > 0.6 ? 'auto' : 'none';
           floatingEl.style.display = 'block';
         } else {
           floatingEl.style.opacity = '0';
-          floatingEl.style.pointerEvents = 'none';
           floatingEl.style.display = 'none';
         }
       }
 
-      // Throttled store update for focused book and preview card content
+      // Throttled store update for focused book and preview
       if (time - lastHoverCheckTime > 50) {
         lastHoverCheckTime = time;
         if (cam.hasActiveMouse && !cam.isDragging) {
@@ -630,7 +611,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
     };
   }, []);
 
-  // Global window pointermove so moving towards window edges NEVER stops or cancels!
+  // Global window pointermove so moving towards window edges NEVER cancels
   useEffect(() => {
     const onWindowPointerMove = (e: PointerEvent) => {
       const container = containerRef.current;
@@ -726,23 +707,16 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
     >
       <canvas ref={canvasRef} className="w-full h-full block" />
 
-      {/* Floating Near-Book Preview Card */}
+      {/* Floating Ethereal Preview Tag on Hover */}
       <div
         ref={floatingPreviewElRef}
-        onClick={(e) => {
-          e.stopPropagation();
-          if (previewBook) {
-            useBookStore.getState().setSelectedBook(previewBook);
-            onSelectBook?.(previewBook);
-          }
-        }}
         style={{ display: 'none', opacity: 0 }}
-        className="absolute top-0 left-0 z-20 w-72 p-3.5 rounded-2xl bg-zinc-950/90 backdrop-blur-xl border border-zinc-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.85)] cursor-pointer group transition-colors duration-150 hover:border-emerald-500/50 hover:bg-zinc-950"
+        className="pointer-events-none absolute top-0 left-0 z-20 w-72 p-3 rounded-2xl bg-zinc-950/80 backdrop-blur-xl border border-white/10 shadow-[0_12px_32px_rgba(0,0,0,0.85)] text-zinc-100"
       >
         {previewBook && (
           <div className="flex items-start justify-between gap-3 select-none">
             <div className="flex-1 min-w-0">
-              <p className="text-[11px] font-medium text-zinc-400 truncate flex items-center gap-1.5 mb-1">
+              <p className="text-[11px] font-medium text-zinc-400 truncate flex items-center gap-1.5 mb-0.5">
                 <span className="truncate">{previewBook.author}</span>
                 {previewBook.year > 0 && (
                   <>
@@ -754,27 +728,27 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
                 )}
               </p>
 
-              <h3 className="text-sm font-bold text-white leading-snug line-clamp-2 group-hover:text-emerald-300 transition-colors">
+              <h3 className="text-sm font-bold text-white leading-snug line-clamp-1">
                 {previewBook.title}
               </h3>
 
-              <div className="mt-2.5 flex items-center justify-between gap-2">
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-zinc-800/90 text-zinc-300 border border-zinc-700/60 truncate max-w-[120px]">
+              <div className="mt-2 flex items-center justify-between gap-2">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-zinc-900 text-zinc-300 border border-zinc-700/60 truncate max-w-[120px]">
                   {previewBook.genre}
                 </span>
-                <span className="text-[10px] text-emerald-400 font-mono font-medium flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">
-                  Explore ↗
+                <span className="text-[10px] text-emerald-400 font-mono font-medium">
+                  Click to inspect ↗
                 </span>
               </div>
             </div>
 
             {/* Circular Rating Dial */}
             <div
-              className="shrink-0 flex flex-col items-center justify-center w-10 h-10 rounded-full bg-zinc-900/90 border border-zinc-800 shadow-inner"
+              className="shrink-0 flex flex-col items-center justify-center w-9 h-9 rounded-full bg-zinc-900 border border-zinc-800"
               title={`${previewBook.rating || 85}% Rating`}
             >
-              <div className="relative w-8 h-8 flex items-center justify-center">
-                <svg className="w-8 h-8 transform -rotate-90" viewBox="0 0 28 28">
+              <div className="relative w-7 h-7 flex items-center justify-center">
+                <svg className="w-7 h-7 transform -rotate-90" viewBox="0 0 28 28">
                   <circle
                     cx="14"
                     cy="14"
@@ -800,7 +774,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
                     strokeLinecap="round"
                   />
                 </svg>
-                <span className="absolute text-[9px] font-mono font-bold text-zinc-200">
+                <span className="absolute text-[8.5px] font-mono font-bold text-zinc-200">
                   {previewBook.rating || 85}
                 </span>
               </div>
