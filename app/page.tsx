@@ -112,7 +112,10 @@ export default function Home() {
 
   const handleLoadingFinished = useCallback(() => {
     // Cinematic random zoom in to a book right after loading finishes
-    selectRandomBook();
+    const chosen = selectRandomBook();
+    if (chosen) {
+      setActiveModal('details');
+    }
   }, [selectRandomBook]);
 
   return (
@@ -129,11 +132,14 @@ export default function Home() {
       {/* Bottom Hint Bar */}
       <FooterBar />
 
-      {/* Modals */}
+      {/* Top-Left Sliding Book Detail Card with Cover Background */}
       <BookDetailsModal
-        isOpen={activeModal === 'details'}
+        isOpen={activeModal === 'details' && !!(selectedBook || focusedBook)}
         book={selectedBook || focusedBook}
-        onClose={() => setActiveModal(null)}
+        onClose={() => {
+          setActiveModal(null);
+          setSelectedBook(null);
+        }}
       />
 
       <BookListModal

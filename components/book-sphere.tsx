@@ -103,10 +103,12 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
     if (index === -1) return;
 
     const cols = 18;
-    const stepX = 56;
-    const stepY = 80;
     const col = index % cols;
     const row = Math.floor(index / cols);
+
+    const targetZoom = 1.05;
+    const stepX = 56 * targetZoom;
+    const stepY = 80 * targetZoom;
 
     const targetX = -(col * stepX + ((row % 2) * stepX * 0.5));
     const targetY = -(row * stepY);
@@ -115,7 +117,20 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
     cameraRef.current.targetY = targetY;
     cameraRef.current.targetVx = 0;
     cameraRef.current.targetVy = 0;
-    cameraRef.current.targetZoom = 1.05;
+    cameraRef.current.targetZoom = targetZoom;
+
+    const canvas = canvasRef.current;
+    const w = canvas?.width || 800;
+    const h = canvas?.height || 600;
+
+    // Center lens directly onto the book so it is actively magnified with focus halo
+    cameraRef.current.hasActiveMouse = true;
+    cameraRef.current.lensX = w / 2;
+    cameraRef.current.lensY = h * 0.52;
+    cameraRef.current.mouseX = w / 2;
+    cameraRef.current.mouseY = h * 0.52;
+    cameraRef.current.targetMouseX = w / 2;
+    cameraRef.current.targetMouseY = h * 0.52;
   }, [selectedBook]);
 
   // Handle Resize using ResizeObserver
@@ -445,7 +460,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
         const item = drawList[i];
         const { book, screenX, screenY, w, h, z, angle, opacity } = item;
 
-        const isFocused = focusedBookRef.current?.id === book.id && z > 0.35;
+        const isFocused = (focusedBookRef.current?.id === book.id || selectedBook?.id === book.id);
         const isHovered = closestBook?.id === book.id;
 
         ctx.save();
