@@ -9,6 +9,7 @@ import FooterBar from '@/components/footer-bar';
 import BookDetailsModal from '@/components/book-details-modal';
 import BookListModal from '@/components/book-list-modal';
 import AboutModal from '@/components/about-modal';
+import LoadingScreen from '@/components/loading-screen';
 
 export default function Home() {
   const {
@@ -23,6 +24,33 @@ export default function Home() {
   } = useBookStore();
 
   const [activeModal, setActiveModal] = useState<'about' | 'list' | 'details' | null>(null);
+  const [isReady, setIsReady] = useState(false);
+
+  // Preload initial visible batch of covers for smooth entrance
+  useEffect(() => {
+    if (books.length === 0) return;
+    const initialCovers = books
+      .slice(0, 24)
+      .map((b) => b.cover || b.cover_url)
+      .filter(Boolean) as string[];
+
+    if (initialCovers.length === 0) {
+      setIsReady(true);
+      return;
+    }
+
+    let loaded = 0;
+    initialCovers.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+      img.onload = img.onerror = () => {
+        loaded++;
+        if (loaded >= Math.min(10, initialCovers.length)) {
+          setIsReady(true);
+        }
+      };
+    });
+  }, [books]);
 
   // Sync books from /data/books.json when updated
   useEffect(() => {
@@ -113,6 +141,9 @@ export default function Home() {
         isOpen={activeModal === 'about'}
         onClose={() => setActiveModal(null)}
       />
+
+      {/* Intro Loading Screen with sequential dot ellipsis */}
+      <LoadingScreen isReady={isReady} />
     </main>
   );
 }
