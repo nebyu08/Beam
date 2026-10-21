@@ -26,6 +26,8 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
   focusedBookRef.current = focusedBook;
 
   const selectedBook = useBookStore((s) => s.selectedBook);
+  const selectedBookRef = useRef<Book | null>(selectedBook);
+  selectedBookRef.current = selectedBook;
 
   // Infinite Camera & Physics state
   const cameraRef = useRef({
@@ -460,7 +462,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
         const item = drawList[i];
         const { book, screenX, screenY, w, h, z, angle, opacity } = item;
 
-        const isFocused = (focusedBookRef.current?.id === book.id || selectedBook?.id === book.id);
+        const isFocused = (focusedBookRef.current?.id === book.id || selectedBookRef.current?.id === book.id);
         const isHovered = closestBook?.id === book.id;
 
         ctx.save();
@@ -549,7 +551,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
         let targetY = -9999;
         let targetOpacity = 0;
 
-        if (cam.hasActiveMouse && closestBook && !cam.isDragging) {
+        if (cam.hasActiveMouse && closestBook && !cam.isDragging && !selectedBookRef.current) {
           const cardCenterX = closestCoords.screenX / dpr;
           const cardCenterY = closestCoords.screenY / dpr;
           const cardHalfW = closestCoords.w / (2 * dpr);

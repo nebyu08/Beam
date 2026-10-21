@@ -111,11 +111,8 @@ export default function Home() {
   }, [setSelectedBook]);
 
   const handleLoadingFinished = useCallback(() => {
-    // Cinematic random zoom in to a book right after loading finishes
-    const chosen = selectRandomBook();
-    if (chosen) {
-      setActiveModal('details');
-    }
+    // Cinematic random zoom in to a book on the sphere (modal opens strictly on select)
+    selectRandomBook();
   }, [selectRandomBook]);
 
   return (
@@ -132,10 +129,10 @@ export default function Home() {
       {/* Bottom Hint Bar */}
       <FooterBar />
 
-      {/* Top-Left Sliding Book Detail Card with Cover Background */}
+      {/* Top-Left Sliding Book Detail Card with Cover Background - Strictly on Select */}
       <BookDetailsModal
-        isOpen={activeModal === 'details' && !!(selectedBook || focusedBook)}
-        book={selectedBook || focusedBook}
+        isOpen={activeModal === 'details' && !!selectedBook}
+        book={selectedBook}
         onClose={() => {
           setActiveModal(null);
           setSelectedBook(null);
