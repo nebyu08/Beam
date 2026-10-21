@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useBookStore } from '@/lib/book-store';
 import { Book } from '@/lib/types';
 
@@ -11,6 +11,11 @@ interface BookSphereProps {
 export default function BookSphere({ onSelectBook }: BookSphereProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const [previewBook, setPreviewBook] = useState<Book | null>(null);
+  const currentPreviewIdRef = useRef<number | null>(null);
+  const floatingPreviewElRef = useRef<HTMLDivElement | null>(null);
+  const floatingPosRef = useRef({ x: -9999, y: -9999, opacity: 0 });
 
   const filteredBooks = useBookStore((s) => s.filteredBooks);
   const booksRef = useRef<Book[]>(filteredBooks);
@@ -85,6 +90,9 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
     if (!selectedBook) return;
     if (lastCenteringIdRef.current === selectedBook.id) return;
     lastCenteringIdRef.current = selectedBook.id;
+
+    currentPreviewIdRef.current = selectedBook.id;
+    setPreviewBook(selectedBook);
 
     const books = booksRef.current;
     const index = books.findIndex((b) => b.id === selectedBook.id);
@@ -257,7 +265,13 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
       const lensRadius = Math.min(width, height) * 0.44 * Math.sqrt(cam.zoom);
 
       let closestBook: Book | null = null;
+      let closestCoords = { screenX: 0, screenY: 0, w: 0, h: 0 };
+      let directHitBook: Book | null = null;
+      let directHitCoords = { screenX: 0, screenY: 0, w: 0, h: 0 };
+      let highestDirectZ = -1;
       let minDistanceToCenter = Infinity;
+      let lensBook: Book | null = null;
+      let lensCoords = { screenX: 0, screenY: 0, w: 0, h: 0 };
 
       interface StackedBook {
         book: Book;
@@ -343,12 +357,25 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
             continue;
           }
 
-          // Active card under cursor
-          if (cam.hasActiveMouse && dist < lensRadius) {
-            const distToLens = Math.hypot(screenX - cam.lensX, screenY - cam.lensY);
-            if (distToLens < minDistanceToCenter && z > 0.3) {
-              minDistanceToCenter = distToLens;
-              closestBook = book;
+          // Active card under cursor: prioritize physical bounding box, then fallback to lens proximity
+          if (cam.hasActiveMouse && !cam.isDragging) {
+            const isInside =
+              Math.abs(screenX - cam.lensX) <= (w / 2) * 1.08 &&
+              Math.abs(screenY - cam.lensY) <= (h / 2) * 1.08;
+
+            if (isInside && z > highestDirectZ) {
+              highestDirectZ = z;
+              directHitBook = book;
+              directHitCoords = { screenX, screenY, w, h };
+            }
+
+            if (dist < lensRadius) {
+              const distToLens = Math.hypot(screenX - cam.lensX, screenY - cam.lensY);
+              if (distToLens < minDistanceToCenter && z > 0.35) {
+                minDistanceToCenter = distToLens;
+                lensBook = book;
+                lensCoords = { screenX, screenY, w, h };
+              }
             }
           }
 
@@ -368,6 +395,14 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
 
       // Sort by depth so closer / higher z cards are drawn ON TOP of further cards
       drawList.sort((a, b) => a.z - b.z);
+
+      if (directHitBook) {
+        closestBook = directHitBook;
+        closestCoords = directHitCoords;
+      } else if (lensBook) {
+        closestBook = lensBook;
+        closestCoords = lensCoords;
+      }
 
       // Render each stacked book card
       for (let i = 0; i < drawList.length; i++) {
@@ -452,11 +487,80 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
         }
       }
 
-      // Throttled store update for focused book
-      if (time - lastHoverCheckTime > 75) {
+      // Update floating preview position with hardware-accelerated 3D transforms
+      const floatingEl = floatingPreviewElRef.current;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (floatingEl) {
+        let targetX = -9999;
+        let targetY = -9999;
+        let targetOpacity = 0;
+
+        if (cam.hasActiveMouse && closestBook && !cam.isDragging) {
+          const cardCenterX = closestCoords.screenX / dpr;
+          const cardCenterY = closestCoords.screenY / dpr;
+          const cardHalfW = closestCoords.w / (2 * dpr);
+          const cardHalfH = closestCoords.h / (2 * dpr);
+
+          const containerW = width / dpr;
+          const containerH = height / dpr;
+
+          const previewW = 280;
+          const previewH = 110;
+
+          // Default: float to the right side of card
+          let posX = cardCenterX + cardHalfW + 16;
+          // Flip to left side if overflowing right edge
+          if (posX + previewW > containerW - 14) {
+            posX = cardCenterX - cardHalfW - previewW - 16;
+          }
+          posX = Math.max(14, Math.min(containerW - previewW - 14, posX));
+
+          // Align vertically near card top-center
+          let posY = cardCenterY - previewH * 0.45;
+          posY = Math.max(14, Math.min(containerH - previewH - 14, posY));
+
+          targetX = posX;
+          targetY = posY;
+          targetOpacity = 1;
+        }
+
+        const pos = floatingPosRef.current;
+        if (pos.x < -5000 && targetX > 0) {
+          pos.x = targetX;
+          pos.y = targetY;
+        } else if (targetX > 0) {
+          pos.x += (targetX - pos.x) * 0.25;
+          pos.y += (targetY - pos.y) * 0.25;
+        }
+        pos.opacity += (targetOpacity - pos.opacity) * 0.22;
+
+        if (pos.opacity > 0.02) {
+          floatingEl.style.transform = `translate3d(${pos.x.toFixed(1)}px, ${pos.y.toFixed(1)}px, 0)`;
+          floatingEl.style.opacity = pos.opacity.toFixed(3);
+          floatingEl.style.pointerEvents = pos.opacity > 0.6 ? 'auto' : 'none';
+          floatingEl.style.display = 'block';
+        } else {
+          floatingEl.style.opacity = '0';
+          floatingEl.style.pointerEvents = 'none';
+          floatingEl.style.display = 'none';
+        }
+      }
+
+      // Throttled store update for focused book and preview card content
+      if (time - lastHoverCheckTime > 50) {
         lastHoverCheckTime = time;
-        if (cam.hasActiveMouse && closestBook && closestBook.id !== focusedBookRef.current?.id) {
-          useBookStore.getState().setFocusedBook(closestBook);
+        if (cam.hasActiveMouse && !cam.isDragging) {
+          if (closestBook) {
+            if (closestBook.id !== currentPreviewIdRef.current) {
+              currentPreviewIdRef.current = closestBook.id;
+              setPreviewBook(closestBook);
+              useBookStore.getState().setFocusedBook(closestBook);
+            }
+          } else if (currentPreviewIdRef.current !== null) {
+            currentPreviewIdRef.current = null;
+            setPreviewBook(null);
+            useBookStore.getState().setFocusedBook(null);
+          }
         }
       }
 
@@ -549,7 +653,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
     const cam = cameraRef.current;
     const dragDist = Math.hypot(e.clientX - cam.dragStartX, e.clientY - cam.dragStartY);
     if (dragDist < 6) {
-      const current = focusedBookRef.current;
+      const current = focusedBookRef.current || previewBook;
       if (current) {
         useBookStore.getState().setSelectedBook(current);
         onSelectBook?.(current);
@@ -565,6 +669,89 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
       onClick={handleClick}
     >
       <canvas ref={canvasRef} className="w-full h-full block" />
+
+      {/* Floating Near-Book Preview Card */}
+      <div
+        ref={floatingPreviewElRef}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (previewBook) {
+            useBookStore.getState().setSelectedBook(previewBook);
+            onSelectBook?.(previewBook);
+          }
+        }}
+        style={{ display: 'none', opacity: 0 }}
+        className="absolute top-0 left-0 z-20 w-72 p-3.5 rounded-2xl bg-zinc-950/90 backdrop-blur-xl border border-zinc-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.85)] cursor-pointer group transition-colors duration-150 hover:border-emerald-500/50 hover:bg-zinc-950"
+      >
+        {previewBook && (
+          <div className="flex items-start justify-between gap-3 select-none">
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] font-medium text-zinc-400 truncate flex items-center gap-1.5 mb-1">
+                <span className="truncate">{previewBook.author}</span>
+                {previewBook.year > 0 && (
+                  <>
+                    <span className="text-zinc-600">•</span>
+                    <span className="text-zinc-500 font-mono text-[10px]">
+                      {previewBook.year}
+                    </span>
+                  </>
+                )}
+              </p>
+
+              <h3 className="text-sm font-bold text-white leading-snug line-clamp-2 group-hover:text-emerald-300 transition-colors">
+                {previewBook.title}
+              </h3>
+
+              <div className="mt-2.5 flex items-center justify-between gap-2">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-zinc-800/90 text-zinc-300 border border-zinc-700/60 truncate max-w-[120px]">
+                  {previewBook.genre}
+                </span>
+                <span className="text-[10px] text-emerald-400 font-mono font-medium flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">
+                  Explore ↗
+                </span>
+              </div>
+            </div>
+
+            {/* Circular Rating Dial */}
+            <div
+              className="shrink-0 flex flex-col items-center justify-center w-10 h-10 rounded-full bg-zinc-900/90 border border-zinc-800 shadow-inner"
+              title={`${previewBook.rating || 85}% Rating`}
+            >
+              <div className="relative w-8 h-8 flex items-center justify-center">
+                <svg className="w-8 h-8 transform -rotate-90" viewBox="0 0 28 28">
+                  <circle
+                    cx="14"
+                    cy="14"
+                    r={10}
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    className="text-zinc-800"
+                    fill="transparent"
+                  />
+                  <circle
+                    cx="14"
+                    cy="14"
+                    r={10}
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    className="text-emerald-400"
+                    fill="transparent"
+                    strokeDasharray={2 * Math.PI * 10}
+                    strokeDashoffset={
+                      2 * Math.PI * 10 -
+                      ((previewBook.rating || 85) / 100) * (2 * Math.PI * 10)
+                    }
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <span className="absolute text-[9px] font-mono font-bold text-zinc-200">
+                  {previewBook.rating || 85}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

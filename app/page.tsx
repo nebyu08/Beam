@@ -5,7 +5,6 @@ import { useBookStore } from '@/lib/book-store';
 import { Book } from '@/lib/types';
 import BookSphere from '@/components/book-sphere';
 import BookHeader from '@/components/book-header';
-import BookOverlay from '@/components/book-overlay';
 import FooterBar from '@/components/footer-bar';
 import BookDetailsModal from '@/components/book-details-modal';
 import BookListModal from '@/components/book-list-modal';
@@ -80,25 +79,18 @@ export default function Home() {
 
   const handleSelectBook = useCallback((book: Book) => {
     setSelectedBook(book);
+    setActiveModal('details');
   }, [setSelectedBook]);
 
   return (
     <main className="relative w-screen h-screen overflow-hidden bg-[#060608] text-zinc-100">
-      {/* Interactive 3D Book Sphere Canvas */}
+      {/* Interactive 3D Book Sphere Canvas with Near-Book Floating Details */}
       <BookSphere onSelectBook={handleSelectBook} />
 
-      {/* Top Header & Filters */}
+      {/* Discreet Corner Toggle & Tools */}
       <BookHeader
         onOpenAbout={() => setActiveModal('about')}
         onOpenList={() => setActiveModal('list')}
-      />
-
-      {/* Main Focus Overlay (Title, Author, Rating Dial, Actions) */}
-      <BookOverlay
-        onOpenDetails={(book) => {
-          setSelectedBook(book);
-          setActiveModal('details');
-        }}
       />
 
       {/* Bottom Hint Bar */}
