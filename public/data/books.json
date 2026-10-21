@@ -3798,5 +3798,5705 @@
     "cover_id": 8684447,
     "openlibrary_url": "https://openlibrary.org/works/OL455327W",
     "edition_count": 192
+  },
+  {
+    "id": 200,
+    "key": "/works/OL1417907W",
+    "title": "At the Earth's Core",
+    "author": "Edgar Rice Burroughs",
+    "year": 1914,
+    "rating": 83,
+    "genre": "Science Fiction",
+    "genres": [
+      "Science Fiction",
+      "American Science fiction",
+      "Classic Literature"
+    ],
+    "cover": "/covers/200.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9317372-M.jpg",
+    "cover_id": 9317372,
+    "openlibrary_url": "https://openlibrary.org/works/OL1417907W",
+    "edition_count": 219
+  },
+  {
+    "id": 201,
+    "key": "/works/OL52252W",
+    "title": "In the days of the comet",
+    "author": "H. G. Wells",
+    "year": 1906,
+    "rating": 85,
+    "genre": "Science Fiction",
+    "genres": [
+      "Science Fiction",
+      "Classic Literature",
+      "Collisions with Earth"
+    ],
+    "cover": "/covers/201.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5783892-M.jpg",
+    "cover_id": 5783892,
+    "openlibrary_url": "https://openlibrary.org/works/OL52252W",
+    "edition_count": 213
+  },
+  {
+    "id": 202,
+    "key": "/works/OL10215W",
+    "title": "\u041c\u044b",
+    "author": "\u0415\u0432\u0433\u0435\u043d\u0438\u0439 \u0418\u0432\u0430\u043d\u043e\u0432\u0438\u0447 \u0417\u0430\u043c\u044f\u0442\u0438\u043d",
+    "year": 1924,
+    "rating": 89,
+    "genre": "Science Fiction",
+    "genres": [
+      "Science Fiction",
+      "Literature: Texts",
+      "Untranslated Fiction - General"
+    ],
+    "cover": "/covers/202.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5484189-M.jpg",
+    "cover_id": 5484189,
+    "openlibrary_url": "https://openlibrary.org/works/OL10215W",
+    "edition_count": 210
+  },
+  {
+    "id": 203,
+    "key": "/works/OL1099479W",
+    "title": "De la terre \u00e0 la lune",
+    "author": "Jules Verne",
+    "year": 1865,
+    "rating": 83,
+    "genre": "Science Fiction",
+    "genres": [
+      "Science Fiction",
+      "Continental european fiction (fictional works by one author)",
+      "Fiction, science fiction, general"
+    ],
+    "cover": "/covers/203.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5943556-M.jpg",
+    "cover_id": 5943556,
+    "openlibrary_url": "https://openlibrary.org/works/OL1099479W",
+    "edition_count": 209
+  },
+  {
+    "id": 204,
+    "key": "/works/OL1418128W",
+    "title": "Thuvia, Maid of Mars",
+    "author": "Edgar Rice Burroughs, Craig Trahan, Eric King, J. Allen St. John",
+    "year": 1916,
+    "rating": 78,
+    "genre": "Science Fiction",
+    "genres": [
+      "American Science fiction",
+      "Fiction",
+      "Science fiction, American"
+    ],
+    "cover": "/covers/204.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/284442-M.jpg",
+    "cover_id": 284442,
+    "openlibrary_url": "https://openlibrary.org/works/OL1418128W",
+    "edition_count": 206
+  },
+  {
+    "id": 205,
+    "key": "/works/OL1099513W",
+    "title": "Voyage au Centre de la Terre",
+    "author": "Jules Verne",
+    "year": 1867,
+    "rating": 80,
+    "genre": "Science Fiction",
+    "genres": [
+      "Science Fiction",
+      "Fiction",
+      "Science fiction"
+    ],
+    "cover": "/covers/205.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5890987-M.jpg",
+    "cover_id": 5890987,
+    "openlibrary_url": "https://openlibrary.org/works/OL1099513W",
+    "edition_count": 206
+  },
+  {
+    "id": 206,
+    "key": "/works/OL52195W",
+    "title": "The food of the gods and how it came to earth",
+    "author": "H. G. Wells",
+    "year": 1900,
+    "rating": 81,
+    "genre": "Science Fiction",
+    "genres": [
+      "Science Fiction",
+      "Fiction",
+      "Giants"
+    ],
+    "cover": "/covers/206.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/314687-M.jpg",
+    "cover_id": 314687,
+    "openlibrary_url": "https://openlibrary.org/works/OL52195W",
+    "edition_count": 194
+  },
+  {
+    "id": 207,
+    "key": "/works/OL1417916W",
+    "title": "The Beasts of Tarzan (Classic Ace SF, F-203)",
+    "author": "Edgar Rice Burroughs",
+    "year": 1914,
+    "rating": 91,
+    "genre": "Science Fiction",
+    "genres": [
+      "Tarzan (fictitious character), fiction",
+      "Fiction, action & adventure",
+      "Fiction, fantasy, general"
+    ],
+    "cover": "/covers/207.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/2421421-M.jpg",
+    "cover_id": 2421421,
+    "openlibrary_url": "https://openlibrary.org/works/OL1417916W",
+    "edition_count": 188
+  },
+  {
+    "id": 208,
+    "key": "/works/OL17518W",
+    "title": "When the World Shook",
+    "author": "H. Rider Haggard, H. Haggar",
+    "year": 1919,
+    "rating": 93,
+    "genre": "Science Fiction",
+    "genres": [
+      "Science Fiction",
+      "Fiction, action & adventure",
+      "English Adventure stories"
+    ],
+    "cover": "/covers/208.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/2976990-M.jpg",
+    "cover_id": 2976990,
+    "openlibrary_url": "https://openlibrary.org/works/OL17518W",
+    "edition_count": 181
+  },
+  {
+    "id": 209,
+    "key": "/works/OL262391W",
+    "title": "Glinda of Oz",
+    "author": "L. Frank Baum",
+    "year": 1920,
+    "rating": 87,
+    "genre": "Fantasy",
+    "genres": [
+      "Fiction",
+      "Fantasy",
+      "Children's stories"
+    ],
+    "cover": "/covers/209.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/758814-M.jpg",
+    "cover_id": 758814,
+    "openlibrary_url": "https://openlibrary.org/works/OL262391W",
+    "edition_count": 454
+  },
+  {
+    "id": 210,
+    "key": "/works/OL99535W",
+    "title": "The Magic City",
+    "author": "Edith Nesbit",
+    "year": 1910,
+    "rating": 81,
+    "genre": "Fantasy",
+    "genres": [
+      "Fantasy",
+      "Cities and towns",
+      "Juvenile fiction"
+    ],
+    "cover": "/covers/210.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/1673063-M.jpg",
+    "cover_id": 1673063,
+    "openlibrary_url": "https://openlibrary.org/works/OL99535W",
+    "edition_count": 445
+  },
+  {
+    "id": 211,
+    "key": "/works/OL462007W",
+    "title": "Peter Pan",
+    "author": "J. M. Barrie",
+    "year": 1911,
+    "rating": 89,
+    "genre": "Fantasy",
+    "genres": [
+      "Fantasy",
+      "Open Library Staff Picks",
+      "English Children's fiction"
+    ],
+    "cover": "/covers/211.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8237052-M.jpg",
+    "cover_id": 8237052,
+    "openlibrary_url": "https://openlibrary.org/works/OL462007W",
+    "edition_count": 441
+  },
+  {
+    "id": 212,
+    "key": "/works/OL99539W",
+    "title": "The Phoenix and the Carpet",
+    "author": "Edith Nesbit",
+    "year": 1903,
+    "rating": 81,
+    "genre": "Fantasy",
+    "genres": [
+      "Fantasy",
+      "English Fantasy fiction",
+      "Magic"
+    ],
+    "cover": "/covers/212.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/902122-M.jpg",
+    "cover_id": 902122,
+    "openlibrary_url": "https://openlibrary.org/works/OL99539W",
+    "edition_count": 438
+  },
+  {
+    "id": 213,
+    "key": "/works/OL1527356W",
+    "title": "Le avventure di Pinocchio",
+    "author": "Carlo Collodi",
+    "year": 1883,
+    "rating": 92,
+    "genre": "Fantasy",
+    "genres": [
+      "Fantasy",
+      "Puppets",
+      "Fiction"
+    ],
+    "cover": "/covers/213.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8597022-M.jpg",
+    "cover_id": 8597022,
+    "openlibrary_url": "https://openlibrary.org/works/OL1527356W",
+    "edition_count": 431
+  },
+  {
+    "id": 214,
+    "key": "/works/OL2239396W",
+    "title": "\u00c0 rebours",
+    "author": "Joris-Karl Huysmans",
+    "year": 1884,
+    "rating": 92,
+    "genre": "Fantasy",
+    "genres": [
+      "Fantasy",
+      "Aesthetics",
+      "Fiction"
+    ],
+    "cover": "/covers/214.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/13170209-M.jpg",
+    "cover_id": 13170209,
+    "openlibrary_url": "https://openlibrary.org/works/OL2239396W",
+    "edition_count": 337
+  },
+  {
+    "id": 215,
+    "key": "/works/OL1317211W",
+    "title": "Meditations",
+    "author": "Marcus Aurelius",
+    "year": 1626,
+    "rating": 91,
+    "genre": "Classics",
+    "genres": [
+      "Philosophy",
+      "Nonfiction",
+      "Classics"
+    ],
+    "cover": "/covers/215.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/211529-M.jpg",
+    "cover_id": 211529,
+    "openlibrary_url": "https://openlibrary.org/works/OL1317211W",
+    "edition_count": 643
+  },
+  {
+    "id": 216,
+    "key": "/works/OL20874W",
+    "title": "Silas Marner",
+    "author": "George Eliot, John O'Connor, Mary Anne Evans, Hugh Thomson, Julius Frese",
+    "year": 1800,
+    "rating": 91,
+    "genre": "Classics",
+    "genres": [
+      "Classics",
+      "Weavers",
+      "Social life and customs"
+    ],
+    "cover": "/covers/216.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9286405-M.jpg",
+    "cover_id": 9286405,
+    "openlibrary_url": "https://openlibrary.org/works/OL20874W",
+    "edition_count": 628
+  },
+  {
+    "id": 217,
+    "key": "/works/OL318900W",
+    "title": "The Prophet",
+    "author": "Kahlil Gibran",
+    "year": 1923,
+    "rating": 97,
+    "genre": "Classics",
+    "genres": [
+      "Poetry",
+      "Classics",
+      "Literature & Fiction"
+    ],
+    "cover": "/covers/217.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/418324-M.jpg",
+    "cover_id": 418324,
+    "openlibrary_url": "https://openlibrary.org/works/OL318900W",
+    "edition_count": 570
+  },
+  {
+    "id": 218,
+    "key": "/works/OL81294W",
+    "title": "Women in Love",
+    "author": "D. H. Lawrence",
+    "year": 1877,
+    "rating": 81,
+    "genre": "Classics",
+    "genres": [
+      "Classics",
+      "Romance",
+      "Classic Literature"
+    ],
+    "cover": "/covers/218.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/13140934-M.jpg",
+    "cover_id": 13140934,
+    "openlibrary_url": "https://openlibrary.org/works/OL81294W",
+    "edition_count": 564
+  },
+  {
+    "id": 219,
+    "key": "/works/OL276386W",
+    "title": "The Turn of the Screw",
+    "author": "Henry James",
+    "year": 1898,
+    "rating": 90,
+    "genre": "Classics",
+    "genres": [
+      "Classics",
+      "Governesses, fiction",
+      "Children, fiction"
+    ],
+    "cover": "/covers/219.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/181493-M.jpg",
+    "cover_id": 181493,
+    "openlibrary_url": "https://openlibrary.org/works/OL276386W",
+    "edition_count": 563
+  },
+  {
+    "id": 220,
+    "key": "/works/OL15292640W",
+    "title": "Metamorphoses",
+    "author": "Ovid",
+    "year": 1479,
+    "rating": 81,
+    "genre": "Classics",
+    "genres": [
+      "Classics",
+      "Poetry",
+      "Classical Mythology"
+    ],
+    "cover": "/covers/220.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/7212118-M.jpg",
+    "cover_id": 7212118,
+    "openlibrary_url": "https://openlibrary.org/works/OL15292640W",
+    "edition_count": 501
+  },
+  {
+    "id": 221,
+    "key": "/works/OL16820266W",
+    "title": "The 5th wave (The 5th Wave #1)",
+    "author": "Richard Yancey",
+    "year": 2013,
+    "rating": 97,
+    "genre": "Dystopian",
+    "genres": [
+      "Dystopian",
+      "Fiction",
+      "Extraterrestrial beings"
+    ],
+    "cover": "/covers/221.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/7393264-M.jpg",
+    "cover_id": 7393264,
+    "openlibrary_url": "https://openlibrary.org/works/OL16820266W",
+    "edition_count": 30
+  },
+  {
+    "id": 222,
+    "key": "/works/OL20658722W",
+    "title": "Lakewood",
+    "author": "Megan Giddings",
+    "year": 2020,
+    "rating": 80,
+    "genre": "Dystopian",
+    "genres": [
+      "Dystopian",
+      "American literature",
+      "Fiction, african american & black, women"
+    ],
+    "cover": "/covers/222.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9320243-M.jpg",
+    "cover_id": 9320243,
+    "openlibrary_url": "https://openlibrary.org/works/OL20658722W",
+    "edition_count": 6
+  },
+  {
+    "id": 223,
+    "key": "/works/OL19349259W",
+    "title": "The Weaver",
+    "author": "Emmi It\u00e4ranta",
+    "year": 2016,
+    "rating": 97,
+    "genre": "Dystopian",
+    "genres": [
+      "Dystopian",
+      "Fiction, dystopian",
+      "Political corruption"
+    ],
+    "cover": "/covers/223.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8461426-M.jpg",
+    "cover_id": 8461426,
+    "openlibrary_url": "https://openlibrary.org/works/OL19349259W",
+    "edition_count": 6
+  },
+  {
+    "id": 224,
+    "key": "/works/OL19308509W",
+    "title": "The Book of Ivy",
+    "author": "Amy Engel",
+    "year": 2001,
+    "rating": 83,
+    "genre": "Dystopian",
+    "genres": [
+      "Love & Romance",
+      "Dystopian",
+      "Adventure and adventurers"
+    ],
+    "cover": "/covers/224.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8435084-M.jpg",
+    "cover_id": 8435084,
+    "openlibrary_url": "https://openlibrary.org/works/OL19308509W",
+    "edition_count": 6
+  },
+  {
+    "id": 225,
+    "key": "/works/OL19755541W",
+    "title": "Last pick",
+    "author": "Jason Walz",
+    "year": 2018,
+    "rating": 97,
+    "genre": "Dystopian",
+    "genres": [
+      "Dystopian",
+      "Extraterrestrial beings",
+      "People with disabilities"
+    ],
+    "cover": "/covers/225.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/10272169-M.jpg",
+    "cover_id": 10272169,
+    "openlibrary_url": "https://openlibrary.org/works/OL19755541W",
+    "edition_count": 6
+  },
+  {
+    "id": 226,
+    "key": "/works/OL17718536W",
+    "title": "Proxy",
+    "author": "Alex London, Alex London",
+    "year": 2013,
+    "rating": 84,
+    "genre": "Dystopian",
+    "genres": [
+      "Fiction",
+      "Science Fiction",
+      "Dystopian"
+    ],
+    "cover": "/covers/226.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12360557-M.jpg",
+    "cover_id": 12360557,
+    "openlibrary_url": "https://openlibrary.org/works/OL17718536W",
+    "edition_count": 5
+  },
+  {
+    "id": 227,
+    "key": "/works/OL167019W",
+    "title": "Enclave",
+    "author": "Kit Reed",
+    "year": 2009,
+    "rating": 80,
+    "genre": "Dystopian",
+    "genres": [
+      "Dystopian",
+      "Private schools",
+      "Fiction"
+    ],
+    "cover": "/covers/227.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8120388-M.jpg",
+    "cover_id": 8120388,
+    "openlibrary_url": "https://openlibrary.org/works/OL167019W",
+    "edition_count": 5
+  },
+  {
+    "id": 228,
+    "key": "/works/OL19713560W",
+    "title": "The foretelling of Georgie Spider",
+    "author": "Ambelin Kwaymullina",
+    "year": 2015,
+    "rating": 88,
+    "genre": "Dystopian",
+    "genres": [
+      "Fiction",
+      "Psychic ability",
+      "Dystopian"
+    ],
+    "cover": "/covers/228.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/10564637-M.jpg",
+    "cover_id": 10564637,
+    "openlibrary_url": "https://openlibrary.org/works/OL19713560W",
+    "edition_count": 4
+  },
+  {
+    "id": 229,
+    "key": "/works/OL19747081W",
+    "title": "A study in honor",
+    "author": "Claire O'Dell",
+    "year": 2018,
+    "rating": 93,
+    "genre": "Dystopian",
+    "genres": [
+      "Dystopian",
+      "Women detectives",
+      "Murder"
+    ],
+    "cover": "/covers/229.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12101042-M.jpg",
+    "cover_id": 12101042,
+    "openlibrary_url": "https://openlibrary.org/works/OL19747081W",
+    "edition_count": 4
+  },
+  {
+    "id": 230,
+    "key": "/works/OL21775531W",
+    "title": "Destroy Me",
+    "author": "Tahereh Mafi",
+    "year": 2012,
+    "rating": 94,
+    "genre": "Dystopian",
+    "genres": [
+      "Dystopian",
+      "science fiction",
+      "young adult"
+    ],
+    "cover": "/covers/230.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14427908-M.jpg",
+    "cover_id": 14427908,
+    "openlibrary_url": "https://openlibrary.org/works/OL21775531W",
+    "edition_count": 4
+  },
+  {
+    "id": 231,
+    "key": "/works/OL176087W",
+    "title": "The dead secret",
+    "author": "Wilkie Collins",
+    "year": 1857,
+    "rating": 95,
+    "genre": "Mystery",
+    "genres": [
+      "Mystery",
+      "Fiction",
+      "Social life and customs"
+    ],
+    "cover": "/covers/231.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14305247-M.jpg",
+    "cover_id": 14305247,
+    "openlibrary_url": "https://openlibrary.org/works/OL176087W",
+    "edition_count": 167
+  },
+  {
+    "id": 232,
+    "key": "/works/OL1172118W",
+    "title": "The Lodger",
+    "author": "Marie Belloc Lowndes",
+    "year": 1913,
+    "rating": 84,
+    "genre": "Mystery",
+    "genres": [
+      "Mystery",
+      "Classic Literature",
+      "Fiction"
+    ],
+    "cover": "/covers/232.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/696674-M.jpg",
+    "cover_id": 696674,
+    "openlibrary_url": "https://openlibrary.org/works/OL1172118W",
+    "edition_count": 163
+  },
+  {
+    "id": 233,
+    "key": "/works/OL176073W",
+    "title": "The Queen of Hearts",
+    "author": "Wilkie Collins",
+    "year": 1859,
+    "rating": 81,
+    "genre": "Mystery",
+    "genres": [
+      "Fiction",
+      "Mystery",
+      "British and irish fiction (fictional works by one author)"
+    ],
+    "cover": "/covers/233.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/1861500-M.jpg",
+    "cover_id": 1861500,
+    "openlibrary_url": "https://openlibrary.org/works/OL176073W",
+    "edition_count": 161
+  },
+  {
+    "id": 234,
+    "key": "/works/OL1868679W",
+    "title": "R. Holmes & Co.",
+    "author": "John Kendrick Bangs",
+    "year": 1906,
+    "rating": 80,
+    "genre": "Mystery",
+    "genres": [
+      "Criminals",
+      "Fiction",
+      "Private investigators"
+    ],
+    "cover": "/covers/234.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5716647-M.jpg",
+    "cover_id": 5716647,
+    "openlibrary_url": "https://openlibrary.org/works/OL1868679W",
+    "edition_count": 156
+  },
+  {
+    "id": 235,
+    "key": "/works/OL1546094W",
+    "title": "L'affaire Lerouge",
+    "author": "\u00c9mile Gaboriau",
+    "year": 1800,
+    "rating": 86,
+    "genre": "Mystery",
+    "genres": [
+      "Fiction",
+      "Mystery",
+      "Fiction, mystery & detective, general"
+    ],
+    "cover": "/covers/235.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/4486242-M.jpg",
+    "cover_id": 4486242,
+    "openlibrary_url": "https://openlibrary.org/works/OL1546094W",
+    "edition_count": 148
+  },
+  {
+    "id": 236,
+    "key": "/works/OL82586W",
+    "title": "Harry Potter and the Deathly Hallows",
+    "author": "J. K. Rowling",
+    "year": 2007,
+    "rating": 87,
+    "genre": "Mystery",
+    "genres": [
+      "Mystery",
+      "the Elder Wand",
+      "children's books"
+    ],
+    "cover": "/covers/236.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/15158660-M.jpg",
+    "cover_id": 15158660,
+    "openlibrary_url": "https://openlibrary.org/works/OL82586W",
+    "edition_count": 144
+  },
+  {
+    "id": 237,
+    "key": "/works/OL471509W",
+    "title": "The A.B.C. Murders",
+    "author": "Agatha Christie",
+    "year": 1936,
+    "rating": 85,
+    "genre": "Mystery",
+    "genres": [
+      "Fiction",
+      "Mystery",
+      "Agatha Christie"
+    ],
+    "cover": "/covers/237.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14573514-M.jpg",
+    "cover_id": 14573514,
+    "openlibrary_url": "https://openlibrary.org/works/OL471509W",
+    "edition_count": 142
+  },
+  {
+    "id": 238,
+    "key": "/works/OL471500W",
+    "title": "4:50 from Paddington",
+    "author": "Agatha Christie",
+    "year": 1957,
+    "rating": 81,
+    "genre": "Mystery",
+    "genres": [
+      "Fiction",
+      "Mystery",
+      "Jane Marple (Fictitious character)"
+    ],
+    "cover": "/covers/238.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/13151352-M.jpg",
+    "cover_id": 13151352,
+    "openlibrary_url": "https://openlibrary.org/works/OL471500W",
+    "edition_count": 140
+  },
+  {
+    "id": 239,
+    "key": "/works/OL1517945W",
+    "title": "The daffodil murder",
+    "author": "Edgar Wallace",
+    "year": 1921,
+    "rating": 91,
+    "genre": "Mystery",
+    "genres": [
+      "Fiction",
+      "Mystery",
+      "Fiction, mystery & detective, general"
+    ],
+    "cover": "/covers/239.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/2895230-M.jpg",
+    "cover_id": 2895230,
+    "openlibrary_url": "https://openlibrary.org/works/OL1517945W",
+    "edition_count": 137
+  },
+  {
+    "id": 240,
+    "key": "/works/OL30040W",
+    "title": "The Mysterious Key And What It Opened",
+    "author": "Louisa May Alcott",
+    "year": 2004,
+    "rating": 79,
+    "genre": "Mystery",
+    "genres": [
+      "Fiction",
+      "Mystery",
+      "Fiction, thrillers, general"
+    ],
+    "cover": "/covers/240.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/1815112-M.jpg",
+    "cover_id": 1815112,
+    "openlibrary_url": "https://openlibrary.org/works/OL30040W",
+    "edition_count": 129
+  },
+  {
+    "id": 241,
+    "key": "/works/OL76524W",
+    "title": "The Thirty-Nine Steps",
+    "author": "John Buchan",
+    "year": 1915,
+    "rating": 81,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "Hannay, richard (fictitious character), fiction",
+      "Great britain, fiction"
+    ],
+    "cover": "/covers/241.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/93020-M.jpg",
+    "cover_id": 93020,
+    "openlibrary_url": "https://openlibrary.org/works/OL76524W",
+    "edition_count": 881
+  },
+  {
+    "id": 242,
+    "key": "/works/OL76598W",
+    "title": "Mr. Standfast",
+    "author": "John Buchan",
+    "year": 1918,
+    "rating": 83,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "Fiction",
+      "World War, 1914-1918"
+    ],
+    "cover": "/covers/242.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/6962564-M.jpg",
+    "cover_id": 6962564,
+    "openlibrary_url": "https://openlibrary.org/works/OL76598W",
+    "edition_count": 437
+  },
+  {
+    "id": 243,
+    "key": "/works/OL78009W",
+    "title": "The Pathfinder",
+    "author": "James Fenimore Cooper",
+    "year": 1800,
+    "rating": 88,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "Classic Literature",
+      "Fiction"
+    ],
+    "cover": "/covers/243.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8980913-M.jpg",
+    "cover_id": 8980913,
+    "openlibrary_url": "https://openlibrary.org/works/OL78009W",
+    "edition_count": 427
+  },
+  {
+    "id": 244,
+    "key": "/works/OL4885721W",
+    "title": "A strange disappearance",
+    "author": "Anna Katharine Green",
+    "year": 1879,
+    "rating": 83,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "Fiction",
+      "Police"
+    ],
+    "cover": "/covers/244.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12657405-M.jpg",
+    "cover_id": 12657405,
+    "openlibrary_url": "https://openlibrary.org/works/OL4885721W",
+    "edition_count": 392
+  },
+  {
+    "id": 245,
+    "key": "/works/OL74504W",
+    "title": "White Fang",
+    "author": "Jack London",
+    "year": 1905,
+    "rating": 83,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "Gold discoveries",
+      "Wolfdogs"
+    ],
+    "cover": "/covers/245.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8236920-M.jpg",
+    "cover_id": 8236920,
+    "openlibrary_url": "https://openlibrary.org/works/OL74504W",
+    "edition_count": 387
+  },
+  {
+    "id": 246,
+    "key": "/works/OL77997W",
+    "title": "The pioneers",
+    "author": "James Fenimore Cooper",
+    "year": 1800,
+    "rating": 88,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "Frontier and pioneer life",
+      "Open Library Staff Picks"
+    ],
+    "cover": "/covers/246.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9000512-M.jpg",
+    "cover_id": 9000512,
+    "openlibrary_url": "https://openlibrary.org/works/OL77997W",
+    "edition_count": 378
+  },
+  {
+    "id": 247,
+    "key": "/works/OL2681032W",
+    "title": "The Evil Shepherd",
+    "author": "Edward Phillips Oppenheim",
+    "year": 1922,
+    "rating": 90,
+    "genre": "Thriller",
+    "genres": [
+      "Classic Literature",
+      "Fiction",
+      "Thriller"
+    ],
+    "cover": "/covers/247.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12648419-M.jpg",
+    "cover_id": 12648419,
+    "openlibrary_url": "https://openlibrary.org/works/OL2681032W",
+    "edition_count": 291
+  },
+  {
+    "id": 248,
+    "key": "/works/OL2021957W",
+    "title": "Otto of the Silver Hand",
+    "author": "Howard Pyle, Howard Pyle",
+    "year": 1888,
+    "rating": 90,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "Middle Ages",
+      "Fiction"
+    ],
+    "cover": "/covers/248.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/7263483-M.jpg",
+    "cover_id": 7263483,
+    "openlibrary_url": "https://openlibrary.org/works/OL2021957W",
+    "edition_count": 226
+  },
+  {
+    "id": 249,
+    "key": "/works/OL17455W",
+    "title": "A Tale of Three Lions",
+    "author": "H. Rider Haggard",
+    "year": 2004,
+    "rating": 95,
+    "genre": "Thriller",
+    "genres": [
+      "Classic Literature",
+      "Fiction",
+      "Thriller"
+    ],
+    "cover": "/covers/249.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/2009339-M.jpg",
+    "cover_id": 2009339,
+    "openlibrary_url": "https://openlibrary.org/works/OL17455W",
+    "edition_count": 215
+  },
+  {
+    "id": 250,
+    "key": "/works/OL827304W",
+    "title": "The Beetle. A Mystery",
+    "author": "Richard Marsh",
+    "year": 1897,
+    "rating": 92,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "Fiction, occult & supernatural",
+      "Egypt, fiction"
+    ],
+    "cover": "/covers/250.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/750958-M.jpg",
+    "cover_id": 750958,
+    "openlibrary_url": "https://openlibrary.org/works/OL827304W",
+    "edition_count": 211
+  },
+  {
+    "id": 251,
+    "key": "/works/OL100239W",
+    "title": "An American Tragedy",
+    "author": "Theodore Dreiser",
+    "year": 1900,
+    "rating": 97,
+    "genre": "Thriller",
+    "genres": [
+      "Classic Literature",
+      "Fiction",
+      "Thriller"
+    ],
+    "cover": "/covers/251.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12728401-M.jpg",
+    "cover_id": 12728401,
+    "openlibrary_url": "https://openlibrary.org/works/OL100239W",
+    "edition_count": 210
+  },
+  {
+    "id": 252,
+    "key": "/works/OL8075008W",
+    "title": "Alcatraz",
+    "author": "Frederick Faust",
+    "year": 1922,
+    "rating": 96,
+    "genre": "Thriller",
+    "genres": [
+      "Classic Literature",
+      "Fiction",
+      "Thriller"
+    ],
+    "cover": "/covers/252.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/2891182-M.jpg",
+    "cover_id": 2891182,
+    "openlibrary_url": "https://openlibrary.org/works/OL8075008W",
+    "edition_count": 178
+  },
+  {
+    "id": 253,
+    "key": "/works/OL1517879W",
+    "title": "The Four Just Men",
+    "author": "Edgar Wallace",
+    "year": 1905,
+    "rating": 85,
+    "genre": "Thriller",
+    "genres": [
+      "Classic Literature",
+      "Fiction",
+      "Thriller"
+    ],
+    "cover": "/covers/253.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12947886-M.jpg",
+    "cover_id": 12947886,
+    "openlibrary_url": "https://openlibrary.org/works/OL1517879W",
+    "edition_count": 177
+  },
+  {
+    "id": 254,
+    "key": "/works/OL85753W",
+    "title": "Casino Royale",
+    "author": "Ian Fleming",
+    "year": 1953,
+    "rating": 95,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "British",
+      "Fiction"
+    ],
+    "cover": "/covers/254.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5540820-M.jpg",
+    "cover_id": 5540820,
+    "openlibrary_url": "https://openlibrary.org/works/OL85753W",
+    "edition_count": 164
+  },
+  {
+    "id": 255,
+    "key": "/works/OL1099641W",
+    "title": "Michel Strogoff",
+    "author": "Jules Verne",
+    "year": 1876,
+    "rating": 86,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "Classic Literature",
+      "Fiction"
+    ],
+    "cover": "/covers/255.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/10393209-M.jpg",
+    "cover_id": 10393209,
+    "openlibrary_url": "https://openlibrary.org/works/OL1099641W",
+    "edition_count": 153
+  },
+  {
+    "id": 256,
+    "key": "/works/OL85732W",
+    "title": "From Russia, with love",
+    "author": "Ian Fleming",
+    "year": 1957,
+    "rating": 95,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "British",
+      "Fiction"
+    ],
+    "cover": "/covers/256.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/109458-M.jpg",
+    "cover_id": 109458,
+    "openlibrary_url": "https://openlibrary.org/works/OL85732W",
+    "edition_count": 150
+  },
+  {
+    "id": 257,
+    "key": "/works/OL85750W",
+    "title": "Goldfinger",
+    "author": "Ian Fleming",
+    "year": 1958,
+    "rating": 83,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "Fiction",
+      "Fiction in English"
+    ],
+    "cover": "/covers/257.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/109454-M.jpg",
+    "cover_id": 109454,
+    "openlibrary_url": "https://openlibrary.org/works/OL85750W",
+    "edition_count": 144
+  },
+  {
+    "id": 258,
+    "key": "/works/OL8127199W",
+    "title": "In Secret",
+    "author": "Robert W. Chambers",
+    "year": 1919,
+    "rating": 87,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "World war, 1914-1918, fiction",
+      "Fiction, historical, general"
+    ],
+    "cover": "/covers/258.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/1844837-M.jpg",
+    "cover_id": 1844837,
+    "openlibrary_url": "https://openlibrary.org/works/OL8127199W",
+    "edition_count": 142
+  },
+  {
+    "id": 259,
+    "key": "/works/OL2344450W",
+    "title": "The Drums of Jeopardy",
+    "author": "Harold MacGrath",
+    "year": 1920,
+    "rating": 89,
+    "genre": "Thriller",
+    "genres": [
+      "Classic Literature",
+      "Fiction",
+      "Thriller"
+    ],
+    "cover": "/covers/259.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/11351150-M.jpg",
+    "cover_id": 11351150,
+    "openlibrary_url": "https://openlibrary.org/works/OL2344450W",
+    "edition_count": 140
+  },
+  {
+    "id": 260,
+    "key": "/works/OL2713465W",
+    "title": "Nightmare Abbey",
+    "author": "Thomas Love Peacock",
+    "year": 1818,
+    "rating": 80,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "Adaptations",
+      "Arthurian romances"
+    ],
+    "cover": "/covers/260.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/1956635-M.jpg",
+    "cover_id": 1956635,
+    "openlibrary_url": "https://openlibrary.org/works/OL2713465W",
+    "edition_count": 140
+  },
+  {
+    "id": 261,
+    "key": "/works/OL13150029W",
+    "title": "The Eye of Osiris",
+    "author": "R. Austin Freeman",
+    "year": 1911,
+    "rating": 80,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "London (england), fiction",
+      "Physicians, fiction"
+    ],
+    "cover": "/covers/261.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/7162423-M.jpg",
+    "cover_id": 7162423,
+    "openlibrary_url": "https://openlibrary.org/works/OL13150029W",
+    "edition_count": 136
+  },
+  {
+    "id": 262,
+    "key": "/works/OL85746W",
+    "title": "Live and let die",
+    "author": "Ian Fleming",
+    "year": 1954,
+    "rating": 92,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "British",
+      "Fiction"
+    ],
+    "cover": "/covers/262.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/109570-M.jpg",
+    "cover_id": 109570,
+    "openlibrary_url": "https://openlibrary.org/works/OL85746W",
+    "edition_count": 135
+  },
+  {
+    "id": 263,
+    "key": "/works/OL8074996W",
+    "title": "The Rangeland Avenger",
+    "author": "Frederick Faust",
+    "year": 1924,
+    "rating": 91,
+    "genre": "Thriller",
+    "genres": [
+      "Classic Literature",
+      "Fiction",
+      "Thriller"
+    ],
+    "cover": "/covers/263.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/1845677-M.jpg",
+    "cover_id": 1845677,
+    "openlibrary_url": "https://openlibrary.org/works/OL8074996W",
+    "edition_count": 135
+  },
+  {
+    "id": 264,
+    "key": "/works/OL81626W",
+    "title": "Carrie",
+    "author": "Stephen King",
+    "year": 1974,
+    "rating": 96,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "occult & supernatural fiction",
+      "horror fiction"
+    ],
+    "cover": "/covers/264.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9256043-M.jpg",
+    "cover_id": 9256043,
+    "openlibrary_url": "https://openlibrary.org/works/OL81626W",
+    "edition_count": 121
+  },
+  {
+    "id": 265,
+    "key": "/works/OL85736W",
+    "title": "Doctor No",
+    "author": "Ian Fleming",
+    "year": 1958,
+    "rating": 78,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "Detective and mystery stories",
+      "Fiction"
+    ],
+    "cover": "/covers/265.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/6491664-M.jpg",
+    "cover_id": 6491664,
+    "openlibrary_url": "https://openlibrary.org/works/OL85736W",
+    "edition_count": 119
+  },
+  {
+    "id": 266,
+    "key": "/works/OL85747W",
+    "title": "Diamonds are Forever",
+    "author": "Ian Fleming",
+    "year": 1956,
+    "rating": 78,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "British",
+      "Diamond smuggling"
+    ],
+    "cover": "/covers/266.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5540817-M.jpg",
+    "cover_id": 5540817,
+    "openlibrary_url": "https://openlibrary.org/works/OL85747W",
+    "edition_count": 117
+  },
+  {
+    "id": 267,
+    "key": "/works/OL1099693W",
+    "title": "Robur le conqu\u00e9rant",
+    "author": "Jules Verne",
+    "year": 1886,
+    "rating": 93,
+    "genre": "Thriller",
+    "genres": [
+      "Classic Literature",
+      "Fiction",
+      "Thriller"
+    ],
+    "cover": "/covers/267.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/2821179-M.jpg",
+    "cover_id": 2821179,
+    "openlibrary_url": "https://openlibrary.org/works/OL1099693W",
+    "edition_count": 113
+  },
+  {
+    "id": 268,
+    "key": "/works/OL1099380W",
+    "title": "Cinq semaines en ballon",
+    "author": "Jules Verne",
+    "year": 1867,
+    "rating": 85,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "Travel",
+      "Hot air balloons"
+    ],
+    "cover": "/covers/268.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8179189-M.jpg",
+    "cover_id": 8179189,
+    "openlibrary_url": "https://openlibrary.org/works/OL1099380W",
+    "edition_count": 113
+  },
+  {
+    "id": 269,
+    "key": "/works/OL1914022W",
+    "title": "The Pillars of the Earth",
+    "author": "Ken Follett",
+    "year": 1989,
+    "rating": 96,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "White Ship",
+      "The Anarchy"
+    ],
+    "cover": "/covers/269.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9269909-M.jpg",
+    "cover_id": 9269909,
+    "openlibrary_url": "https://openlibrary.org/works/OL1914022W",
+    "edition_count": 111
+  },
+  {
+    "id": 270,
+    "key": "/works/OL472165W",
+    "title": "Peril at End House",
+    "author": "Agatha Christie",
+    "year": 1932,
+    "rating": 90,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "English Detective and mystery stories",
+      "Fiction"
+    ],
+    "cover": "/covers/270.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12996556-M.jpg",
+    "cover_id": 12996556,
+    "openlibrary_url": "https://openlibrary.org/works/OL472165W",
+    "edition_count": 111
+  },
+  {
+    "id": 271,
+    "key": "/works/OL85742W",
+    "title": "The Spy Who Loved Me",
+    "author": "Ian Fleming",
+    "year": 1962,
+    "rating": 97,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "Fiction",
+      "Fiction in English"
+    ],
+    "cover": "/covers/271.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/109573-M.jpg",
+    "cover_id": 109573,
+    "openlibrary_url": "https://openlibrary.org/works/OL85742W",
+    "edition_count": 108
+  },
+  {
+    "id": 272,
+    "key": "/works/OL85743W",
+    "title": "Moonraker",
+    "author": "Ian Fleming",
+    "year": 1955,
+    "rating": 80,
+    "genre": "Thriller",
+    "genres": [
+      "Thriller",
+      "Fiction",
+      "Intelligence officers"
+    ],
+    "cover": "/covers/272.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/6593911-M.jpg",
+    "cover_id": 6593911,
+    "openlibrary_url": "https://openlibrary.org/works/OL85743W",
+    "edition_count": 107
+  },
+  {
+    "id": 273,
+    "key": "/works/OL39360W",
+    "title": "Orlando",
+    "author": "Virginia Woolf",
+    "year": 1928,
+    "rating": 97,
+    "genre": "Historical Fiction",
+    "genres": [
+      "Historical Fiction",
+      "Nobility in fiction",
+      "Gender identity in fiction"
+    ],
+    "cover": "/covers/273.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/3240273-M.jpg",
+    "cover_id": 3240273,
+    "openlibrary_url": "https://openlibrary.org/works/OL39360W",
+    "edition_count": 452
+  },
+  {
+    "id": 274,
+    "key": "/works/OL166925W",
+    "title": "\u0418\u0434\u0438\u043e\u0442",
+    "author": "Fi\u00f3dor Dostoievski",
+    "year": 1874,
+    "rating": 78,
+    "genre": "Historical Fiction",
+    "genres": [
+      "Historical Fiction",
+      "Notebooks, sketchbooks",
+      "Fiction, general"
+    ],
+    "cover": "/covers/274.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/11226648-M.jpg",
+    "cover_id": 11226648,
+    "openlibrary_url": "https://openlibrary.org/works/OL166925W",
+    "edition_count": 437
+  },
+  {
+    "id": 275,
+    "key": "/works/OL276365W",
+    "title": "The Portrait of a Lady",
+    "author": "Henry James",
+    "year": 1881,
+    "rating": 92,
+    "genre": "Historical Fiction",
+    "genres": [
+      "Historical Fiction",
+      "Social life and customs",
+      "Manners and customs"
+    ],
+    "cover": "/covers/275.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/3352367-M.jpg",
+    "cover_id": 3352367,
+    "openlibrary_url": "https://openlibrary.org/works/OL276365W",
+    "edition_count": 432
+  },
+  {
+    "id": 276,
+    "key": "/works/OL44973W",
+    "title": "Under the Greenwood Tree or, The Mellstock quire",
+    "author": "Thomas Hardy",
+    "year": 1872,
+    "rating": 81,
+    "genre": "Historical Fiction",
+    "genres": [
+      "Historical Fiction",
+      "British and irish fiction (fictional works by one author)",
+      "Wessex (england), fiction"
+    ],
+    "cover": "/covers/276.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/902186-M.jpg",
+    "cover_id": 902186,
+    "openlibrary_url": "https://openlibrary.org/works/OL44973W",
+    "edition_count": 425
+  },
+  {
+    "id": 277,
+    "key": "/works/OL77970W",
+    "title": "The Prairie",
+    "author": "James Fenimore Cooper",
+    "year": 1800,
+    "rating": 95,
+    "genre": "Historical Fiction",
+    "genres": [
+      "Historical Fiction",
+      "Popular Print Disabled Books",
+      "Indians of North America"
+    ],
+    "cover": "/covers/277.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5578106-M.jpg",
+    "cover_id": 5578106,
+    "openlibrary_url": "https://openlibrary.org/works/OL77970W",
+    "edition_count": 399
+  },
+  {
+    "id": 278,
+    "key": "/works/OL1418112W",
+    "title": "Tarzan the Untamed (Book #7)",
+    "author": "Edgar Rice Burroughs",
+    "year": 1920,
+    "rating": 95,
+    "genre": "Adventure",
+    "genres": [
+      "Adventure",
+      "Fiction",
+      "Classic Literature"
+    ],
+    "cover": "/covers/278.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/2404593-M.jpg",
+    "cover_id": 2404593,
+    "openlibrary_url": "https://openlibrary.org/works/OL1418112W",
+    "edition_count": 178
+  },
+  {
+    "id": 279,
+    "key": "/works/OL1517919W",
+    "title": "Room 13",
+    "author": "Edgar Wallace",
+    "year": 1920,
+    "rating": 83,
+    "genre": "Adventure",
+    "genres": [
+      "Fiction, mystery & detective, general",
+      "Detective and mystery stories, English",
+      "Adventure"
+    ],
+    "cover": "/covers/279.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12947911-M.jpg",
+    "cover_id": 12947911,
+    "openlibrary_url": "https://openlibrary.org/works/OL1517919W",
+    "edition_count": 171
+  },
+  {
+    "id": 280,
+    "key": "/works/OL1418108W",
+    "title": "Tarzan the Terrible (#8)",
+    "author": "Edgar Rice Burroughs",
+    "year": 1921,
+    "rating": 96,
+    "genre": "Adventure",
+    "genres": [
+      "Adventure",
+      "Tarzan (Fictitious character)",
+      "Fiction"
+    ],
+    "cover": "/covers/280.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/875818-M.jpg",
+    "cover_id": 875818,
+    "openlibrary_url": "https://openlibrary.org/works/OL1418108W",
+    "edition_count": 158
+  },
+  {
+    "id": 281,
+    "key": "/works/OL45885W",
+    "title": "The BFG",
+    "author": "Roald Dahl",
+    "year": 1732,
+    "rating": 86,
+    "genre": "Adventure",
+    "genres": [
+      "Adventure",
+      "Open Library Staff Picks",
+      "Roald Dahl"
+    ],
+    "cover": "/covers/281.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9176033-M.jpg",
+    "cover_id": 9176033,
+    "openlibrary_url": "https://openlibrary.org/works/OL45885W",
+    "edition_count": 155
+  },
+  {
+    "id": 282,
+    "key": "/works/OL28988W",
+    "title": "Northern Lights",
+    "author": "Philip Pullman",
+    "year": 1995,
+    "rating": 97,
+    "genre": "Adventure",
+    "genres": [
+      "Adventure",
+      "Political theology",
+      "Polar bears"
+    ],
+    "cover": "/covers/282.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8747028-M.jpg",
+    "cover_id": 8747028,
+    "openlibrary_url": "https://openlibrary.org/works/OL28988W",
+    "edition_count": 148
+  },
+  {
+    "id": 283,
+    "key": "/works/OL1418248W",
+    "title": "Tarzan and the Jewels of Opar",
+    "author": "Edgar Rice Burroughs",
+    "year": 1916,
+    "rating": 83,
+    "genre": "Adventure",
+    "genres": [
+      "Adventure",
+      "Classic Literature",
+      "Fiction"
+    ],
+    "cover": "/covers/283.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8235276-M.jpg",
+    "cover_id": 8235276,
+    "openlibrary_url": "https://openlibrary.org/works/OL1418248W",
+    "edition_count": 135
+  },
+  {
+    "id": 284,
+    "key": "/works/OL2455093W",
+    "title": "Lost Horizon",
+    "author": "James Hilton",
+    "year": 1933,
+    "rating": 93,
+    "genre": "Adventure",
+    "genres": [
+      "Adventure",
+      "Fiction",
+      "Survival after airplane accidents, shipwrecks"
+    ],
+    "cover": "/covers/284.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/4656607-M.jpg",
+    "cover_id": 4656607,
+    "openlibrary_url": "https://openlibrary.org/works/OL2455093W",
+    "edition_count": 130
+  },
+  {
+    "id": 285,
+    "key": "/works/OL2163649W",
+    "title": "The Hitchhiker's Guide to the Galaxy",
+    "author": "Douglas Adams",
+    "year": 1979,
+    "rating": 84,
+    "genre": "Adventure",
+    "genres": [
+      "Adventure",
+      "comic science fiction",
+      "Vogons"
+    ],
+    "cover": "/covers/285.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12986869-M.jpg",
+    "cover_id": 12986869,
+    "openlibrary_url": "https://openlibrary.org/works/OL2163649W",
+    "edition_count": 130
+  },
+  {
+    "id": 286,
+    "key": "/works/OL1517869W",
+    "title": "The door with seven locks",
+    "author": "Edgar Wallace",
+    "year": 1926,
+    "rating": 80,
+    "genre": "Adventure",
+    "genres": [
+      "Fiction, mystery & detective, general",
+      "Detective and mystery stories",
+      "Adventure"
+    ],
+    "cover": "/covers/286.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12947915-M.jpg",
+    "cover_id": 12947915,
+    "openlibrary_url": "https://openlibrary.org/works/OL1517869W",
+    "edition_count": 119
+  },
+  {
+    "id": 287,
+    "key": "/works/OL241903W",
+    "title": "The black gang",
+    "author": "H. C. McNeile",
+    "year": 1922,
+    "rating": 93,
+    "genre": "Adventure",
+    "genres": [
+      "Adventure",
+      "Bulldog Drummond (fictional character)",
+      "Sapper"
+    ],
+    "cover": "/covers/287.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/13716769-M.jpg",
+    "cover_id": 13716769,
+    "openlibrary_url": "https://openlibrary.org/works/OL241903W",
+    "edition_count": 115
+  },
+  {
+    "id": 288,
+    "key": "/works/OL1518031W",
+    "title": "The avenger",
+    "author": "Edgar Wallace",
+    "year": 1924,
+    "rating": 83,
+    "genre": "Adventure",
+    "genres": [
+      "Adventure",
+      "Fiction, mystery & detective, general",
+      "Detective and mystery stories, English"
+    ],
+    "cover": "/covers/288.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/890189-M.jpg",
+    "cover_id": 890189,
+    "openlibrary_url": "https://openlibrary.org/works/OL1518031W",
+    "edition_count": 109
+  },
+  {
+    "id": 289,
+    "key": "/works/OL8193406W",
+    "title": "The Mayor of Casterbridge",
+    "author": "Thomas Hardy",
+    "year": 1800,
+    "rating": 87,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "British and irish fiction (fictional works by one author)",
+      "Wessex (england), fiction"
+    ],
+    "cover": "/covers/289.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/1260617-M.jpg",
+    "cover_id": 1260617,
+    "openlibrary_url": "https://openlibrary.org/works/OL8193406W",
+    "edition_count": 676
+  },
+  {
+    "id": 290,
+    "key": "/works/OL2771987W",
+    "title": "Herland",
+    "author": "Charlotte Perkins Gilman, Alex Goody, Eva Kumar, Evelynn D. Smith, Chavdar Georgiev, Booking, Aurora Irvine",
+    "year": 1915,
+    "rating": 80,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "Utopias",
+      "Fiction"
+    ],
+    "cover": "/covers/290.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/448130-M.jpg",
+    "cover_id": 448130,
+    "openlibrary_url": "https://openlibrary.org/works/OL2771987W",
+    "edition_count": 627
+  },
+  {
+    "id": 291,
+    "key": "/works/OL85875W",
+    "title": "Bram Stoker's Dracula omnibus",
+    "author": "Bram Stoker, Mary Shelley, Robert Louis Stevenson, Danide, N\u00faria Pradas, Carmen Gil, Bram Stoker, Juan Antonio Molina Foix, Mario Montalb\u00e1n, Leonard Wolf, ClassyBookRead, BRAM STOCKER, BRAM STOKER, Anna Gasol Trullols, Destinyalready Creative Writing Ink, Bram Stroker, Fay Weldon, Bram Stoker., Bess Georges, Alba Pag\u00e1n, David Stuart Davies, David Rogers, A. R. S. BEL, Ferdinand Du Chevalier, Abraham Stoker, Sarah Prescott, Alex Rouse, Bram Stoke, A. Nessi, Bram Stoker ",
+    "year": 1897,
+    "rating": 91,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "Fiction, horror",
+      "Children: Grades 3-4"
+    ],
+    "cover": "/covers/291.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8028797-M.jpg",
+    "cover_id": 8028797,
+    "openlibrary_url": "https://openlibrary.org/works/OL85875W",
+    "edition_count": 598
+  },
+  {
+    "id": 292,
+    "key": "/works/OL2895536W",
+    "title": "Carmilla",
+    "author": "Sheridan Le Fanu",
+    "year": 1871,
+    "rating": 83,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "English Fantasy fiction",
+      "Fantasy fiction, English"
+    ],
+    "cover": "/covers/292.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/973851-M.jpg",
+    "cover_id": 973851,
+    "openlibrary_url": "https://openlibrary.org/works/OL2895536W",
+    "edition_count": 571
+  },
+  {
+    "id": 293,
+    "key": "/works/OL3388961W",
+    "title": "The Great God Pan",
+    "author": "Arthur Machen",
+    "year": 1894,
+    "rating": 91,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "austin osman spare",
+      "arthur machen"
+    ],
+    "cover": "/covers/293.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/921610-M.jpg",
+    "cover_id": 921610,
+    "openlibrary_url": "https://openlibrary.org/works/OL3388961W",
+    "edition_count": 431
+  },
+  {
+    "id": 294,
+    "key": "/works/OL85889W",
+    "title": "Dracula's Guest and Other Weird Stories",
+    "author": "Bram Stoker, Bram Stoker, Bram Bram Stoker",
+    "year": 1937,
+    "rating": 85,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "English Horror tales",
+      "short stories"
+    ],
+    "cover": "/covers/294.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/2039484-M.jpg",
+    "cover_id": 2039484,
+    "openlibrary_url": "https://openlibrary.org/works/OL85889W",
+    "edition_count": 387
+  },
+  {
+    "id": 295,
+    "key": "/works/OL3388994W",
+    "title": "The White People",
+    "author": "Arthur Machen",
+    "year": 2004,
+    "rating": 97,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "Fiction",
+      "Short story"
+    ],
+    "cover": "/covers/295.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/1803998-M.jpg",
+    "cover_id": 1803998,
+    "openlibrary_url": "https://openlibrary.org/works/OL3388994W",
+    "edition_count": 247
+  },
+  {
+    "id": 296,
+    "key": "/works/OL41078W",
+    "title": "The Fall of the House of Usher",
+    "author": "Edgar Allan Poe",
+    "year": 1704,
+    "rating": 84,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "American fiction (fictional works by one author)",
+      "short stories (single author)"
+    ],
+    "cover": "/covers/296.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/11838138-M.jpg",
+    "cover_id": 11838138,
+    "openlibrary_url": "https://openlibrary.org/works/OL41078W",
+    "edition_count": 237
+  },
+  {
+    "id": 297,
+    "key": "/works/OL2288676W",
+    "title": "Brood of the Witch-Queen",
+    "author": "Sax Rohmer",
+    "year": 1924,
+    "rating": 96,
+    "genre": "Horror",
+    "genres": [
+      "Fantasy",
+      "Fiction",
+      "Horror"
+    ],
+    "cover": "/covers/297.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/2011286-M.jpg",
+    "cover_id": 2011286,
+    "openlibrary_url": "https://openlibrary.org/works/OL2288676W",
+    "edition_count": 194
+  },
+  {
+    "id": 298,
+    "key": "/works/OL85864W",
+    "title": "Dracula's guest, and other weird stories",
+    "author": "Bram Stoker, Washington Irving, Saki, Charles Dickens, Edgar Allan Poe, Guy de Maupassant, Robert Louis Stevenson, Mark Twain, Bram Stroker, Thomas Hardy, Henry James, Michael Sims, Varla Ventura, James Anderson Foster, Sheridan Le Fanu, E. F. Benson, Paul Boehmer, Gabrielle de Cuir, Kate Orsini, Bram Stoker, Bram StokerDracula's Guest is a short story by Bram Stoker and published in the short story collection Dracula's Guest and Other Weir, Najam Saqib, Luis Angel O. E., Abraham Stoker, Bram Stocker, M. Kellermeyer, Stoker Bram, Shanower Eric, Michael Sims",
+    "year": 1914,
+    "rating": 97,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "Fiction",
+      "Literature"
+    ],
+    "cover": "/covers/298.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8369722-M.jpg",
+    "cover_id": 8369722,
+    "openlibrary_url": "https://openlibrary.org/works/OL85864W",
+    "edition_count": 171
+  },
+  {
+    "id": 299,
+    "key": "/works/OL3625242W",
+    "title": "The Vampyre",
+    "author": "John William Polidori",
+    "year": 1819,
+    "rating": 79,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "Fiction",
+      "Incest"
+    ],
+    "cover": "/covers/299.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/4871002-M.jpg",
+    "cover_id": 4871002,
+    "openlibrary_url": "https://openlibrary.org/works/OL3625242W",
+    "edition_count": 149
+  },
+  {
+    "id": 300,
+    "key": "/works/OL41041W",
+    "title": "Tales of the Grotesque and Arabesque",
+    "author": "Edgar Allan Poe",
+    "year": 1840,
+    "rating": 84,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "short stories",
+      "aristocracy"
+    ],
+    "cover": "/covers/300.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8863360-M.jpg",
+    "cover_id": 8863360,
+    "openlibrary_url": "https://openlibrary.org/works/OL41041W",
+    "edition_count": 146
+  },
+  {
+    "id": 301,
+    "key": "/works/OL2700643W",
+    "title": "The Damned",
+    "author": "Algernon Blackwood",
+    "year": 2002,
+    "rating": 84,
+    "genre": "Horror",
+    "genres": [
+      "Fiction",
+      "Horror",
+      "Fiction, horror"
+    ],
+    "cover": "/covers/301.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/2808419-M.jpg",
+    "cover_id": 2808419,
+    "openlibrary_url": "https://openlibrary.org/works/OL2700643W",
+    "edition_count": 106
+  },
+  {
+    "id": 302,
+    "key": "/works/OL81634W",
+    "title": "Misery",
+    "author": "Stephen King",
+    "year": 1978,
+    "rating": 91,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "dope",
+      "pills"
+    ],
+    "cover": "/covers/302.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8259296-M.jpg",
+    "cover_id": 8259296,
+    "openlibrary_url": "https://openlibrary.org/works/OL81634W",
+    "edition_count": 101
+  },
+  {
+    "id": 303,
+    "key": "/works/OL81633W",
+    "title": "The Shining",
+    "author": "Stephen King",
+    "year": 1977,
+    "rating": 79,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "Fiction",
+      "horror fiction"
+    ],
+    "cover": "/covers/303.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12376585-M.jpg",
+    "cover_id": 12376585,
+    "openlibrary_url": "https://openlibrary.org/works/OL81633W",
+    "edition_count": 98
+  },
+  {
+    "id": 304,
+    "key": "/works/OL81613W",
+    "title": "It",
+    "author": "Stephen King",
+    "year": 1986,
+    "rating": 87,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "coming of age",
+      "thrillers"
+    ],
+    "cover": "/covers/304.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8569284-M.jpg",
+    "cover_id": 8569284,
+    "openlibrary_url": "https://openlibrary.org/works/OL81613W",
+    "edition_count": 96
+  },
+  {
+    "id": 305,
+    "key": "/works/OL81628W",
+    "title": "The Gunslinger",
+    "author": "Stephen King",
+    "year": 1976,
+    "rating": 93,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "succubus",
+      "demons"
+    ],
+    "cover": "/covers/305.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8396638-M.jpg",
+    "cover_id": 8396638,
+    "openlibrary_url": "https://openlibrary.org/works/OL81628W",
+    "edition_count": 95
+  },
+  {
+    "id": 306,
+    "key": "/works/OL81629W",
+    "title": "The Green Mile",
+    "author": "Stephen King",
+    "year": 1996,
+    "rating": 79,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "horror fiction",
+      "fiction"
+    ],
+    "cover": "/covers/306.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9334567-M.jpg",
+    "cover_id": 9334567,
+    "openlibrary_url": "https://openlibrary.org/works/OL81629W",
+    "edition_count": 93
+  },
+  {
+    "id": 307,
+    "key": "/works/OL81631W",
+    "title": "Pet Sematary",
+    "author": "Stephen King",
+    "year": 1983,
+    "rating": 85,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "fiction",
+      "thrillers"
+    ],
+    "cover": "/covers/307.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12015500-M.jpg",
+    "cover_id": 12015500,
+    "openlibrary_url": "https://openlibrary.org/works/OL81631W",
+    "edition_count": 93
+  },
+  {
+    "id": 308,
+    "key": "/works/OL81630W",
+    "title": "The Dead Zone",
+    "author": "Stephen King",
+    "year": 1979,
+    "rating": 89,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "brain tumors",
+      "rifles"
+    ],
+    "cover": "/covers/308.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14653991-M.jpg",
+    "cover_id": 14653991,
+    "openlibrary_url": "https://openlibrary.org/works/OL81630W",
+    "edition_count": 90
+  },
+  {
+    "id": 309,
+    "key": "/works/OL81618W",
+    "title": "The Stand",
+    "author": "Stephen King",
+    "year": 1978,
+    "rating": 85,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "suspense & thriller",
+      "gothic & horror"
+    ],
+    "cover": "/covers/309.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9255992-M.jpg",
+    "cover_id": 9255992,
+    "openlibrary_url": "https://openlibrary.org/works/OL81618W",
+    "edition_count": 87
+  },
+  {
+    "id": 310,
+    "key": "/works/OL7973293W",
+    "title": "In the Midst of Life. Tales of Civilians",
+    "author": "Ambrose Bierce, A Bierce",
+    "year": 1891,
+    "rating": 90,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "History",
+      "Fiction"
+    ],
+    "cover": "/covers/310.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8753716-M.jpg",
+    "cover_id": 8753716,
+    "openlibrary_url": "https://openlibrary.org/works/OL7973293W",
+    "edition_count": 86
+  },
+  {
+    "id": 311,
+    "key": "/works/OL41050W",
+    "title": "The Masque of the Red Death",
+    "author": "Edgar Allan Poe",
+    "year": 1922,
+    "rating": 90,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "gothic fiction",
+      "horror"
+    ],
+    "cover": "/covers/311.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/11860130-M.jpg",
+    "cover_id": 11860130,
+    "openlibrary_url": "https://openlibrary.org/works/OL41050W",
+    "edition_count": 85
+  },
+  {
+    "id": 312,
+    "key": "/works/OL81623W",
+    "title": "Firestarter",
+    "author": "Stephen King",
+    "year": 1980,
+    "rating": 81,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "Genetic Engineering",
+      "suspense"
+    ],
+    "cover": "/covers/312.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12015446-M.jpg",
+    "cover_id": 12015446,
+    "openlibrary_url": "https://openlibrary.org/works/OL81623W",
+    "edition_count": 78
+  },
+  {
+    "id": 313,
+    "key": "/works/OL81627W",
+    "title": "Skeleton crew",
+    "author": "Stephen King",
+    "year": 1985,
+    "rating": 80,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "American Horror tales",
+      "nested narrative"
+    ],
+    "cover": "/covers/313.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14657166-M.jpg",
+    "cover_id": 14657166,
+    "openlibrary_url": "https://openlibrary.org/works/OL81627W",
+    "edition_count": 75
+  },
+  {
+    "id": 314,
+    "key": "/works/OL8088702W",
+    "title": "The Haunted and the Haunters, Or, The House and the Brain",
+    "author": "Edward Bulwer Lytton, Baron Lytton",
+    "year": 1800,
+    "rating": 96,
+    "genre": "Horror",
+    "genres": [
+      "Fiction",
+      "Horror",
+      "Suspense"
+    ],
+    "cover": "/covers/314.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/2788688-M.jpg",
+    "cover_id": 2788688,
+    "openlibrary_url": "https://openlibrary.org/works/OL8088702W",
+    "edition_count": 73
+  },
+  {
+    "id": 315,
+    "key": "/works/OL41059W",
+    "title": "The Tell-Tale Heart",
+    "author": "Edgar Allan Poe",
+    "year": 1958,
+    "rating": 87,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "Asesinato",
+      "Cuentos de terror estadounidenses"
+    ],
+    "cover": "/covers/315.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/11851436-M.jpg",
+    "cover_id": 11851436,
+    "openlibrary_url": "https://openlibrary.org/works/OL41059W",
+    "edition_count": 71
+  },
+  {
+    "id": 316,
+    "key": "/works/OL81607W",
+    "title": "Needful Things",
+    "author": "Stephen King",
+    "year": 1991,
+    "rating": 78,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "suspense",
+      "City and town life"
+    ],
+    "cover": "/covers/316.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8404327-M.jpg",
+    "cover_id": 8404327,
+    "openlibrary_url": "https://openlibrary.org/works/OL81607W",
+    "edition_count": 67
+  },
+  {
+    "id": 317,
+    "key": "/works/OL81599W",
+    "title": "The talisman",
+    "author": "Stephen King, Peter Straub",
+    "year": 1925,
+    "rating": 96,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "Fantastique",
+      "Romans"
+    ],
+    "cover": "/covers/317.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14651566-M.jpg",
+    "cover_id": 14651566,
+    "openlibrary_url": "https://openlibrary.org/works/OL81599W",
+    "edition_count": 66
+  },
+  {
+    "id": 318,
+    "key": "/works/OL81619W",
+    "title": "Christine",
+    "author": "Stephen King",
+    "year": 1983,
+    "rating": 95,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "carbon monoxide",
+      "greasers"
+    ],
+    "cover": "/covers/318.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14655985-M.jpg",
+    "cover_id": 14655985,
+    "openlibrary_url": "https://openlibrary.org/works/OL81619W",
+    "edition_count": 66
+  },
+  {
+    "id": 319,
+    "key": "/works/OL81608W",
+    "title": "Night Shift",
+    "author": "Stephen King",
+    "year": 1960,
+    "rating": 86,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "euthanasia",
+      "terminal illness"
+    ],
+    "cover": "/covers/319.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14651337-M.jpg",
+    "cover_id": 14651337,
+    "openlibrary_url": "https://openlibrary.org/works/OL81608W",
+    "edition_count": 66
+  },
+  {
+    "id": 320,
+    "key": "/works/OL81602W",
+    "title": "The Eyes of the Dragon",
+    "author": "Stephen King",
+    "year": 1959,
+    "rating": 78,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "suspense",
+      "horror"
+    ],
+    "cover": "/covers/320.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8524085-M.jpg",
+    "cover_id": 8524085,
+    "openlibrary_url": "https://openlibrary.org/works/OL81602W",
+    "edition_count": 65
+  },
+  {
+    "id": 321,
+    "key": "/works/OL81606W",
+    "title": "Four Past Midnight",
+    "author": "Stephen King",
+    "year": 1990,
+    "rating": 82,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "paranormal",
+      "nightmares"
+    ],
+    "cover": "/covers/321.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8413143-M.jpg",
+    "cover_id": 8413143,
+    "openlibrary_url": "https://openlibrary.org/works/OL81606W",
+    "edition_count": 65
+  },
+  {
+    "id": 322,
+    "key": "/works/OL1911336W",
+    "title": "The Day of the Triffids",
+    "author": "John Wyndham, Marcel Battin, Cover by Andy Bridge",
+    "year": 1951,
+    "rating": 82,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "Blind",
+      "English Fantasy fiction"
+    ],
+    "cover": "/covers/322.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/535027-M.jpg",
+    "cover_id": 535027,
+    "openlibrary_url": "https://openlibrary.org/works/OL1911336W",
+    "edition_count": 63
+  },
+  {
+    "id": 323,
+    "key": "/works/OL149210W",
+    "title": "Thinner",
+    "author": "Stephen King",
+    "year": 1984,
+    "rating": 86,
+    "genre": "Horror",
+    "genres": [
+      "Horror",
+      "gluttony",
+      "magic"
+    ],
+    "cover": "/covers/323.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8274288-M.jpg",
+    "cover_id": 8274288,
+    "openlibrary_url": "https://openlibrary.org/works/OL149210W",
+    "edition_count": 63
+  },
+  {
+    "id": 324,
+    "key": "/works/OL66562W",
+    "title": "Sense and Sensibility",
+    "author": "Jane Austen",
+    "year": 1811,
+    "rating": 86,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "Fiction, Romance, Historical, Regency",
+      "Inheritance and succession, fiction"
+    ],
+    "cover": "/covers/324.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9278292-M.jpg",
+    "cover_id": 9278292,
+    "openlibrary_url": "https://openlibrary.org/works/OL66562W",
+    "edition_count": 2091
+  },
+  {
+    "id": 325,
+    "key": "/works/OL1095427W",
+    "title": "Jane Eyre",
+    "author": "Charlotte Bronte\u0308",
+    "year": 1847,
+    "rating": 97,
+    "genre": "Romance",
+    "genres": [
+      "Fiction",
+      "Romance",
+      "Historical\""
+    ],
+    "cover": "/covers/325.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8235363-M.jpg",
+    "cover_id": 8235363,
+    "openlibrary_url": "https://openlibrary.org/works/OL1095427W",
+    "edition_count": 1170
+  },
+  {
+    "id": 326,
+    "key": "/works/OL66534W",
+    "title": "Northanger Abbey",
+    "author": "Jane Austen",
+    "year": 1818,
+    "rating": 81,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "Mate selection",
+      "Cousins"
+    ],
+    "cover": "/covers/326.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12567961-M.jpg",
+    "cover_id": 12567961,
+    "openlibrary_url": "https://openlibrary.org/works/OL66534W",
+    "edition_count": 1014
+  },
+  {
+    "id": 327,
+    "key": "/works/OL98501W",
+    "title": "Ethan Frome",
+    "author": "Edith Wharton",
+    "year": 1910,
+    "rating": 91,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "Accident victims",
+      "American fiction (fictional works by one author)"
+    ],
+    "cover": "/covers/327.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8303480-M.jpg",
+    "cover_id": 8303480,
+    "openlibrary_url": "https://openlibrary.org/works/OL98501W",
+    "edition_count": 1000
+  },
+  {
+    "id": 328,
+    "key": "/works/OL485504W",
+    "title": "Riders of the Purple Sage",
+    "author": "Zane Grey",
+    "year": 1912,
+    "rating": 93,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "Fiction",
+      "Mormon women"
+    ],
+    "cover": "/covers/328.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/872066-M.jpg",
+    "cover_id": 872066,
+    "openlibrary_url": "https://openlibrary.org/works/OL485504W",
+    "edition_count": 709
+  },
+  {
+    "id": 329,
+    "key": "/works/OL152161W",
+    "title": "Uncle Tom's Cabin",
+    "author": "Harriet Beecher Stowe",
+    "year": 1850,
+    "rating": 80,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "Master and servant",
+      "Slavery"
+    ],
+    "cover": "/covers/329.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12728198-M.jpg",
+    "cover_id": 12728198,
+    "openlibrary_url": "https://openlibrary.org/works/OL152161W",
+    "edition_count": 688
+  },
+  {
+    "id": 330,
+    "key": "/works/OL468488W",
+    "title": "This Side of Paradise",
+    "author": "F. Scott Fitzgerald",
+    "year": 1920,
+    "rating": 93,
+    "genre": "Romance",
+    "genres": [
+      "Fiction",
+      "Romance",
+      "Historical\""
+    ],
+    "cover": "/covers/330.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8243609-M.jpg",
+    "cover_id": 8243609,
+    "openlibrary_url": "https://openlibrary.org/works/OL468488W",
+    "edition_count": 631
+  },
+  {
+    "id": 331,
+    "key": "/works/OL1103093W",
+    "title": "Cranford",
+    "author": "Elizabeth Cleghorn Gaskell",
+    "year": 1853,
+    "rating": 93,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "Fiction",
+      "Older women"
+    ],
+    "cover": "/covers/331.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5188445-M.jpg",
+    "cover_id": 5188445,
+    "openlibrary_url": "https://openlibrary.org/works/OL1103093W",
+    "edition_count": 473
+  },
+  {
+    "id": 332,
+    "key": "/works/OL44986W",
+    "title": "Jude the Obscure",
+    "author": "Thomas Hardy",
+    "year": 1895,
+    "rating": 78,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "Social life and customs",
+      "Death"
+    ],
+    "cover": "/covers/332.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12973053-M.jpg",
+    "cover_id": 12973053,
+    "openlibrary_url": "https://openlibrary.org/works/OL44986W",
+    "edition_count": 425
+  },
+  {
+    "id": 333,
+    "key": "/works/OL733640W",
+    "title": "Le rouge et le noir",
+    "author": "Stendhal",
+    "year": 1830,
+    "rating": 95,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "Fiction",
+      "Young men"
+    ],
+    "cover": "/covers/333.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8231413-M.jpg",
+    "cover_id": 8231413,
+    "openlibrary_url": "https://openlibrary.org/works/OL733640W",
+    "edition_count": 404
+  },
+  {
+    "id": 334,
+    "key": "/works/OL44990W",
+    "title": "The Woodlanders",
+    "author": "Thomas Hardy",
+    "year": 1800,
+    "rating": 93,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "Fiction",
+      "Forests and forestry"
+    ],
+    "cover": "/covers/334.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8243078-M.jpg",
+    "cover_id": 8243078,
+    "openlibrary_url": "https://openlibrary.org/works/OL44990W",
+    "edition_count": 392
+  },
+  {
+    "id": 335,
+    "key": "/works/OL485469W",
+    "title": "The Lone Star Ranger",
+    "author": "Zane Grey",
+    "year": 1914,
+    "rating": 78,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "Fiction, westerns",
+      "Fiction, general"
+    ],
+    "cover": "/covers/335.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/4813849-M.jpg",
+    "cover_id": 4813849,
+    "openlibrary_url": "https://openlibrary.org/works/OL485469W",
+    "edition_count": 358
+  },
+  {
+    "id": 336,
+    "key": "/works/OL109880W",
+    "title": "Framley Parsonage",
+    "author": "Anthony Trollope",
+    "year": 1861,
+    "rating": 78,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "Fiction",
+      "Clergy"
+    ],
+    "cover": "/covers/336.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8288051-M.jpg",
+    "cover_id": 8288051,
+    "openlibrary_url": "https://openlibrary.org/works/OL109880W",
+    "edition_count": 317
+  },
+  {
+    "id": 337,
+    "key": "/works/OL98491W",
+    "title": "The Age of Innocence",
+    "author": "Edith Wharton",
+    "year": 1920,
+    "rating": 79,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "Fiction",
+      "Triangles (Interpersonal relations)"
+    ],
+    "cover": "/covers/337.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/11196262-M.jpg",
+    "cover_id": 11196262,
+    "openlibrary_url": "https://openlibrary.org/works/OL98491W",
+    "edition_count": 301
+  },
+  {
+    "id": 338,
+    "key": "/works/OL276328W",
+    "title": "Daisy Miller",
+    "author": "Henry James",
+    "year": 1877,
+    "rating": 89,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "Fiction",
+      "Americans"
+    ],
+    "cover": "/covers/338.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/6482238-M.jpg",
+    "cover_id": 6482238,
+    "openlibrary_url": "https://openlibrary.org/works/OL276328W",
+    "edition_count": 244
+  },
+  {
+    "id": 339,
+    "key": "/works/OL276470W",
+    "title": "The Ambassadors",
+    "author": "Henry James",
+    "year": 1903,
+    "rating": 95,
+    "genre": "Romance",
+    "genres": [
+      "Man-woman relationships",
+      "Fiction",
+      "Romance"
+    ],
+    "cover": "/covers/339.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/313610-M.jpg",
+    "cover_id": 313610,
+    "openlibrary_url": "https://openlibrary.org/works/OL276470W",
+    "edition_count": 231
+  },
+  {
+    "id": 340,
+    "key": "/works/OL276395W",
+    "title": "Washington Square",
+    "author": "Henry James",
+    "year": 1880,
+    "rating": 93,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "Man-woman relationships",
+      "Historical Fiction"
+    ],
+    "cover": "/covers/340.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8243278-M.jpg",
+    "cover_id": 8243278,
+    "openlibrary_url": "https://openlibrary.org/works/OL276395W",
+    "edition_count": 219
+  },
+  {
+    "id": 341,
+    "key": "/works/OL44994W",
+    "title": "The Return of the Native",
+    "author": "Thomas Hardy",
+    "year": 1878,
+    "rating": 84,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "People with visual disabilities, fiction",
+      "Return of the native (Hardy"
+    ],
+    "cover": "/covers/341.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8162989-M.jpg",
+    "cover_id": 8162989,
+    "openlibrary_url": "https://openlibrary.org/works/OL44994W",
+    "edition_count": 205
+  },
+  {
+    "id": 342,
+    "key": "/works/OL258301W",
+    "title": "\u0414\u043e\u043a\u0442\u043e\u0440 \u0416\u0438\u0432\u0430\u0433\u043e",
+    "author": "Boris Leonidovich Pasternak",
+    "year": 1957,
+    "rating": 79,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "Fiction",
+      "History"
+    ],
+    "cover": "/covers/342.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/1045432-M.jpg",
+    "cover_id": 1045432,
+    "openlibrary_url": "https://openlibrary.org/works/OL258301W",
+    "edition_count": 176
+  },
+  {
+    "id": 343,
+    "key": "/works/OL16336633W",
+    "title": "Fifty Shades of Grey",
+    "author": "E. L. James",
+    "year": 2000,
+    "rating": 88,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "Man-woman relationships, fiction",
+      "FICTION / Contemporary Women"
+    ],
+    "cover": "/covers/343.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12648183-M.jpg",
+    "cover_id": 12648183,
+    "openlibrary_url": "https://openlibrary.org/works/OL16336633W",
+    "edition_count": 141
+  },
+  {
+    "id": 344,
+    "key": "/works/OL5720023W",
+    "title": "Twilight",
+    "author": "Stephenie Meyer",
+    "year": 2005,
+    "rating": 82,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "series:Luz_e_Escurid\u00e3o",
+      "series:Twilight"
+    ],
+    "cover": "/covers/344.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12641977-M.jpg",
+    "cover_id": 12641977,
+    "openlibrary_url": "https://openlibrary.org/works/OL5720023W",
+    "edition_count": 131
+  },
+  {
+    "id": 345,
+    "key": "/works/OL274518W",
+    "title": "El amor en los tiempos del c\u00f3lera",
+    "author": "Gabriel Garc\u00eda M\u00e1rquez",
+    "year": 1985,
+    "rating": 83,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "Vida familiar",
+      "Family life"
+    ],
+    "cover": "/covers/345.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/10096404-M.jpg",
+    "cover_id": 10096404,
+    "openlibrary_url": "https://openlibrary.org/works/OL274518W",
+    "edition_count": 130
+  },
+  {
+    "id": 346,
+    "key": "/works/OL471603W",
+    "title": "The Mystery of the Blue Train",
+    "author": "Agatha Christie",
+    "year": 1928,
+    "rating": 88,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "Crimes against",
+      "Detective and mystery stories"
+    ],
+    "cover": "/covers/346.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14575533-M.jpg",
+    "cover_id": 14575533,
+    "openlibrary_url": "https://openlibrary.org/works/OL471603W",
+    "edition_count": 124
+  },
+  {
+    "id": 347,
+    "key": "/works/OL1992198W",
+    "title": "In Cold Blood",
+    "author": "Truman Capote",
+    "year": 1965,
+    "rating": 87,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "True",
+      "Crime"
+    ],
+    "cover": "/covers/347.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/228066-M.jpg",
+    "cover_id": 228066,
+    "openlibrary_url": "https://openlibrary.org/works/OL1992198W",
+    "edition_count": 121
+  },
+  {
+    "id": 348,
+    "key": "/works/OL2564006W",
+    "title": "Genji monogatari",
+    "author": "Murasaki Shikibu",
+    "year": 1900,
+    "rating": 96,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "Classic Literature",
+      "Concordances"
+    ],
+    "cover": "/covers/348.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/6614001-M.jpg",
+    "cover_id": 6614001,
+    "openlibrary_url": "https://openlibrary.org/works/OL2564006W",
+    "edition_count": 121
+  },
+  {
+    "id": 349,
+    "key": "/works/OL810989W",
+    "title": "Comus",
+    "author": "John Milton",
+    "year": 1738,
+    "rating": 97,
+    "genre": "Romance",
+    "genres": [
+      "Romance",
+      "Fiction",
+      "Librettos"
+    ],
+    "cover": "/covers/349.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5622287-M.jpg",
+    "cover_id": 5622287,
+    "openlibrary_url": "https://openlibrary.org/works/OL810989W",
+    "edition_count": 111
+  },
+  {
+    "id": 350,
+    "key": "/works/OL93082W",
+    "title": "La Divina Commedia",
+    "author": "Dante Alighieri",
+    "year": 1472,
+    "rating": 97,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "Poetry (poetic works by one author)",
+      "Literatura"
+    ],
+    "cover": "/covers/350.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/11621024-M.jpg",
+    "cover_id": 11621024,
+    "openlibrary_url": "https://openlibrary.org/works/OL93082W",
+    "edition_count": 1339
+  },
+  {
+    "id": 351,
+    "key": "/works/OL16333W",
+    "title": "Leaves of Grass",
+    "author": "Walt Whitman",
+    "year": 1855,
+    "rating": 95,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "Manuscripts",
+      "United States Civil War, 1861-1865"
+    ],
+    "cover": "/covers/351.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9000447-M.jpg",
+    "cover_id": 9000447,
+    "openlibrary_url": "https://openlibrary.org/works/OL16333W",
+    "edition_count": 755
+  },
+  {
+    "id": 352,
+    "key": "/works/OL97727W",
+    "title": "Metamorfosi",
+    "author": "Ovid, William S. Anderson, Mary Frederick, Rolfe Humphries, John Dryden, Samuel Garth, Jack Shapiro, Ovid, Robert Squillace, Frank Justus Miller, Ovidio, Julius Ziehen, Banier (Antoine, M L'Abbe), Niklas Holzberg, Lee Fratantuono, A D Melville, Emeritus Kennedy Professor of Latin Fellow E J Kenney, Ovide, William Scovil Anderson, Stephanie McCarter, Gerhard Fink, Alexander Pope, Joseph Addison, William Congreve, Gottlieb Erdmann Gierig, Jan Minell, Pieter Rabus, Alexander Pope, Sir Samuel Garth, John Godwin, OVIDIO, Publio Nasone Ovidio, Ovidi, Xavier Mata Oroval, Claude-Pierre Goujet, Claude-Pierre Banier, Publius Ovidius Naso, Edward Brooks, Edward Ovid, Ovidius, Ernest Ensor Publius Ovidius Naso, Ov\u00eddio, Pierre Du Ryer, Publio Ovidio Nason, Johannes Minellius, Nathan Bailey, J., F., and C. Rivington (Firm), G. G. J. and J. Robinson (Paternoster-Row, London, England), Scatcherd and Whitaker, Publius Ovidius Naso, Mathieu Guillaume Th\u00e9r\u00e8s de Villenave, Rudolf Merkel, Ovid Giovanni Andrea Dell' Anguillara, C. Luke Soucy, Publius Ovidius Naso, Joseph Gaspard Dubois-Fontanelle, Villenave, Moriz Haupt, Otto Korn, Otto Ovid, J. J. J.J. Howard, Henry Riley, Th\u00e9odose Burette, Etienne Gros, John Clarke, John Ovid, William Thane Peck, Moriz Haupt, Hermann Johannes M\u00fcller, Otto Korn, Henry T. Riley, Banier M. l'abb\u00e9, Bernard Picart, Arthur Golding, William White, William Seres, J. H. Haydon, Maximus Planudes, Jean Fran\u00e7ois Boissonade, Garth, Samuel Sir, Joseph Addison, Laurence Eusden, Arthur Maynwaring, Samuel Croxall, Nahum Tate, John Gay, Freigius, Moritz Haupt, Otto Korn, Ovide Ovide, George Sewell, Ovid Vergil, Ovide (Ovid) ; Georges Lafaye, Rolfe (Translated by) Ovid and Humphries, Ernst Karl Christian Bach, Rudolf Ehwald, Ovidb C -17 or 18 a D, Daniel Crespin, Anton Zingerle, Heinrich Stefan Sedlmayer, Jos\u00e9 Carlos Fern\u00e1ndez Corte, Mar\u00eda Josefa Cant\u00f3 Llorca, Charles Martin, Emily R. Wilson, Ovide, Henry T. Riley, translated by frank jsutus miller Ovid, Moriz Haupt P. Ovidius Naso, 43 B. C. -17 or 18 A. D. Ovid, N. C. (Nathan Covington) 180 Brooks, Jos\u00e9-Rom\u00e1n Bravo D\u00edaz, Publio Ovidio Nas\u00f3n, Antonio Ruiz de Elvira Prieto, Bartolom\u00e9 Segura Ramos, OVIDIO; BONIFAZ NU;O, RUBEN INTRODUCION, VERSION, OVIDIO; BONIFAZ NU;O, RUBEN INTRODUCION, VERSION, Publius Ovidius Naso Ovide, OVIDE, 43 B. C. -17 A. D. or 18 A. D. Ovid, Stamperia del Seminario (Padua), Publius Ovidius Publius Ovidius Naso, Henry Thomas Riley, Publi Ovidi Nas\u00f3, Donald E. Hill, J. R. Jenkinson, K. Sara Myers, Ovid Poet, John Laney, Hermann Breitenbach, Rudolf Merkel, Rudolf Ehwald, Ange-Fran\u00e7ois Fariau de Saint-Ange, Pablo Picasso, Jean Gaspard Dubois-Fontanelle, Giuseppe Zocchi, Joseph Chamonard, Diedrich Ernest Bosselaar, Thomas Farnaby, Friedrich Polle, Johannes Siebelis, Bernardino Stagnino, Carolus Vivianus, Ovide (Ovid) ,  Georges Lafaye, Garth, Samuel Sir, George Sandys, Richard Badger, Johann Raener, Henricus Glareanus, Thomas Purfoot, Charles Simmons, Lodovico Dolce, Jakob Moltzer, Ercole Ciofani, Daniel Heinsius, Nicolaas Heinsius, Pieter Burman, Johann Wilhelm Capoferrius, Charles de Massac, Raymond de Massac, George Sewell, Jakob Moltzer, Raffaele Regio, Giovanni de Buonsignore, Luca-Antonio Giunta, William Caxton, George Hibbert, Roxburghe Club, Erich R\u00f6sch, Joseph Davidson, Claude-Pierre Goujet, N. Bailey, Johannes Minellius, Banier (Antoine), Jean Matheus, Isaac Briot, Pierre Firens, Michael Faulte, Gerard Jean-Baptiste Scotin, Antoine Humblot, Virgil Solis, Vasili\u012d Ma\u012dkov, Gerhard Lorich, Marguerite Carnec, Olivier Sers, SparkNotes, Georges Lafaye, Raphaello Regius, Josse Badius, Gottlieb Erdmann Gierig, Almeno pseud, \u0112lias Tsirinkak\u0113s, Jordi Parramon Blasco, John Clarke, Jacobus Rubeus, Henry N. Heale, William Scovil Anderson, Gianpiero Rosati, Giovanna Faranda Villa, Rossella Corti, Nicolas Renouard, Publius Vergilius Maro, Henry King, Karl Hermann Weise, Jorge de Bustamante, Pierre Bell\u00e8re, Fitzwilliam, William Charles de Meuron Earl, Edward Glaser, Giovanni de' Buonsignori, Gregor Bersmann, Josse Badius, Pieter Rabus, 'Introductiones' Printer of Nebrissensis, Hannibal Gamon, Clifden, Arthur Victor Agar-Robartes Viscount, England) Lanhydrock House (Cornwall, Giovanni Andrea dell' Anguillara, Francesco Turchi, Clarke, John, Lodovico Dolce, Ovid, Banier (Antoine), Claude-Pierre Goujet, Karl Paul Otto Korn, H. J. M\u00fcller, Otto Korn, Johann Balthasar Sedkezki, Stephen Gaselee, H. F. B. Brett-Smith, Pepys Library, Raphaello Regius, Paul Brandt, Thomas Farnaby, Pierre Du Ryer, Gwilym Aneurin Tudor Davies, Ovid, 43 BCE-18, 43 BCE-18",
+    "year": 1474,
+    "rating": 96,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "Mythology",
+      "Metamorphosis"
+    ],
+    "cover": "/covers/352.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5701612-M.jpg",
+    "cover_id": 5701612,
+    "openlibrary_url": "https://openlibrary.org/works/OL97727W",
+    "edition_count": 747
+  },
+  {
+    "id": 353,
+    "key": "/works/OL531767W",
+    "title": "The Canterbury Tales",
+    "author": "Geoffrey Chaucer, John E. Cunningham, Peter Ackroyd, Ted Stearn, V. A. Kolve, Glending Olson",
+    "year": 1478,
+    "rating": 91,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "Death",
+      "English Narrative poetry"
+    ],
+    "cover": "/covers/353.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5767180-M.jpg",
+    "cover_id": 5767180,
+    "openlibrary_url": "https://openlibrary.org/works/OL531767W",
+    "edition_count": 722
+  },
+  {
+    "id": 354,
+    "key": "/works/OL47087W",
+    "title": "Aeneis",
+    "author": "Publius Vergilius Maro",
+    "year": 1592,
+    "rating": 95,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "Aeneas (Legendary character) in literature",
+      "Classical literature"
+    ],
+    "cover": "/covers/354.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5273998-M.jpg",
+    "cover_id": 5273998,
+    "openlibrary_url": "https://openlibrary.org/works/OL47087W",
+    "edition_count": 721
+  },
+  {
+    "id": 355,
+    "key": "/works/OL362706W",
+    "title": "Sonnets",
+    "author": "William Shakespeare",
+    "year": 1609,
+    "rating": 84,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "English Sonnets",
+      "History and criticism"
+    ],
+    "cover": "/covers/355.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8222090-M.jpg",
+    "cover_id": 8222090,
+    "openlibrary_url": "https://openlibrary.org/works/OL362706W",
+    "edition_count": 646
+  },
+  {
+    "id": 356,
+    "key": "/works/OL52456W",
+    "title": "Faust",
+    "author": "Johann Wolfgang von Goethe",
+    "year": 1800,
+    "rating": 93,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "Good and evil",
+      "Drama"
+    ],
+    "cover": "/covers/356.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/6499459-M.jpg",
+    "cover_id": 6499459,
+    "openlibrary_url": "https://openlibrary.org/works/OL52456W",
+    "edition_count": 621
+  },
+  {
+    "id": 357,
+    "key": "/works/OL1548597W",
+    "title": "De rerum natura",
+    "author": "Titus Lucretius Carus",
+    "year": 1486,
+    "rating": 97,
+    "genre": "Poetry",
+    "genres": [
+      "Latin Didactic poetry",
+      "Ancient Philosophy",
+      "Poetry"
+    ],
+    "cover": "/covers/357.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/566208-M.jpg",
+    "cover_id": 566208,
+    "openlibrary_url": "https://openlibrary.org/works/OL1548597W",
+    "edition_count": 537
+  },
+  {
+    "id": 358,
+    "key": "/works/OL151515W",
+    "title": "La Poetica",
+    "author": "Aristotle",
+    "year": 1479,
+    "rating": 92,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "Metaphysics",
+      "Early works to 1800"
+    ],
+    "cover": "/covers/358.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/129771-M.jpg",
+    "cover_id": 129771,
+    "openlibrary_url": "https://openlibrary.org/works/OL151515W",
+    "edition_count": 498
+  },
+  {
+    "id": 359,
+    "key": "/works/OL30056W",
+    "title": "Flower Fables",
+    "author": "Louisa May Alcott",
+    "year": 1854,
+    "rating": 82,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "Fairy tales",
+      "Fairies"
+    ],
+    "cover": "/covers/359.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/755980-M.jpg",
+    "cover_id": 755980,
+    "openlibrary_url": "https://openlibrary.org/works/OL30056W",
+    "edition_count": 448
+  },
+  {
+    "id": 360,
+    "key": "/works/OL93227W",
+    "title": "Inferno",
+    "author": "Dante Alighieri",
+    "year": 1767,
+    "rating": 79,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "Hell",
+      "Illustrations"
+    ],
+    "cover": "/covers/360.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/6387077-M.jpg",
+    "cover_id": 6387077,
+    "openlibrary_url": "https://openlibrary.org/works/OL93227W",
+    "edition_count": 446
+  },
+  {
+    "id": 361,
+    "key": "/works/OL810991W",
+    "title": "Paradise Lost",
+    "author": "John Milton",
+    "year": 1667,
+    "rating": 97,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "Bible",
+      "Biography"
+    ],
+    "cover": "/covers/361.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5992814-M.jpg",
+    "cover_id": 5992814,
+    "openlibrary_url": "https://openlibrary.org/works/OL810991W",
+    "edition_count": 396
+  },
+  {
+    "id": 362,
+    "key": "/works/OL655908W",
+    "title": "The Night Before Christmas",
+    "author": "Clement Clarke Moore",
+    "year": 1857,
+    "rating": 86,
+    "genre": "Poetry",
+    "genres": [
+      "Santa in juvenile prison",
+      "Juvenile poetry",
+      "Poetry"
+    ],
+    "cover": "/covers/362.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8236410-M.jpg",
+    "cover_id": 8236410,
+    "openlibrary_url": "https://openlibrary.org/works/OL655908W",
+    "edition_count": 389
+  },
+  {
+    "id": 363,
+    "key": "/works/OL26386W",
+    "title": "Poems",
+    "author": "William Wordsworth",
+    "year": 1807,
+    "rating": 94,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "Gift books",
+      "Specimens"
+    ],
+    "cover": "/covers/363.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/102874-M.jpg",
+    "cover_id": 102874,
+    "openlibrary_url": "https://openlibrary.org/works/OL26386W",
+    "edition_count": 372
+  },
+  {
+    "id": 364,
+    "key": "/works/OL848771W",
+    "title": "Os Lus\u00edadas",
+    "author": "Lu\u00eds de Cam\u00f5es, Souza Botelho",
+    "year": 1572,
+    "rating": 78,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "History",
+      "Discovery and exploration"
+    ],
+    "cover": "/covers/364.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5943496-M.jpg",
+    "cover_id": 5943496,
+    "openlibrary_url": "https://openlibrary.org/works/OL848771W",
+    "edition_count": 367
+  },
+  {
+    "id": 365,
+    "key": "/works/OL35395W",
+    "title": "Tender Buttons",
+    "author": "Gertrude Stein",
+    "year": 1914,
+    "rating": 91,
+    "genre": "Poetry",
+    "genres": [
+      "Fiction",
+      "Poetry",
+      "Poetry (poetic works by one author)"
+    ],
+    "cover": "/covers/365.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/756373-M.jpg",
+    "cover_id": 756373,
+    "openlibrary_url": "https://openlibrary.org/works/OL35395W",
+    "edition_count": 365
+  },
+  {
+    "id": 366,
+    "key": "/works/OL1158921W",
+    "title": "Les fleurs du mal",
+    "author": "Charles Baudelaire",
+    "year": 1855,
+    "rating": 94,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "Traducciones al espa\u00f1ol",
+      "Translations into Spanish"
+    ],
+    "cover": "/covers/366.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8236412-M.jpg",
+    "cover_id": 8236412,
+    "openlibrary_url": "https://openlibrary.org/works/OL1158921W",
+    "edition_count": 363
+  },
+  {
+    "id": 367,
+    "key": "/works/OL50348W",
+    "title": "Fables",
+    "author": "Jean de La Fontaine",
+    "year": 1678,
+    "rating": 87,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "French Fables",
+      "Translations into English"
+    ],
+    "cover": "/covers/367.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/976209-M.jpg",
+    "cover_id": 976209,
+    "openlibrary_url": "https://openlibrary.org/works/OL50348W",
+    "edition_count": 345
+  },
+  {
+    "id": 368,
+    "key": "/works/OL502943W",
+    "title": "Godfrey of Bulloigne",
+    "author": "Torquato Tasso, Marzio Pieri",
+    "year": 1581,
+    "rating": 84,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "Crusades",
+      "History"
+    ],
+    "cover": "/covers/368.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5954727-M.jpg",
+    "cover_id": 5954727,
+    "openlibrary_url": "https://openlibrary.org/works/OL502943W",
+    "edition_count": 326
+  },
+  {
+    "id": 369,
+    "key": "/works/OL79353W",
+    "title": "An essay on man",
+    "author": "Alexander Pope",
+    "year": 1733,
+    "rating": 95,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "Human beings",
+      "English Philosophy"
+    ],
+    "cover": "/covers/369.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14538511-M.jpg",
+    "cover_id": 14538511,
+    "openlibrary_url": "https://openlibrary.org/works/OL79353W",
+    "edition_count": 315
+  },
+  {
+    "id": 370,
+    "key": "/works/OL766052W",
+    "title": "The complete poetical works",
+    "author": "Robert Burns",
+    "year": 1786,
+    "rating": 95,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "Biography",
+      "Children's poetry, Scottish"
+    ],
+    "cover": "/covers/370.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9048263-M.jpg",
+    "cover_id": 9048263,
+    "openlibrary_url": "https://openlibrary.org/works/OL766052W",
+    "edition_count": 293
+  },
+  {
+    "id": 371,
+    "key": "/works/OL810990W",
+    "title": "Milton's Poems",
+    "author": "John Milton",
+    "year": 1605,
+    "rating": 87,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "Bible",
+      "Criticism and interpretation"
+    ],
+    "cover": "/covers/371.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8235508-M.jpg",
+    "cover_id": 8235508,
+    "openlibrary_url": "https://openlibrary.org/works/OL810990W",
+    "edition_count": 292
+  },
+  {
+    "id": 372,
+    "key": "/works/OL93230W",
+    "title": "Il Paradiso",
+    "author": "Dante Alighieri",
+    "year": 1595,
+    "rating": 90,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "Heaven",
+      "Paradise"
+    ],
+    "cover": "/covers/372.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/6549496-M.jpg",
+    "cover_id": 6549496,
+    "openlibrary_url": "https://openlibrary.org/works/OL93230W",
+    "edition_count": 291
+  },
+  {
+    "id": 373,
+    "key": "/works/OL41081W",
+    "title": "The Raven",
+    "author": "Edgar Allan Poe",
+    "year": 1845,
+    "rating": 87,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "busts",
+      "narrative poetry"
+    ],
+    "cover": "/covers/373.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8246077-M.jpg",
+    "cover_id": 8246077,
+    "openlibrary_url": "https://openlibrary.org/works/OL41081W",
+    "edition_count": 287
+  },
+  {
+    "id": 374,
+    "key": "/works/OL15678068W",
+    "title": "\u1f39\u03c3\u03c4\u03bf\u03c1\u03af\u03b1\u03b9",
+    "author": "\u1f29\u03c1\u03cc\u03b4\u03bf\u03c4\u03bf\u03c2",
+    "year": 1494,
+    "rating": 79,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "genre:historiography",
+      "genre:history"
+    ],
+    "cover": "/covers/374.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9829028-M.jpg",
+    "cover_id": 9829028,
+    "openlibrary_url": "https://openlibrary.org/works/OL15678068W",
+    "edition_count": 285
+  },
+  {
+    "id": 375,
+    "key": "/works/OL3159983W",
+    "title": "Hudibras",
+    "author": "Samuel Butler",
+    "year": 1662,
+    "rating": 96,
+    "genre": "Poetry",
+    "genres": [
+      "English Satire",
+      "English poetry",
+      "Knights and knighthood"
+    ],
+    "cover": "/covers/375.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9938523-M.jpg",
+    "cover_id": 9938523,
+    "openlibrary_url": "https://openlibrary.org/works/OL3159983W",
+    "edition_count": 283
+  },
+  {
+    "id": 376,
+    "key": "/works/OL415234W",
+    "title": "Helen of Troy",
+    "author": "Andrew Lang",
+    "year": 1882,
+    "rating": 97,
+    "genre": "Poetry",
+    "genres": [
+      "Helen of Troy (Greek mythology)",
+      "Poetry",
+      "Fiction"
+    ],
+    "cover": "/covers/376.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5556502-M.jpg",
+    "cover_id": 5556502,
+    "openlibrary_url": "https://openlibrary.org/works/OL415234W",
+    "edition_count": 282
+  },
+  {
+    "id": 377,
+    "key": "/works/OL886738W",
+    "title": "Poema de mio Cid",
+    "author": "Anonymous",
+    "year": 1868,
+    "rating": 90,
+    "genre": "Poetry",
+    "genres": [
+      "Romances",
+      "Spanish poetry",
+      "Poetry"
+    ],
+    "cover": "/covers/377.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/4910995-M.jpg",
+    "cover_id": 4910995,
+    "openlibrary_url": "https://openlibrary.org/works/OL886738W",
+    "edition_count": 269
+  },
+  {
+    "id": 378,
+    "key": "/works/OL151447W",
+    "title": "The Hunting of the Snark",
+    "author": "Lewis Carroll",
+    "year": 1876,
+    "rating": 93,
+    "genre": "Poetry",
+    "genres": [
+      "Bibliography",
+      "History and criticism",
+      "Children's poetry, English"
+    ],
+    "cover": "/covers/378.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8243028-M.jpg",
+    "cover_id": 8243028,
+    "openlibrary_url": "https://openlibrary.org/works/OL151447W",
+    "edition_count": 255
+  },
+  {
+    "id": 379,
+    "key": "/works/OL13703833W",
+    "title": "Poetics",
+    "author": "Aristotle",
+    "year": 1536,
+    "rating": 85,
+    "genre": "Poetry",
+    "genres": [
+      "Early works to 1800",
+      "Aesthetics",
+      "Poetry"
+    ],
+    "cover": "/covers/379.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/6528920-M.jpg",
+    "cover_id": 6528920,
+    "openlibrary_url": "https://openlibrary.org/works/OL13703833W",
+    "edition_count": 252
+  },
+  {
+    "id": 380,
+    "key": "/works/OL4558936W",
+    "title": "The History of Rasselas, Prince of Abyssinia",
+    "author": "Samuel Johnson",
+    "year": 1759,
+    "rating": 93,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "Ethiopia, fiction",
+      "British and irish fiction (fictional works by one author)"
+    ],
+    "cover": "/covers/380.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/2035834-M.jpg",
+    "cover_id": 2035834,
+    "openlibrary_url": "https://openlibrary.org/works/OL4558936W",
+    "edition_count": 249
+  },
+  {
+    "id": 381,
+    "key": "/works/OL15237196W",
+    "title": "The Georgics of Virgil translated by Thomas Neville, ..",
+    "author": "Publius Vergilius Maro, Ovid, Salvatore Quasimodo",
+    "year": 1523,
+    "rating": 84,
+    "genre": "Poetry",
+    "genres": [
+      "Translations into Italian",
+      "Agriculture",
+      "Poetry"
+    ],
+    "cover": "/covers/381.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/2810356-M.jpg",
+    "cover_id": 2810356,
+    "openlibrary_url": "https://openlibrary.org/works/OL15237196W",
+    "edition_count": 248
+  },
+  {
+    "id": 382,
+    "key": "/works/OL88208W",
+    "title": "Q. Horatii Flacci opera",
+    "author": "Horace, Horace, Massimo Lenchant de Gubernatis, Domenico Bo",
+    "year": 1498,
+    "rating": 94,
+    "genre": "Poetry",
+    "genres": [
+      "Criticism and interpretation",
+      "Translations into English",
+      "Poetry"
+    ],
+    "cover": "/covers/382.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/6924561-M.jpg",
+    "cover_id": 6924561,
+    "openlibrary_url": "https://openlibrary.org/works/OL88208W",
+    "edition_count": 248
+  },
+  {
+    "id": 383,
+    "key": "/works/OL8271329W",
+    "title": "The Ballad of Reading Gaol",
+    "author": "Oscar Wilde",
+    "year": 1896,
+    "rating": 89,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "Fiction, general",
+      "English poetry"
+    ],
+    "cover": "/covers/383.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/1990809-M.jpg",
+    "cover_id": 1990809,
+    "openlibrary_url": "https://openlibrary.org/works/OL8271329W",
+    "edition_count": 241
+  },
+  {
+    "id": 384,
+    "key": "/works/OL1084495W",
+    "title": "The seasons",
+    "author": "James Thomson",
+    "year": 1726,
+    "rating": 83,
+    "genre": "Poetry",
+    "genres": [
+      "Poetry",
+      "German poetry",
+      "Winter"
+    ],
+    "cover": "/covers/384.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5807889-M.jpg",
+    "cover_id": 5807889,
+    "openlibrary_url": "https://openlibrary.org/works/OL1084495W",
+    "edition_count": 240
+  },
+  {
+    "id": 385,
+    "key": "/works/OL9170454W",
+    "title": "Hamlet",
+    "author": "William Shakespeare",
+    "year": 1603,
+    "rating": 81,
+    "genre": "Drama",
+    "genres": [
+      "Drama",
+      "performing arts",
+      "Stage history"
+    ],
+    "cover": "/covers/385.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8281954-M.jpg",
+    "cover_id": 8281954,
+    "openlibrary_url": "https://openlibrary.org/works/OL9170454W",
+    "edition_count": 2378
+  },
+  {
+    "id": 386,
+    "key": "/works/OL258902W",
+    "title": "Macbeth",
+    "author": "William Shakespeare",
+    "year": 1508,
+    "rating": 90,
+    "genre": "Drama",
+    "genres": [
+      "Drama",
+      "Regicides",
+      "Kings and rulers"
+    ],
+    "cover": "/covers/386.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/872432-M.jpg",
+    "cover_id": 872432,
+    "openlibrary_url": "https://openlibrary.org/works/OL258902W",
+    "edition_count": 1867
+  },
+  {
+    "id": 387,
+    "key": "/works/OL259026W",
+    "title": "King Lear",
+    "author": "William Shakespeare",
+    "year": 1608,
+    "rating": 91,
+    "genre": "Drama",
+    "genres": [
+      "Drama",
+      "King Lear (Legendary character)",
+      "Fathers and daughters"
+    ],
+    "cover": "/covers/387.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/7420452-M.jpg",
+    "cover_id": 7420452,
+    "openlibrary_url": "https://openlibrary.org/works/OL259026W",
+    "edition_count": 1614
+  },
+  {
+    "id": 388,
+    "key": "/works/OL362702W",
+    "title": "Julius Caesar",
+    "author": "William Shakespeare",
+    "year": 1656,
+    "rating": 97,
+    "genre": "Drama",
+    "genres": [
+      "Drama",
+      "Antoine (Marcus Antonius)",
+      "Assassination"
+    ],
+    "cover": "/covers/388.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/7901303-M.jpg",
+    "cover_id": 7901303,
+    "openlibrary_url": "https://openlibrary.org/works/OL362702W",
+    "edition_count": 1531
+  },
+  {
+    "id": 389,
+    "key": "/works/OL8721462W",
+    "title": "Great Expectations",
+    "author": "Charles Dickens",
+    "year": 1861,
+    "rating": 80,
+    "genre": "Drama",
+    "genres": [
+      "Drama",
+      "Authors",
+      "Benefactors"
+    ],
+    "cover": "/covers/389.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/13322313-M.jpg",
+    "cover_id": 13322313,
+    "openlibrary_url": "https://openlibrary.org/works/OL8721462W",
+    "edition_count": 1489
+  },
+  {
+    "id": 390,
+    "key": "/works/OL362690W",
+    "title": "The Taming of the Shrew",
+    "author": "William Shakespeare",
+    "year": 1631,
+    "rating": 78,
+    "genre": "Drama",
+    "genres": [
+      "Drama",
+      "Married people",
+      "Sex role"
+    ],
+    "cover": "/covers/390.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/7889534-M.jpg",
+    "cover_id": 7889534,
+    "openlibrary_url": "https://openlibrary.org/works/OL362690W",
+    "edition_count": 1125
+  },
+  {
+    "id": 391,
+    "key": "/works/OL102749W",
+    "title": "Moby Dick",
+    "author": "Herman Melville",
+    "year": 1851,
+    "rating": 96,
+    "genre": "Drama",
+    "genres": [
+      "Drama",
+      "American Sea stories",
+      "Mentally ill"
+    ],
+    "cover": "/covers/391.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/10544254-M.jpg",
+    "cover_id": 10544254,
+    "openlibrary_url": "https://openlibrary.org/works/OL102749W",
+    "edition_count": 1115
+  },
+  {
+    "id": 392,
+    "key": "/works/OL45139W",
+    "title": "Moll Flanders",
+    "author": "Daniel Defoe",
+    "year": 1722,
+    "rating": 89,
+    "genre": "Drama",
+    "genres": [
+      "Drama",
+      "Fiction",
+      "Social life and customs"
+    ],
+    "cover": "/covers/392.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12997559-M.jpg",
+    "cover_id": 12997559,
+    "openlibrary_url": "https://openlibrary.org/works/OL45139W",
+    "edition_count": 1114
+  },
+  {
+    "id": 393,
+    "key": "/works/OL66530W",
+    "title": "Mansfield Park",
+    "author": "Jane Austen",
+    "year": 1814,
+    "rating": 83,
+    "genre": "Drama",
+    "genres": [
+      "Drama",
+      "Love stories, English",
+      "Fiction, Romance, Historical, Regency"
+    ],
+    "cover": "/covers/393.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14618737-M.jpg",
+    "cover_id": 14618737,
+    "openlibrary_url": "https://openlibrary.org/works/OL66530W",
+    "edition_count": 1108
+  },
+  {
+    "id": 394,
+    "key": "/works/OL362166W",
+    "title": "Coriolanus",
+    "author": "William Shakespeare",
+    "year": 1721,
+    "rating": 93,
+    "genre": "Drama",
+    "genres": [
+      "Drama",
+      "Generals",
+      "History"
+    ],
+    "cover": "/covers/394.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8222112-M.jpg",
+    "cover_id": 8222112,
+    "openlibrary_url": "https://openlibrary.org/works/OL362166W",
+    "edition_count": 1048
+  },
+  {
+    "id": 395,
+    "key": "/works/OL362685W",
+    "title": "Troilus and Cressida",
+    "author": "William Shakespeare",
+    "year": 1609,
+    "rating": 97,
+    "genre": "Drama",
+    "genres": [
+      "Drama",
+      "Troilus (Legendary character)",
+      "Cressida (Fictitious character)"
+    ],
+    "cover": "/covers/395.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8789523-M.jpg",
+    "cover_id": 8789523,
+    "openlibrary_url": "https://openlibrary.org/works/OL362685W",
+    "edition_count": 992
+  },
+  {
+    "id": 396,
+    "key": "/works/OL362684W",
+    "title": "Richard III",
+    "author": "William Shakespeare",
+    "year": 1597,
+    "rating": 90,
+    "genre": "Drama",
+    "genres": [
+      "Drama",
+      "History",
+      "Kings and rulers in literature"
+    ],
+    "cover": "/covers/396.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9020720-M.jpg",
+    "cover_id": 9020720,
+    "openlibrary_url": "https://openlibrary.org/works/OL362684W",
+    "edition_count": 987
+  },
+  {
+    "id": 397,
+    "key": "/works/OL362427W",
+    "title": "Romeo and Juliet",
+    "author": "William Shakespeare",
+    "year": 1597,
+    "rating": 84,
+    "genre": "Drama",
+    "genres": [
+      "Drama",
+      "Classical Literature",
+      "British and irish drama (dramatic works by one author)"
+    ],
+    "cover": "/covers/397.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8257991-M.jpg",
+    "cover_id": 8257991,
+    "openlibrary_url": "https://openlibrary.org/works/OL362427W",
+    "edition_count": 985
+  },
+  {
+    "id": 398,
+    "key": "/works/OL1348798W",
+    "title": "Henry IV, Part 1",
+    "author": "William Shakespeare",
+    "year": 1598,
+    "rating": 91,
+    "genre": "Drama",
+    "genres": [
+      "Drama",
+      "History",
+      "In literature"
+    ],
+    "cover": "/covers/398.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/116833-M.jpg",
+    "cover_id": 116833,
+    "openlibrary_url": "https://openlibrary.org/works/OL1348798W",
+    "edition_count": 958
+  },
+  {
+    "id": 399,
+    "key": "/works/OL362695W",
+    "title": "Antony and Cleopatra",
+    "author": "William Shakespeare",
+    "year": 1734,
+    "rating": 85,
+    "genre": "Drama",
+    "genres": [
+      "Antonius, Marcus,",
+      "Antonius, Marcus, 83?-30 B.C.",
+      "Bibliography"
+    ],
+    "cover": "/covers/399.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8222096-M.jpg",
+    "cover_id": 8222096,
+    "openlibrary_url": "https://openlibrary.org/works/OL362695W",
+    "edition_count": 949
+  },
+  {
+    "id": 400,
+    "key": "/works/OL362665W",
+    "title": "King Richard II",
+    "author": "William Shakespeare",
+    "year": 1597,
+    "rating": 82,
+    "genre": "Drama",
+    "genres": [
+      "Drama",
+      "History",
+      "Quartos"
+    ],
+    "cover": "/covers/400.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9069548-M.jpg",
+    "cover_id": 9069548,
+    "openlibrary_url": "https://openlibrary.org/works/OL362665W",
+    "edition_count": 902
+  },
+  {
+    "id": 401,
+    "key": "/works/OL258656W",
+    "title": "Cymbeline",
+    "author": "William Shakespeare",
+    "year": 1734,
+    "rating": 78,
+    "genre": "Drama",
+    "genres": [
+      "Drama",
+      "Fathers and daughters",
+      "Kings and rulers"
+    ],
+    "cover": "/covers/401.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8997203-M.jpg",
+    "cover_id": 8997203,
+    "openlibrary_url": "https://openlibrary.org/works/OL258656W",
+    "edition_count": 844
+  },
+  {
+    "id": 402,
+    "key": "/works/OL362676W",
+    "title": "All's Well That Ends Well",
+    "author": "William Shakespeare",
+    "year": 1734,
+    "rating": 84,
+    "genre": "Drama",
+    "genres": [
+      "Drama",
+      "Married women",
+      "Runaway husbands"
+    ],
+    "cover": "/covers/402.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/7338455-M.jpg",
+    "cover_id": 7338455,
+    "openlibrary_url": "https://openlibrary.org/works/OL362676W",
+    "edition_count": 818
+  },
+  {
+    "id": 403,
+    "key": "/works/OL258758W",
+    "title": "The Merchant of Venice",
+    "author": "William Shakespeare",
+    "year": 1600,
+    "rating": 96,
+    "genre": "Drama",
+    "genres": [
+      "Drama",
+      "Jews",
+      "Moneylenders"
+    ],
+    "cover": "/covers/403.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/7182819-M.jpg",
+    "cover_id": 7182819,
+    "openlibrary_url": "https://openlibrary.org/works/OL258758W",
+    "edition_count": 818
+  },
+  {
+    "id": 404,
+    "key": "/works/OL54031W",
+    "title": "A Connecticut Yankee in King Arthur's Court",
+    "author": "Mark Twain",
+    "year": 1889,
+    "rating": 88,
+    "genre": "Drama",
+    "genres": [
+      "Drama",
+      "Time travel",
+      "Fiction"
+    ],
+    "cover": "/covers/404.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9168732-M.jpg",
+    "cover_id": 9168732,
+    "openlibrary_url": "https://openlibrary.org/works/OL54031W",
+    "edition_count": 789
+  },
+  {
+    "id": 405,
+    "key": "/works/OL362671W",
+    "title": "Two Gentlemen of Verona",
+    "author": "William Shakespeare",
+    "year": 1632,
+    "rating": 87,
+    "genre": "Drama",
+    "genres": [
+      "Drama",
+      "Triangles (Interpersonal relations)",
+      "Exiles"
+    ],
+    "cover": "/covers/405.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8791306-M.jpg",
+    "cover_id": 8791306,
+    "openlibrary_url": "https://openlibrary.org/works/OL362671W",
+    "edition_count": 787
+  },
+  {
+    "id": 406,
+    "key": "/works/OL77746W",
+    "title": "Anne of Green Gables",
+    "author": "Lucy Maud Montgomery",
+    "year": 1908,
+    "rating": 80,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Fiction",
+      "Juvenile fiction"
+    ],
+    "cover": "/covers/406.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14641084-M.jpg",
+    "cover_id": 14641084,
+    "openlibrary_url": "https://openlibrary.org/works/OL77746W",
+    "edition_count": 1299
+  },
+  {
+    "id": 407,
+    "key": "/works/OL55649W",
+    "title": "Walden",
+    "author": "Henry David Thoreau",
+    "year": 1854,
+    "rating": 81,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Homes and haunts",
+      "American Authors"
+    ],
+    "cover": "/covers/407.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/11248037-M.jpg",
+    "cover_id": 11248037,
+    "openlibrary_url": "https://openlibrary.org/works/OL55649W",
+    "edition_count": 1140
+  },
+  {
+    "id": 408,
+    "key": "/works/OL69178W",
+    "title": "Narrative of the life of Frederick Douglass",
+    "author": "Frederick Douglass",
+    "year": 1845,
+    "rating": 78,
+    "genre": "Biography",
+    "genres": [
+      "Douglass, frederick, 1818-1895",
+      "Biography",
+      "African American abolitionists"
+    ],
+    "cover": "/covers/408.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8247724-M.jpg",
+    "cover_id": 8247724,
+    "openlibrary_url": "https://openlibrary.org/works/OL69178W",
+    "edition_count": 1032
+  },
+  {
+    "id": 409,
+    "key": "/works/OL78871W",
+    "title": "Twelve years a slave",
+    "author": "Solomon Northup",
+    "year": 1853,
+    "rating": 89,
+    "genre": "Biography",
+    "genres": [
+      "Slavery",
+      "Plantation life",
+      "History"
+    ],
+    "cover": "/covers/409.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14856045-M.jpg",
+    "cover_id": 14856045,
+    "openlibrary_url": "https://openlibrary.org/works/OL78871W",
+    "edition_count": 1029
+  },
+  {
+    "id": 410,
+    "key": "/works/OL19842W",
+    "title": "Captains Courageous",
+    "author": "Rudyard Kipling",
+    "year": 1896,
+    "rating": 82,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Teenage boys",
+      "Fishers"
+    ],
+    "cover": "/covers/410.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12819857-M.jpg",
+    "cover_id": 12819857,
+    "openlibrary_url": "https://openlibrary.org/works/OL19842W",
+    "edition_count": 991
+  },
+  {
+    "id": 411,
+    "key": "/works/OL107195W",
+    "title": "The Pilgrim's Progress",
+    "author": "John Bunyan",
+    "year": 1678,
+    "rating": 82,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Bibliography",
+      "Readers"
+    ],
+    "cover": "/covers/411.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8229224-M.jpg",
+    "cover_id": 8229224,
+    "openlibrary_url": "https://openlibrary.org/works/OL107195W",
+    "edition_count": 683
+  },
+  {
+    "id": 412,
+    "key": "/works/OL26492W",
+    "title": "The Autobiography of Benjamin Franklin",
+    "author": "Benjamin Franklin",
+    "year": 1791,
+    "rating": 87,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Wills",
+      "Scientists"
+    ],
+    "cover": "/covers/412.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5647361-M.jpg",
+    "cover_id": 5647361,
+    "openlibrary_url": "https://openlibrary.org/works/OL26492W",
+    "edition_count": 679
+  },
+  {
+    "id": 413,
+    "key": "/works/OL361466W",
+    "title": "Henry V",
+    "author": "William Shakespeare",
+    "year": 1600,
+    "rating": 94,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Drama",
+      "open_syllabus_project"
+    ],
+    "cover": "/covers/413.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/7420215-M.jpg",
+    "cover_id": 7420215,
+    "openlibrary_url": "https://openlibrary.org/works/OL361466W",
+    "edition_count": 631
+  },
+  {
+    "id": 414,
+    "key": "/works/OL19926W",
+    "title": "The Second Jungle Book",
+    "author": "Rudyard Kipling",
+    "year": 1887,
+    "rating": 95,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Romans",
+      "Enfants sauvages"
+    ],
+    "cover": "/covers/414.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/2140514-M.jpg",
+    "cover_id": 2140514,
+    "openlibrary_url": "https://openlibrary.org/works/OL19926W",
+    "edition_count": 612
+  },
+  {
+    "id": 415,
+    "key": "/works/OL1261147W",
+    "title": "Ab urbe condita",
+    "author": "Titus Livius",
+    "year": 1481,
+    "rating": 93,
+    "genre": "Biography",
+    "genres": [
+      "Antiquities",
+      "Bibliography",
+      "Biography"
+    ],
+    "cover": "/covers/415.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/6657951-M.jpg",
+    "cover_id": 6657951,
+    "openlibrary_url": "https://openlibrary.org/works/OL1261147W",
+    "edition_count": 559
+  },
+  {
+    "id": 416,
+    "key": "/works/OL260101W",
+    "title": "The Tenant of Wildfell Hall",
+    "author": "Anne Bront\u00eb",
+    "year": 1847,
+    "rating": 90,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Fiction",
+      "Married women"
+    ],
+    "cover": "/covers/416.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/1023552-M.jpg",
+    "cover_id": 1023552,
+    "openlibrary_url": "https://openlibrary.org/works/OL260101W",
+    "edition_count": 558
+  },
+  {
+    "id": 417,
+    "key": "/works/OL76350W",
+    "title": "Orthodoxy",
+    "author": "Gilbert Keith Chesterton",
+    "year": 1874,
+    "rating": 94,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Apologetics",
+      "Christianity"
+    ],
+    "cover": "/covers/417.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/6268135-M.jpg",
+    "cover_id": 6268135,
+    "openlibrary_url": "https://openlibrary.org/works/OL76350W",
+    "edition_count": 551
+  },
+  {
+    "id": 418,
+    "key": "/works/OL76399W",
+    "title": "Saint Francis of Assisi",
+    "author": "Gilbert Keith Chesterton",
+    "year": 1923,
+    "rating": 88,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Biography & Autobiography",
+      "Nonfiction"
+    ],
+    "cover": "/covers/418.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/502618-M.jpg",
+    "cover_id": 502618,
+    "openlibrary_url": "https://openlibrary.org/works/OL76399W",
+    "edition_count": 547
+  },
+  {
+    "id": 419,
+    "key": "/works/OL19870W",
+    "title": "The Jungle Book",
+    "author": "Rudyard Kipling",
+    "year": 1893,
+    "rating": 79,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Jungles",
+      "Fiction"
+    ],
+    "cover": "/covers/419.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/3344204-M.jpg",
+    "cover_id": 3344204,
+    "openlibrary_url": "https://openlibrary.org/works/OL19870W",
+    "edition_count": 537
+  },
+  {
+    "id": 420,
+    "key": "/works/OL69179W",
+    "title": "My bondage and my freedom",
+    "author": "Frederick Douglass",
+    "year": 1815,
+    "rating": 79,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Douglass, frederick, 1818-1895",
+      "Maryland, history"
+    ],
+    "cover": "/covers/420.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14847114-M.jpg",
+    "cover_id": 14847114,
+    "openlibrary_url": "https://openlibrary.org/works/OL69179W",
+    "edition_count": 509
+  },
+  {
+    "id": 421,
+    "key": "/works/OL15451W",
+    "title": "At the Back of the North Wind",
+    "author": "George MacDonald",
+    "year": 1871,
+    "rating": 80,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Fairy tales",
+      "Children's fiction"
+    ],
+    "cover": "/covers/421.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8245161-M.jpg",
+    "cover_id": 8245161,
+    "openlibrary_url": "https://openlibrary.org/works/OL15451W",
+    "edition_count": 496
+  },
+  {
+    "id": 422,
+    "key": "/works/OL15437W",
+    "title": "Lilith",
+    "author": "George MacDonald",
+    "year": 1895,
+    "rating": 92,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Fiction, romance, fantasy",
+      "Fiction, general"
+    ],
+    "cover": "/covers/422.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14364546-M.jpg",
+    "cover_id": 14364546,
+    "openlibrary_url": "https://openlibrary.org/works/OL15437W",
+    "edition_count": 480
+  },
+  {
+    "id": 423,
+    "key": "/works/OL20112W",
+    "title": "The  man who would be king",
+    "author": "Rudyard Kipling",
+    "year": 1898,
+    "rating": 88,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Fiction",
+      "Kings and rulers"
+    ],
+    "cover": "/covers/423.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/6021425-M.jpg",
+    "cover_id": 6021425,
+    "openlibrary_url": "https://openlibrary.org/works/OL20112W",
+    "edition_count": 460
+  },
+  {
+    "id": 424,
+    "key": "/works/OL629052W",
+    "title": "Manifest der Kommunistischen Partei",
+    "author": "Karl Marx, Friedrich Engels",
+    "year": 1848,
+    "rating": 86,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Communism",
+      "Sources"
+    ],
+    "cover": "/covers/424.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/11048623-M.jpg",
+    "cover_id": 11048623,
+    "openlibrary_url": "https://openlibrary.org/works/OL629052W",
+    "edition_count": 459
+  },
+  {
+    "id": 425,
+    "key": "/works/OL137872W",
+    "title": "Confessions",
+    "author": "Augustine of Hippo",
+    "year": 1482,
+    "rating": 80,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Religious aspects of Truth",
+      "Christian saints"
+    ],
+    "cover": "/covers/425.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9022521-M.jpg",
+    "cover_id": 9022521,
+    "openlibrary_url": "https://openlibrary.org/works/OL137872W",
+    "edition_count": 450
+  },
+  {
+    "id": 426,
+    "key": "/works/OL357501W",
+    "title": "Up from Slavery",
+    "author": "Booker T. Washington",
+    "year": 1900,
+    "rating": 97,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Washington, Booker T., 1856-1915",
+      "African americans, biography"
+    ],
+    "cover": "/covers/426.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/119317-M.jpg",
+    "cover_id": 119317,
+    "openlibrary_url": "https://openlibrary.org/works/OL357501W",
+    "edition_count": 430
+  },
+  {
+    "id": 427,
+    "key": "/works/OL54059W",
+    "title": "Roughing It",
+    "author": "Mark Twain",
+    "year": 1872,
+    "rating": 94,
+    "genre": "Biography",
+    "genres": [
+      "19th century",
+      "American Authors",
+      "Biography"
+    ],
+    "cover": "/covers/427.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9165528-M.jpg",
+    "cover_id": 9165528,
+    "openlibrary_url": "https://openlibrary.org/works/OL54059W",
+    "edition_count": 408
+  },
+  {
+    "id": 428,
+    "key": "/works/OL28623W",
+    "title": "Incidents in the Life of a Slave Girl",
+    "author": "Harriet A. Jacobs",
+    "year": 1861,
+    "rating": 86,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Women slaves",
+      "United States"
+    ],
+    "cover": "/covers/428.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/411542-M.jpg",
+    "cover_id": 411542,
+    "openlibrary_url": "https://openlibrary.org/works/OL28623W",
+    "edition_count": 386
+  },
+  {
+    "id": 429,
+    "key": "/works/OL15692719W",
+    "title": "Der Antichrist",
+    "author": "Friedrich Nietzsche",
+    "year": 1895,
+    "rating": 82,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Christianity",
+      "Controversial literature"
+    ],
+    "cover": "/covers/429.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/1759313-M.jpg",
+    "cover_id": 1759313,
+    "openlibrary_url": "https://openlibrary.org/works/OL15692719W",
+    "edition_count": 385
+  },
+  {
+    "id": 430,
+    "key": "/works/OL1815550W",
+    "title": "Two years before the mast",
+    "author": "Richard Henry Dana",
+    "year": 1000,
+    "rating": 93,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Alert (Brig : 1843-1862)",
+      "Large-type books"
+    ],
+    "cover": "/covers/430.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8245243-M.jpg",
+    "cover_id": 8245243,
+    "openlibrary_url": "https://openlibrary.org/works/OL1815550W",
+    "edition_count": 369
+  },
+  {
+    "id": 431,
+    "key": "/works/OL38684W",
+    "title": "Lord Jim",
+    "author": "Joseph Conrad",
+    "year": 1900,
+    "rating": 79,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Fiction",
+      "British"
+    ],
+    "cover": "/covers/431.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8236295-M.jpg",
+    "cover_id": 8236295,
+    "openlibrary_url": "https://openlibrary.org/works/OL38684W",
+    "edition_count": 345
+  },
+  {
+    "id": 432,
+    "key": "/works/OL22364W",
+    "title": "Erewhon",
+    "author": "Samuel Butler",
+    "year": 1708,
+    "rating": 86,
+    "genre": "Biography",
+    "genres": [
+      "Biography",
+      "Fiction, humorous, general",
+      "Fiction"
+    ],
+    "cover": "/covers/432.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/825789-M.jpg",
+    "cover_id": 825789,
+    "openlibrary_url": "https://openlibrary.org/works/OL22364W",
+    "edition_count": 337
+  },
+  {
+    "id": 433,
+    "key": "/works/OL13162727W",
+    "title": "Our Mutual Friend",
+    "author": "Charles Dickens, Margeret Tarner, Adam Leverton",
+    "year": 1800,
+    "rating": 84,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Social life and customs",
+      "Classic Literature"
+    ],
+    "cover": "/covers/433.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/13136200-M.jpg",
+    "cover_id": 13136200,
+    "openlibrary_url": "https://openlibrary.org/works/OL13162727W",
+    "edition_count": 318
+  },
+  {
+    "id": 434,
+    "key": "/works/OL471565W",
+    "title": "And Then There Were None",
+    "author": "Agatha Christie",
+    "year": 1939,
+    "rating": 87,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Roman policier",
+      "French language materials"
+    ],
+    "cover": "/covers/434.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/11172296-M.jpg",
+    "cover_id": 11172296,
+    "openlibrary_url": "https://openlibrary.org/works/OL471565W",
+    "edition_count": 215
+  },
+  {
+    "id": 435,
+    "key": "/works/OL1066517W",
+    "title": "Major Barbara",
+    "author": "George Bernard Shaw",
+    "year": 1909,
+    "rating": 78,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Social aspects of Crime",
+      "Fathers and daughters"
+    ],
+    "cover": "/covers/435.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8245287-M.jpg",
+    "cover_id": 8245287,
+    "openlibrary_url": "https://openlibrary.org/works/OL1066517W",
+    "edition_count": 175
+  },
+  {
+    "id": 436,
+    "key": "/works/OL1223677W",
+    "title": "Dei delitte e delle pene",
+    "author": "Cesare Beccaria",
+    "year": 1764,
+    "rating": 90,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Punishment",
+      "Crime and criminals"
+    ],
+    "cover": "/covers/436.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8553099-M.jpg",
+    "cover_id": 8553099,
+    "openlibrary_url": "https://openlibrary.org/works/OL1223677W",
+    "edition_count": 164
+  },
+  {
+    "id": 437,
+    "key": "/works/OL267110W",
+    "title": "\u041a\u0440\u0435\u0439\u0446\u0435\u0440\u043e\u0432\u0430 \u0441\u043e\u043d\u0430\u0442\u0430",
+    "author": "\u041b\u0435\u0432 \u0422\u043e\u043b\u0441\u0442\u043e\u0439",
+    "year": 1880,
+    "rating": 91,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Translations into English",
+      "Man-woman relationships"
+    ],
+    "cover": "/covers/437.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9766366-M.jpg",
+    "cover_id": 9766366,
+    "openlibrary_url": "https://openlibrary.org/works/OL267110W",
+    "edition_count": 141
+  },
+  {
+    "id": 438,
+    "key": "/works/OL471771W",
+    "title": "A Murder Is Announced",
+    "author": "Agatha Christie",
+    "year": 1950,
+    "rating": 93,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Fiction",
+      "Mystery"
+    ],
+    "cover": "/covers/438.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14578204-M.jpg",
+    "cover_id": 14578204,
+    "openlibrary_url": "https://openlibrary.org/works/OL471771W",
+    "edition_count": 127
+  },
+  {
+    "id": 439,
+    "key": "/works/OL471947W",
+    "title": "The Big Four",
+    "author": "Agatha Christie",
+    "year": 1927,
+    "rating": 97,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Fiction",
+      "Mystery"
+    ],
+    "cover": "/covers/439.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12996529-M.jpg",
+    "cover_id": 12996529,
+    "openlibrary_url": "https://openlibrary.org/works/OL471947W",
+    "edition_count": 121
+  },
+  {
+    "id": 440,
+    "key": "/works/OL262554W",
+    "title": "The Complete Sherlock Holmes [4 novels, 56 stories]",
+    "author": "Arthur Conan Doyle",
+    "year": 1900,
+    "rating": 86,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Action & Adventure Fiction",
+      "Adventure stories"
+    ],
+    "cover": "/covers/440.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12501284-M.jpg",
+    "cover_id": 12501284,
+    "openlibrary_url": "https://openlibrary.org/works/OL262554W",
+    "edition_count": 118
+  },
+  {
+    "id": 441,
+    "key": "/works/OL1673205W",
+    "title": "The Godfather",
+    "author": "Mario Puzo",
+    "year": 1969,
+    "rating": 95,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Detective and mystery stories",
+      "Organized crime"
+    ],
+    "cover": "/covers/441.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/6507069-M.jpg",
+    "cover_id": 6507069,
+    "openlibrary_url": "https://openlibrary.org/works/OL1673205W",
+    "edition_count": 109
+  },
+  {
+    "id": 442,
+    "key": "/works/OL472458W",
+    "title": "A Caribbean Mystery",
+    "author": "Agatha Christie",
+    "year": 1964,
+    "rating": 79,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Agatha Christie",
+      "Miss Marple"
+    ],
+    "cover": "/covers/442.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14578132-M.jpg",
+    "cover_id": 14578132,
+    "openlibrary_url": "https://openlibrary.org/works/OL472458W",
+    "edition_count": 107
+  },
+  {
+    "id": 443,
+    "key": "/works/OL259549W",
+    "title": "Ali Pacha",
+    "author": "Alexandre Dumas, Jean Pierre F\u00e9licien Mallefille",
+    "year": 2001,
+    "rating": 85,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Classic Literature",
+      "Fiction"
+    ],
+    "cover": "/covers/443.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/10330225-M.jpg",
+    "cover_id": 10330225,
+    "openlibrary_url": "https://openlibrary.org/works/OL259549W",
+    "edition_count": 105
+  },
+  {
+    "id": 444,
+    "key": "/works/OL176074W",
+    "title": "The Frozen Deep",
+    "author": "Wilkie Collins, George du Maurier, James Mahoney, Charles Dickens, Richard Brydges Beechey, John Everett Millais, J. Mahony",
+    "year": 1800,
+    "rating": 81,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "English Detective and mystery stories",
+      "Fiction"
+    ],
+    "cover": "/covers/444.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/892414-M.jpg",
+    "cover_id": 892414,
+    "openlibrary_url": "https://openlibrary.org/works/OL176074W",
+    "edition_count": 99
+  },
+  {
+    "id": 445,
+    "key": "/works/OL630975W",
+    "title": "Caves du Vatican",
+    "author": "Andre\u0301 Gide",
+    "year": 1922,
+    "rating": 87,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Continental european fiction (fictional works by one author)",
+      "Fiction, general"
+    ],
+    "cover": "/covers/445.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/229147-M.jpg",
+    "cover_id": 229147,
+    "openlibrary_url": "https://openlibrary.org/works/OL630975W",
+    "edition_count": 97
+  },
+  {
+    "id": 446,
+    "key": "/works/OL5725956W",
+    "title": "Artemis Fowl",
+    "author": "Eoin Colfer",
+    "year": 1999,
+    "rating": 83,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Artemis Fowl",
+      "Eoin Colfer"
+    ],
+    "cover": "/covers/446.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/10212689-M.jpg",
+    "cover_id": 10212689,
+    "openlibrary_url": "https://openlibrary.org/works/OL5725956W",
+    "edition_count": 93
+  },
+  {
+    "id": 447,
+    "key": "/works/OL472508W",
+    "title": "Endless Night",
+    "author": "Agatha Christie",
+    "year": 1905,
+    "rating": 94,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Fiction",
+      "Mystery"
+    ],
+    "cover": "/covers/447.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12855084-M.jpg",
+    "cover_id": 12855084,
+    "openlibrary_url": "https://openlibrary.org/works/OL472508W",
+    "edition_count": 84
+  },
+  {
+    "id": 448,
+    "key": "/works/OL675834W",
+    "title": "alias Grace",
+    "author": "Margaret Atwood",
+    "year": 1996,
+    "rating": 94,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Fiction",
+      "Trials (Murder)"
+    ],
+    "cover": "/covers/448.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/6642671-M.jpg",
+    "cover_id": 6642671,
+    "openlibrary_url": "https://openlibrary.org/works/OL675834W",
+    "edition_count": 81
+  },
+  {
+    "id": 449,
+    "key": "/works/OL15167066W",
+    "title": "Les Cenci",
+    "author": "Alexandre Dumas",
+    "year": 1977,
+    "rating": 84,
+    "genre": "Crime",
+    "genres": [
+      "Classic Literature",
+      "Fiction",
+      "Fiction, general"
+    ],
+    "cover": "/covers/449.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/6391144-M.jpg",
+    "cover_id": 6391144,
+    "openlibrary_url": "https://openlibrary.org/works/OL15167066W",
+    "edition_count": 80
+  },
+  {
+    "id": 450,
+    "key": "/works/OL5784622W",
+    "title": "M\u00e4n som hatar kvinnor",
+    "author": "Stieg Larsson",
+    "year": 2005,
+    "rating": 87,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Fiction: Literature",
+      "Novels"
+    ],
+    "cover": "/covers/450.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9274740-M.jpg",
+    "cover_id": 9274740,
+    "openlibrary_url": "https://openlibrary.org/works/OL5784622W",
+    "edition_count": 78
+  },
+  {
+    "id": 451,
+    "key": "/works/OL275128W",
+    "title": "Native Son",
+    "author": "Richard Wright, Richard Wright - undifferentiated, Richard Wright",
+    "year": 1940,
+    "rating": 89,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "African American men",
+      "African americans"
+    ],
+    "cover": "/covers/451.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/10830375-M.jpg",
+    "cover_id": 10830375,
+    "openlibrary_url": "https://openlibrary.org/works/OL275128W",
+    "edition_count": 75
+  },
+  {
+    "id": 452,
+    "key": "/works/OL7981715W",
+    "title": "Nisida",
+    "author": "Alexandre Dumas, Pier-Angelo Fiorentino",
+    "year": 2003,
+    "rating": 78,
+    "genre": "Crime",
+    "genres": [
+      "Classic Literature",
+      "Fiction",
+      "Crime"
+    ],
+    "cover": "/covers/452.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14564269-M.jpg",
+    "cover_id": 14564269,
+    "openlibrary_url": "https://openlibrary.org/works/OL7981715W",
+    "edition_count": 72
+  },
+  {
+    "id": 453,
+    "key": "/works/OL41016W",
+    "title": "The Cask of Amontillado",
+    "author": "Edgar Allan Poe",
+    "year": 1846,
+    "rating": 82,
+    "genre": "Crime",
+    "genres": [
+      "Classic Literature",
+      "Crime",
+      "Detective and mystery stories"
+    ],
+    "cover": "/covers/453.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/11887418-M.jpg",
+    "cover_id": 11887418,
+    "openlibrary_url": "https://openlibrary.org/works/OL41016W",
+    "edition_count": 67
+  },
+  {
+    "id": 454,
+    "key": "/works/OL2789010W",
+    "title": "London Labour and the London Poor (Vol. I)",
+    "author": "Henry Mayhew",
+    "year": 1851,
+    "rating": 80,
+    "genre": "Crime",
+    "genres": [
+      "Criminals",
+      "Crime",
+      "Poor"
+    ],
+    "cover": "/covers/454.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/6346265-M.jpg",
+    "cover_id": 6346265,
+    "openlibrary_url": "https://openlibrary.org/works/OL2789010W",
+    "edition_count": 66
+  },
+  {
+    "id": 455,
+    "key": "/works/OL5725961W",
+    "title": "Artemis Fowl and the Eternity Code",
+    "author": "Eoin Colfer",
+    "year": 2003,
+    "rating": 90,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "New York Times bestseller",
+      "nyt:series_books=2008-06-22"
+    ],
+    "cover": "/covers/455.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12636263-M.jpg",
+    "cover_id": 12636263,
+    "openlibrary_url": "https://openlibrary.org/works/OL5725961W",
+    "edition_count": 63
+  },
+  {
+    "id": 456,
+    "key": "/works/OL93214W",
+    "title": "The wonders of the invisible world",
+    "author": "Cotton Mather, Increase Mather, Mather, Cotton, Harry Houdini Collection (Library of Congress)",
+    "year": 1692,
+    "rating": 88,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Witchcraft",
+      "Early works to 1800"
+    ],
+    "cover": "/covers/456.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/314544-M.jpg",
+    "cover_id": 314544,
+    "openlibrary_url": "https://openlibrary.org/works/OL93214W",
+    "edition_count": 57
+  },
+  {
+    "id": 457,
+    "key": "/works/OL2794726W",
+    "title": "The Regulators",
+    "author": "Stephen King",
+    "year": 1996,
+    "rating": 83,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "science fiction",
+      "Audiobooks"
+    ],
+    "cover": "/covers/457.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14651906-M.jpg",
+    "cover_id": 14651906,
+    "openlibrary_url": "https://openlibrary.org/works/OL2794726W",
+    "edition_count": 55
+  },
+  {
+    "id": 458,
+    "key": "/works/OL553754W",
+    "title": "The Black Dahlia",
+    "author": "James Ellroy",
+    "year": 1987,
+    "rating": 87,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Detective and mystery fiction",
+      "hard-boiled"
+    ],
+    "cover": "/covers/458.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/1474254-M.jpg",
+    "cover_id": 1474254,
+    "openlibrary_url": "https://openlibrary.org/works/OL553754W",
+    "edition_count": 55
+  },
+  {
+    "id": 459,
+    "key": "/works/OL2457396W",
+    "title": "La verdad sobre el caso Savolta",
+    "author": "Eduardo Mendoza",
+    "year": 1975,
+    "rating": 81,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Fiction",
+      "Anarchists"
+    ],
+    "cover": "/covers/459.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5385202-M.jpg",
+    "cover_id": 5385202,
+    "openlibrary_url": "https://openlibrary.org/works/OL2457396W",
+    "edition_count": 52
+  },
+  {
+    "id": 460,
+    "key": "/works/OL46903W",
+    "title": "A Case of Need",
+    "author": "Michael Crichton",
+    "year": 1968,
+    "rating": 92,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "abortion",
+      "Detective and mystery fiction"
+    ],
+    "cover": "/covers/460.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12369402-M.jpg",
+    "cover_id": 12369402,
+    "openlibrary_url": "https://openlibrary.org/works/OL46903W",
+    "edition_count": 52
+  },
+  {
+    "id": 461,
+    "key": "/works/OL5725964W",
+    "title": "Artemis Fowl and the Arctic Incident",
+    "author": "Eoin Colfer",
+    "year": 2001,
+    "rating": 91,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "science fiction",
+      "Secuestro"
+    ],
+    "cover": "/covers/461.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8231795-M.jpg",
+    "cover_id": 8231795,
+    "openlibrary_url": "https://openlibrary.org/works/OL5725964W",
+    "edition_count": 50
+  },
+  {
+    "id": 462,
+    "key": "/works/OL273463W",
+    "title": "The Works of Edgar Allan Poe in Five Volumes",
+    "author": "Edgar Allan Poe",
+    "year": 1903,
+    "rating": 89,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "short stories",
+      "aristocracy"
+    ],
+    "cover": "/covers/462.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8311524-M.jpg",
+    "cover_id": 8311524,
+    "openlibrary_url": "https://openlibrary.org/works/OL273463W",
+    "edition_count": 50
+  },
+  {
+    "id": 463,
+    "key": "/works/OL1881658W",
+    "title": "El Amo Del Juego/Masters of the Game",
+    "author": "Sidney Sheldon",
+    "year": 1905,
+    "rating": 89,
+    "genre": "Crime",
+    "genres": [
+      "Sidney Sheldon",
+      "Adult",
+      "American"
+    ],
+    "cover": "/covers/463.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/4672-M.jpg",
+    "cover_id": 4672,
+    "openlibrary_url": "https://openlibrary.org/works/OL1881658W",
+    "edition_count": 50
+  },
+  {
+    "id": 464,
+    "key": "/works/OL510881W",
+    "title": "A Mind to Murder",
+    "author": "P. D. James",
+    "year": 1963,
+    "rating": 81,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Kriminalroman",
+      "Englisch"
+    ],
+    "cover": "/covers/464.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/3217302-M.jpg",
+    "cover_id": 3217302,
+    "openlibrary_url": "https://openlibrary.org/works/OL510881W",
+    "edition_count": 49
+  },
+  {
+    "id": 465,
+    "key": "/works/OL16820059W",
+    "title": "Mr. Mercedes",
+    "author": "Stephen King, Stephen king, Ingah Mikha\u02bceli",
+    "year": 2013,
+    "rating": 95,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "horror",
+      "mystery"
+    ],
+    "cover": "/covers/465.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14653120-M.jpg",
+    "cover_id": 14653120,
+    "openlibrary_url": "https://openlibrary.org/works/OL16820059W",
+    "edition_count": 47
+  },
+  {
+    "id": 466,
+    "key": "/works/OL5725975W",
+    "title": "The Opal Deception",
+    "author": "Eoin Colfer",
+    "year": 2005,
+    "rating": 90,
+    "genre": "Crime",
+    "genres": [
+      "Crime",
+      "Fiction",
+      "Magic"
+    ],
+    "cover": "/covers/466.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12636364-M.jpg",
+    "cover_id": 12636364,
+    "openlibrary_url": "https://openlibrary.org/works/OL5725975W",
+    "edition_count": 46
+  },
+  {
+    "id": 467,
+    "key": "/works/OL27776452W",
+    "title": "The Importance of Being Earnest",
+    "author": "Oscar Wilde",
+    "year": 1893,
+    "rating": 97,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "British and irish drama (dramatic works by one author)",
+      "English life"
+    ],
+    "cover": "/covers/467.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/1260453-M.jpg",
+    "cover_id": 1260453,
+    "openlibrary_url": "https://openlibrary.org/works/OL27776452W",
+    "edition_count": 455
+  },
+  {
+    "id": 468,
+    "key": "/works/OL45623W",
+    "title": "The History of Tom Jones",
+    "author": "Henry Fielding",
+    "year": 1749,
+    "rating": 97,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Fiction",
+      "Foundlings"
+    ],
+    "cover": "/covers/468.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12968864-M.jpg",
+    "cover_id": 12968864,
+    "openlibrary_url": "https://openlibrary.org/works/OL45623W",
+    "edition_count": 435
+  },
+  {
+    "id": 469,
+    "key": "/works/OL1793135W",
+    "title": "Idle Thoughts of an Idle Fellow",
+    "author": "Jerome Klapka J\u00e9r\u00f4me",
+    "year": 1880,
+    "rating": 93,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "English wit and humor",
+      "Humor, form, essays"
+    ],
+    "cover": "/covers/469.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8243128-M.jpg",
+    "cover_id": 8243128,
+    "openlibrary_url": "https://openlibrary.org/works/OL1793135W",
+    "edition_count": 433
+  },
+  {
+    "id": 470,
+    "key": "/works/OL503861W",
+    "title": "Satyricon",
+    "author": "Petronius, Vittorio de Simone",
+    "year": 1575,
+    "rating": 94,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Latin Satire",
+      "Translations into French"
+    ],
+    "cover": "/covers/470.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/6060585-M.jpg",
+    "cover_id": 6060585,
+    "openlibrary_url": "https://openlibrary.org/works/OL503861W",
+    "edition_count": 313
+  },
+  {
+    "id": 471,
+    "key": "/works/OL40946456W",
+    "title": "Three Men on the Bummel",
+    "author": "Jerome Klapka J\u00e9r\u00f4me",
+    "year": 1900,
+    "rating": 90,
+    "genre": "Humor",
+    "genres": [
+      "Cycling",
+      "Humor",
+      "British"
+    ],
+    "cover": "/covers/471.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5706716-M.jpg",
+    "cover_id": 5706716,
+    "openlibrary_url": "https://openlibrary.org/works/OL40946456W",
+    "edition_count": 312
+  },
+  {
+    "id": 472,
+    "key": "/works/OL7973273W",
+    "title": "The Devil's Dictionary",
+    "author": "Ambrose Bierce",
+    "year": 1840,
+    "rating": 91,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "English language",
+      "Semantics"
+    ],
+    "cover": "/covers/472.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12671319-M.jpg",
+    "cover_id": 12671319,
+    "openlibrary_url": "https://openlibrary.org/works/OL7973273W",
+    "edition_count": 312
+  },
+  {
+    "id": 473,
+    "key": "/works/OL676009W",
+    "title": "\u041c\u0430\u0441\u0442\u0435\u0440 \u0438 \u041c\u0430\u0440\u0433\u0430\u0440\u0438\u0442\u0430",
+    "author": "\u041c\u0438\u0445\u0430\u0438\u043b \u0410\u0444\u0430\u043d\u0430\u0441\u044c\u0435\u0432\u0438\u0447 \u0411\u0443\u043b\u0433\u0430\u043a\u043e\u0432",
+    "year": 1966,
+    "rating": 79,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "satire",
+      "humor"
+    ],
+    "cover": "/covers/473.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12947486-M.jpg",
+    "cover_id": 12947486,
+    "openlibrary_url": "https://openlibrary.org/works/OL676009W",
+    "edition_count": 237
+  },
+  {
+    "id": 474,
+    "key": "/works/OL8300173W",
+    "title": "American notes",
+    "author": "Charles Dickens, Diana C. Archibald",
+    "year": 1800,
+    "rating": 83,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Description and travel",
+      "Social life and customs"
+    ],
+    "cover": "/covers/474.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8236357-M.jpg",
+    "cover_id": 8236357,
+    "openlibrary_url": "https://openlibrary.org/works/OL8300173W",
+    "edition_count": 233
+  },
+  {
+    "id": 475,
+    "key": "/works/OL1124049W",
+    "title": "Castle Rackrent",
+    "author": "Maria Edgeworth, Richard Lovell Edgeworth",
+    "year": 1800,
+    "rating": 80,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Rich people",
+      "Social life and customs"
+    ],
+    "cover": "/covers/475.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8242217-M.jpg",
+    "cover_id": 8242217,
+    "openlibrary_url": "https://openlibrary.org/works/OL1124049W",
+    "edition_count": 170
+  },
+  {
+    "id": 476,
+    "key": "/works/OL45809W",
+    "title": "James and the Giant Peach",
+    "author": "Roald Dahl",
+    "year": 1961,
+    "rating": 90,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Christian Books",
+      "Roald Dahl"
+    ],
+    "cover": "/covers/476.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/8252454-M.jpg",
+    "cover_id": 8252454,
+    "openlibrary_url": "https://openlibrary.org/works/OL45809W",
+    "edition_count": 167
+  },
+  {
+    "id": 477,
+    "key": "/works/OL679943W",
+    "title": "Colloquia",
+    "author": "Desiderius Erasmus",
+    "year": 1519,
+    "rating": 95,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Dialogues, Latin (Medieval and modern)",
+      "Early works to 1800"
+    ],
+    "cover": "/covers/477.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5609568-M.jpg",
+    "cover_id": 5609568,
+    "openlibrary_url": "https://openlibrary.org/works/OL679943W",
+    "edition_count": 132
+  },
+  {
+    "id": 478,
+    "key": "/works/OL461990W",
+    "title": "The Admirable Crichton",
+    "author": "J. M. Barrie",
+    "year": 1900,
+    "rating": 94,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Drama",
+      "Manners and customs"
+    ],
+    "cover": "/covers/478.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/6336288-M.jpg",
+    "cover_id": 6336288,
+    "openlibrary_url": "https://openlibrary.org/works/OL461990W",
+    "edition_count": 129
+  },
+  {
+    "id": 479,
+    "key": "/works/OL626369W",
+    "title": "Nonsense novels",
+    "author": "Stephen Leacock, Stephen Leacock, . Stephen",
+    "year": 1900,
+    "rating": 94,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Parodies",
+      "Canadian Humorous stories"
+    ],
+    "cover": "/covers/479.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5895405-M.jpg",
+    "cover_id": 5895405,
+    "openlibrary_url": "https://openlibrary.org/works/OL626369W",
+    "edition_count": 112
+  },
+  {
+    "id": 480,
+    "key": "/works/OL45183W",
+    "title": "The True-Born Englishman",
+    "author": "Daniel Defoe, Daniel Defoe, Sir Samuel Garth, Matthew Gunne",
+    "year": 1700,
+    "rating": 83,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Politics and government",
+      "English National characteristics"
+    ],
+    "cover": "/covers/480.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/9158278-M.jpg",
+    "cover_id": 9158278,
+    "openlibrary_url": "https://openlibrary.org/works/OL45183W",
+    "edition_count": 94
+  },
+  {
+    "id": 481,
+    "key": "/works/OL8088829W",
+    "title": "1066 and All That",
+    "author": "Walter Carruthers Sellar, Robert Julian Yeatman",
+    "year": 1930,
+    "rating": 88,
+    "genre": "Humor",
+    "genres": [
+      "History",
+      "Humor",
+      "History, Comic, satirical"
+    ],
+    "cover": "/covers/481.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14861758-M.jpg",
+    "cover_id": 14861758,
+    "openlibrary_url": "https://openlibrary.org/works/OL8088829W",
+    "edition_count": 88
+  },
+  {
+    "id": 482,
+    "key": "/works/OL626471W",
+    "title": "Arcadian adventures with the idle rich",
+    "author": "Stephen Leacock",
+    "year": 1914,
+    "rating": 95,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Capitalists and financiers",
+      "Capitalists and financiers in fiction"
+    ],
+    "cover": "/covers/482.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5830537-M.jpg",
+    "cover_id": 5830537,
+    "openlibrary_url": "https://openlibrary.org/works/OL626471W",
+    "edition_count": 84
+  },
+  {
+    "id": 483,
+    "key": "/works/OL9323423W",
+    "title": "Thurber Carnival",
+    "author": "James Thurber",
+    "year": 1940,
+    "rating": 78,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "568 oak street",
+      "agatha"
+    ],
+    "cover": "/covers/483.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/39665-M.jpg",
+    "cover_id": 39665,
+    "openlibrary_url": "https://openlibrary.org/works/OL9323423W",
+    "edition_count": 77
+  },
+  {
+    "id": 484,
+    "key": "/works/OL1793197W",
+    "title": "Novel Notes",
+    "author": "Jerome Klapka J\u00e9r\u00f4me",
+    "year": 1893,
+    "rating": 87,
+    "genre": "Humor",
+    "genres": [
+      "Authorship",
+      "Humor",
+      "Fiction"
+    ],
+    "cover": "/covers/484.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5156908-M.jpg",
+    "cover_id": 5156908,
+    "openlibrary_url": "https://openlibrary.org/works/OL1793197W",
+    "edition_count": 75
+  },
+  {
+    "id": 485,
+    "key": "/works/OL575639W",
+    "title": "V\u00e1lka s mloky",
+    "author": "Karel C\u030capek",
+    "year": 1936,
+    "rating": 96,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Czech Science fiction",
+      "Continental european fiction (fictional works by one author)"
+    ],
+    "cover": "/covers/485.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/4113422-M.jpg",
+    "cover_id": 4113422,
+    "openlibrary_url": "https://openlibrary.org/works/OL575639W",
+    "edition_count": 75
+  },
+  {
+    "id": 486,
+    "key": "/works/OL267622W",
+    "title": "Ast\u00e9rix le Gaulois",
+    "author": "Ren\u00e9 Goscinny, Albert Uderzo",
+    "year": 1961,
+    "rating": 83,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "series:Ast\u00e9rix",
+      "Comic books, strips"
+    ],
+    "cover": "/covers/486.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/962725-M.jpg",
+    "cover_id": 962725,
+    "openlibrary_url": "https://openlibrary.org/works/OL267622W",
+    "edition_count": 74
+  },
+  {
+    "id": 487,
+    "key": "/works/OL453936W",
+    "title": "Good Omens",
+    "author": "Terry Pratchett, Neil Gaiman",
+    "year": 1990,
+    "rating": 97,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "End of the world",
+      "Humorous"
+    ],
+    "cover": "/covers/487.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/10482258-M.jpg",
+    "cover_id": 10482258,
+    "openlibrary_url": "https://openlibrary.org/works/OL453936W",
+    "edition_count": 73
+  },
+  {
+    "id": 488,
+    "key": "/works/OL1066453W",
+    "title": "An Unsocial Socialist",
+    "author": "George Bernard Shaw",
+    "year": 1887,
+    "rating": 86,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Translations into German",
+      "Translations into Portuguese"
+    ],
+    "cover": "/covers/488.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/6046060-M.jpg",
+    "cover_id": 6046060,
+    "openlibrary_url": "https://openlibrary.org/works/OL1066453W",
+    "edition_count": 72
+  },
+  {
+    "id": 489,
+    "key": "/works/OL151947W",
+    "title": "Ramona Quimby, Age 8",
+    "author": "Beverly Cleary",
+    "year": 1981,
+    "rating": 80,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Humorous Stories",
+      "family"
+    ],
+    "cover": "/covers/489.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/15064600-M.jpg",
+    "cover_id": 15064600,
+    "openlibrary_url": "https://openlibrary.org/works/OL151947W",
+    "edition_count": 70
+  },
+  {
+    "id": 490,
+    "key": "/works/OL261868W",
+    "title": "Tropic of Capricorn",
+    "author": "Henry Miller",
+    "year": 1939,
+    "rating": 89,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Social life and customs",
+      "Manners and customs"
+    ],
+    "cover": "/covers/490.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/13119364-M.jpg",
+    "cover_id": 13119364,
+    "openlibrary_url": "https://openlibrary.org/works/OL261868W",
+    "edition_count": 69
+  },
+  {
+    "id": 491,
+    "key": "/works/OL244479W",
+    "title": "Stage-land",
+    "author": "Jerome Klapka J\u00e9r\u00f4me",
+    "year": 1889,
+    "rating": 78,
+    "genre": "Humor",
+    "genres": [
+      "Actors",
+      "Theater",
+      "Anecdotes"
+    ],
+    "cover": "/covers/491.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/5707537-M.jpg",
+    "cover_id": 5707537,
+    "openlibrary_url": "https://openlibrary.org/works/OL244479W",
+    "edition_count": 64
+  },
+  {
+    "id": 492,
+    "key": "/works/OL278022W",
+    "title": "Freakonomics",
+    "author": "Steven D. Levitt, Stephen J. Dubner",
+    "year": 2005,
+    "rating": 87,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Economics",
+      "Economics -- Psychological aspects"
+    ],
+    "cover": "/covers/492.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/11172914-M.jpg",
+    "cover_id": 11172914,
+    "openlibrary_url": "https://openlibrary.org/works/OL278022W",
+    "edition_count": 63
+  },
+  {
+    "id": 493,
+    "key": "/works/OL453658W",
+    "title": "Mort",
+    "author": "Terry Pratchett",
+    "year": 1987,
+    "rating": 96,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Death",
+      "Discworld (Imaginary place)"
+    ],
+    "cover": "/covers/493.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14648805-M.jpg",
+    "cover_id": 14648805,
+    "openlibrary_url": "https://openlibrary.org/works/OL453658W",
+    "edition_count": 61
+  },
+  {
+    "id": 494,
+    "key": "/works/OL53970W",
+    "title": "1601",
+    "author": "Mark Twain",
+    "year": 1880,
+    "rating": 78,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Imaginary conversations",
+      "Fiction"
+    ],
+    "cover": "/covers/494.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/10637325-M.jpg",
+    "cover_id": 10637325,
+    "openlibrary_url": "https://openlibrary.org/works/OL53970W",
+    "edition_count": 59
+  },
+  {
+    "id": 495,
+    "key": "/works/OL16224122W",
+    "title": "Cabin Fever",
+    "author": "Jeff Kinney",
+    "year": 2007,
+    "rating": 91,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "New York Times bestseller",
+      "nyt:series_books=2009-01-10"
+    ],
+    "cover": "/covers/495.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/7247522-M.jpg",
+    "cover_id": 7247522,
+    "openlibrary_url": "https://openlibrary.org/works/OL16224122W",
+    "edition_count": 59
+  },
+  {
+    "id": 496,
+    "key": "/works/OL74128W",
+    "title": "A short history of nearly everything",
+    "author": "Bill Bryson",
+    "year": 2003,
+    "rating": 86,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Science",
+      "Popular works"
+    ],
+    "cover": "/covers/496.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12725620-M.jpg",
+    "cover_id": 12725620,
+    "openlibrary_url": "https://openlibrary.org/works/OL74128W",
+    "edition_count": 57
+  },
+  {
+    "id": 497,
+    "key": "/works/OL1793159W",
+    "title": "Sketches of Lavender, Blue, and Green",
+    "author": "Jerome Klapka J\u00e9r\u00f4me",
+    "year": 1897,
+    "rating": 78,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Fiction, short stories (single author)",
+      "English literature"
+    ],
+    "cover": "/covers/497.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/2808675-M.jpg",
+    "cover_id": 2808675,
+    "openlibrary_url": "https://openlibrary.org/works/OL1793159W",
+    "edition_count": 56
+  },
+  {
+    "id": 498,
+    "key": "/works/OL8119758W",
+    "title": "Captain Underpants and the Invasion of the Incredibly Naughty Cafeteria Ladies from Outer Space",
+    "author": "Dav Pilkey",
+    "year": 1999,
+    "rating": 93,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Fiction",
+      "Juvenile fiction"
+    ],
+    "cover": "/covers/498.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/12625274-M.jpg",
+    "cover_id": 12625274,
+    "openlibrary_url": "https://openlibrary.org/works/OL8119758W",
+    "edition_count": 53
+  },
+  {
+    "id": 499,
+    "key": "/works/OL453989W",
+    "title": "Wintersmith",
+    "author": "Terry Pratchett, Paul Kidby",
+    "year": 2006,
+    "rating": 80,
+    "genre": "Humor",
+    "genres": [
+      "Humor",
+      "Young adult fiction",
+      "humor"
+    ],
+    "cover": "/covers/499.jpg",
+    "cover_url": "https://covers.openlibrary.org/b/id/14645769-M.jpg",
+    "cover_id": 14645769,
+    "openlibrary_url": "https://openlibrary.org/works/OL453989W",
+    "edition_count": 52
   }
 ]

@@ -13,6 +13,7 @@ interface BookStore {
   searchQuery: string;
   isHelpOpen: boolean;
   isListOpen: boolean;
+  navVisible: boolean;
 
   setBooks: (books: Book[]) => void;
   setFocusedBook: (book: Book | null) => void;
@@ -21,24 +22,26 @@ interface BookStore {
   setSearchQuery: (query: string) => void;
   toggleHelp: () => void;
   toggleList: () => void;
+  toggleNav: () => void;
   selectRandomBook: () => Book | null;
 }
 
 export const useBookStore = create<BookStore>((set, get) => ({
   books: defaultBooks,
   filteredBooks: defaultBooks,
-  focusedBook: defaultBooks[0] || null,
+  focusedBook: null, // Start with NO first choice book
   selectedBook: null,
   selectedGenre: 'All',
   searchQuery: '',
   isHelpOpen: false,
   isListOpen: false,
+  navVisible: false, // Navbar hidden by default for pure roaming
 
   setBooks: (books) => {
     set({
       books,
       filteredBooks: books,
-      focusedBook: books[0] || null,
+      focusedBook: null,
     });
   },
 
@@ -60,7 +63,7 @@ export const useBookStore = create<BookStore>((set, get) => ({
     set({
       selectedGenre: genre,
       filteredBooks: filtered,
-      focusedBook: filtered.length > 0 ? filtered[0] : null,
+      focusedBook: null,
     });
   },
 
@@ -79,12 +82,13 @@ export const useBookStore = create<BookStore>((set, get) => ({
     set({
       searchQuery: query,
       filteredBooks: filtered,
-      focusedBook: filtered.length > 0 ? filtered[0] : null,
+      focusedBook: null,
     });
   },
 
   toggleHelp: () => set((state) => ({ isHelpOpen: !state.isHelpOpen })),
   toggleList: () => set((state) => ({ isListOpen: !state.isListOpen })),
+  toggleNav: () => set((state) => ({ navVisible: !state.navVisible })),
 
   selectRandomBook: () => {
     const { filteredBooks } = get();

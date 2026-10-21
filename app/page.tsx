@@ -13,6 +13,8 @@ import AboutModal from '@/components/about-modal';
 
 export default function Home() {
   const {
+    books,
+    setBooks,
     focusedBook,
     setFocusedBook,
     selectedBook,
@@ -22,6 +24,24 @@ export default function Home() {
   } = useBookStore();
 
   const [activeModal, setActiveModal] = useState<'about' | 'list' | 'details' | null>(null);
+
+  // Sync books from /data/books.json when updated
+  useEffect(() => {
+    async function syncBooks() {
+      try {
+        const res = await fetch('/data/books.json');
+        if (res.ok) {
+          const data: Book[] = await res.json();
+          if (data && data.length > books.length) {
+            setBooks(data);
+          }
+        }
+      } catch (e) {
+        // use default preloaded books
+      }
+    }
+    syncBooks();
+  }, [books.length, setBooks]);
 
   // Global Keyboard Navigation
   useEffect(() => {
