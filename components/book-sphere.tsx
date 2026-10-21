@@ -37,6 +37,8 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
     targetVy: 0,
     targetX: null as number | null,
     targetY: null as number | null,
+    panX: 0,
+    panY: 0,
     zoom: 0.45,
     targetZoom: 0.45,
     isDragging: false,
@@ -171,40 +173,54 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
       const width = canvas.width || 800;
       const height = canvas.height || 600;
 
-      const screenCenterX = width / 2;
-      const screenCenterY = height * 0.52;
-
-      // Smooth mouse coordinates spring
+      // Dynamic Viewport Perspective: viewport shifts toward cursor direction so view is never rigidly centered
       if (cam.hasActiveMouse) {
         cam.mouseX += (cam.targetMouseX - cam.mouseX) * 0.16;
         cam.mouseY += (cam.targetMouseY - cam.mouseY) * 0.16;
         cam.lensX += (cam.mouseX - cam.lensX) * 0.18;
         cam.lensY += (cam.mouseY - cam.lensY) * 0.18;
 
-        // Fluid directional flight when cursor moves toward edges
+        // Viewport moves smoothly towards where you are looking (up to 40% screen shift)
+        const targetPanX = (cam.mouseX - width / 2) * 0.42;
+        const targetPanY = (cam.mouseY - height / 2) * 0.42;
+        cam.panX += (targetPanX - cam.panX) * 0.1;
+        cam.panY += (targetPanY - cam.panY) * 0.1;
+
+        // Continuous streaming flight ONLY when reaching actual window boundary (outer 8%)
         if (!cam.isDragging) {
-          const normX = (cam.mouseX - screenCenterX) / (width * 0.42);
-          const normY = (cam.mouseY - screenCenterY) / (height * 0.42);
-          const distFromCenter = Math.hypot(normX, normY);
+          const edgeMarginX = width * 0.08;
+          const edgeMarginY = height * 0.08;
+          let edgeVx = 0;
+          let edgeVy = 0;
 
-          // Calm center deadzone (inner 22% of screen) so you can inspect steadily
-          if (distFromCenter > 0.22) {
-            const edgeRamp = Math.min(1.0, (distFromCenter - 0.22) / 0.78);
-            // Buttery smooth cubic flight curve
-            const maxFlightSpeed = 14.0 * Math.max(0.6, cam.zoom);
-            const currentSpeed = Math.pow(edgeRamp, 1.8) * maxFlightSpeed;
-
-            cam.targetVx = -(normX / distFromCenter) * currentSpeed;
-            cam.targetVy = -(normY / distFromCenter) * currentSpeed;
-          } else {
-            cam.targetVx = 0;
-            cam.targetVy = 0;
+          if (cam.mouseX > width - edgeMarginX) {
+            const intensity = (cam.mouseX - (width - edgeMarginX)) / edgeMarginX;
+            edgeVx = -intensity * 14.0 * Math.max(0.6, cam.zoom);
+          } else if (cam.mouseX < edgeMarginX) {
+            const intensity = (edgeMarginX - cam.mouseX) / edgeMarginX;
+            edgeVx = intensity * 14.0 * Math.max(0.6, cam.zoom);
           }
+
+          if (cam.mouseY > height - edgeMarginY) {
+            const intensity = (cam.mouseY - (height - edgeMarginY)) / edgeMarginY;
+            edgeVy = -intensity * 14.0 * Math.max(0.6, cam.zoom);
+          } else if (cam.mouseY < edgeMarginY) {
+            const intensity = (edgeMarginY - cam.mouseY) / edgeMarginY;
+            edgeVy = intensity * 14.0 * Math.max(0.6, cam.zoom);
+          }
+
+          cam.targetVx = edgeVx;
+          cam.targetVy = edgeVy;
         }
       } else {
         cam.targetVx = 0;
         cam.targetVy = 0;
+        cam.panX += (0 - cam.panX) * 0.05;
+        cam.panY += (0 - cam.panY) * 0.05;
       }
+
+      const screenCenterX = width / 2 + cam.panX;
+      const screenCenterY = height * 0.52 + cam.panY;
 
       // If manual dragging or edge-flying, cancel auto-swoop
       if (cam.isDragging || Math.abs(cam.targetVx) > 0.05 || Math.abs(cam.targetVy) > 0.05) {
