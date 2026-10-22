@@ -6,9 +6,11 @@ import { Book } from '@/lib/types';
 
 interface BookSphereProps {
   onSelectBook?: (book: Book) => void;
+  isDockOpen?: boolean;
+  onCloseDock?: () => void;
 }
 
-export default function BookSphere({ onSelectBook }: BookSphereProps) {
+export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDock }: BookSphereProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -31,6 +33,9 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
 
   // Elevation pull progress for the selected book (0 = in ocean, 1 = pulled up towards viewer)
   const pullProgressRef = useRef(0);
+
+  // Simulation time ref: only advances when dock is closed so ocean freezes while inspecting book
+  const simTimeRef = useRef(0);
 
   // Infinite Ocean Camera & Physics state
   const cameraRef = useRef({
@@ -93,7 +98,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
     });
   }, [filteredBooks]);
 
-  // Center camera on book when selected (e.g. initial random pick or Surprise Me)
+  // Center camera on book when selected (e.g. initial random pick, Surprise Me, or click)
   const lastCenteringIdRef = useRef<number | null>(null);
   useEffect(() => {
     if (!selectedBook) return;
@@ -189,6 +194,12 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
       const dt = Math.min(32, Math.max(8, time - lastTime));
       lastTime = time;
 
+      // When the dock is open, pause the ocean simulation time so the scene freezes peacefully
+      if (!isDockOpen) {
+        simTimeRef.current += dt;
+      }
+      const animTime = simTimeRef.current;
+
       const cam = cameraRef.current;
       const width = canvas.width || 800;
       const height = canvas.height || 600;
@@ -216,13 +227,12 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
         cam.lensY += (cam.mouseY - cam.lensY) * 0.22;
       }
 
-      // BUG FIX: When resting the mouse somewhere, camera MUST NOT move!
-      // Only move when actively dragging or during auto-swoop
-      if (cam.isPointerResting || cam.isDragging || !cam.hasActiveMouse) {
+      // If dock is open, stop camera motion completely
+      if (isDockOpen || cam.isPointerResting || cam.isDragging || !cam.hasActiveMouse) {
         cam.targetVx = 0;
         cam.targetVy = 0;
-        cam.vx *= 0.85;
-        cam.vy *= 0.85;
+        cam.vx *= 0.82;
+        cam.vy *= 0.82;
         if (Math.hypot(cam.vx, cam.vy) < 0.015) {
           cam.vx = 0;
           cam.vy = 0;
@@ -323,7 +333,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
       // Radius within which neighboring books are stacked to support the pulled book
       const stackRadius = stepX * 2.85;
 
-      let closestBook: Book | null = null;
+      let closestBook: Book | null = isDockOpen ? selectedBookRef.current : null;
       let closestCoords = { screenX: 0, screenY: 0, w: 0, h: 0 };
       let directHitBook: Book | null = null;
       let directHitCoords = { screenX: 0, screenY: 0, w: 0, h: 0 };
@@ -346,7 +356,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
 
       const drawList: OceanBookItem[] = [];
 
-      // Truly endless ocean grid covering wide margins in all 4 directions
+      // Endless ocean grid buffer
       const bufferPadding = Math.max(width, height) * 0.6;
       const minCol = Math.floor((-cam.x - screenCenterX - bufferPadding) / stepX) - 3;
       const maxCol = Math.ceil((width - cam.x - screenCenterX + bufferPadding) / stepX) + 3;
@@ -355,7 +365,6 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
 
       for (let r = minRow; r <= maxRow; r++) {
         const rowWrapped = ((r % rows) + rows) % rows;
-        // Hexagonal staggered stone offset
         const offsetX = (r % 2) * (stepX * 0.5);
 
         for (let c = minCol; c <= maxCol; c++) {
@@ -368,10 +377,10 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
           const baseX = screenCenterX + c * stepX + offsetX + cam.x;
           const baseY = screenCenterY + r * stepY + cam.y;
 
-          // 1. Organic Ocean Swell Wave (gentle harmonic motion across the infinite ocean surface)
+          // 1. Organic Ocean Swell Wave (uses animTime which freezes when dock is open)
           const swell1 =
-            Math.sin(baseX * 0.0032 + time * 0.0012) * Math.cos(baseY * 0.0032 + time * 0.001);
-          const swell2 = Math.sin((baseX + baseY) * 0.0048 + time * 0.0016) * 0.45;
+            Math.sin(baseX * 0.0032 + animTime * 0.0012) * Math.cos(baseY * 0.0032 + animTime * 0.001);
+          const swell2 = Math.sin((baseX + baseY) * 0.0048 + animTime * 0.0016) * 0.45;
           const oceanSwell = (swell1 + swell2) * 0.7; // -1.0 to +1.0
 
           // 2. Toroidal Distance to Selected Book
@@ -394,18 +403,17 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
             isSelectedHero = true;
             elevation = 1.0 * pullProgress;
           } else if (pullProgress > 0.01 && distToSelected < stackRadius) {
-            const norm = distToSelected / stackRadius; // 0 to 1
-            // Tiered stepped elevation (neighbors forming stepped mountain / pedestal)
+            const norm = distToSelected / stackRadius;
             const stepped = Math.pow(Math.max(0, 1.0 - norm), 1.55);
             elevation = stepped * 0.65 * pullProgress;
           }
 
-          // Base position with ocean wave swell (lifted books detach smoothly from wave)
+          // Base position with ocean wave swell
           const waveWeight = Math.max(0, 1.0 - elevation * 1.5);
           let screenX = baseX + oceanSwell * 3.6 * waveWeight;
           let screenY = baseY + oceanSwell * 2.8 * waveWeight;
 
-          // 4. Stacking Displacement: Neighbors pull inward toward hero book for layered stacking illusion
+          // 4. Stacking Displacement: Neighbors pull inward toward hero book
           if (!isSelectedHero && elevation > 0.02 && distToSelected > 1) {
             const pullTowardsHero =
               (1.0 - distToSelected / stackRadius) * (stepX * 0.22) * pullProgress;
@@ -413,12 +421,12 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
             screenY -= (dSelY / distToSelected) * pullTowardsHero;
           }
 
-          // 5. Cursor Hover Hydrodynamic Ripple
+          // 5. Cursor Hover Hydrodynamic Ripple (active only when dock is closed)
           let totalBulge = 0;
           let scale = 1.0;
           let opacity = 0.92;
 
-          if (cam.hasActiveMouse) {
+          if (cam.hasActiveMouse && !isDockOpen) {
             const dx = screenX - cam.lensX;
             const dy = screenY - cam.lensY;
             const distToMouse = Math.hypot(dx, dy);
@@ -427,10 +435,9 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
               const normDist = distToMouse / lensRadius;
               const bulge = Math.pow(Math.max(0, 1.0 - normDist), 1.8);
               const ripple =
-                Math.sin(normDist * 16.0 - time * 0.0032) * 0.05 * (1.0 - normDist);
+                Math.sin(normDist * 16.0 - animTime * 0.0032) * 0.05 * (1.0 - normDist);
               totalBulge = Math.max(0, bulge + ripple);
 
-              // Gentle cursor displacement for un-elevated ocean tiles
               if (elevation < 0.2 && distToMouse > 0.01) {
                 const push = totalBulge * (cardW * 0.35);
                 screenX += (dx / distToMouse) * push;
@@ -439,7 +446,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
             }
           }
 
-          // 6. Scale: Hero is pulled towards viewer (2.1x), neighbors are stepped up, ocean tiles ripple
+          // 6. Scale
           if (isSelectedHero) {
             scale = 1.0 + 1.15 * elevation; // Ascends high towards viewer
             opacity = 1.0;
@@ -464,8 +471,8 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
             continue;
           }
 
-          // Active pebble under cursor
-          if (cam.hasActiveMouse && !cam.isDragging) {
+          // If dock is closed, calculate active pebble under cursor
+          if (!isDockOpen && cam.hasActiveMouse && !cam.isDragging) {
             const isInside =
               Math.abs(screenX - cam.lensX) <= (w / 2) * 1.05 &&
               Math.abs(screenY - cam.lensY) <= (h / 2) * 1.05;
@@ -499,17 +506,17 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
         }
       }
 
-      // CRUCIAL FOR 3D STACKING ILLUSION:
       // Sort strictly by elevation (Painter's Algorithm)
-      // Base ocean books drawn first -> Outer neighbors drawn second -> Inner neighbors drawn third -> Hero drawn LAST on top!
       drawList.sort((a, b) => a.elevation - b.elevation);
 
-      if (directHitBook) {
-        closestBook = directHitBook;
-        closestCoords = directHitCoords;
-      } else if (lensBook) {
-        closestBook = lensBook;
-        closestCoords = lensCoords;
+      if (!isDockOpen) {
+        if (directHitBook) {
+          closestBook = directHitBook;
+          closestCoords = directHitCoords;
+        } else if (lensBook) {
+          closestBook = lensBook;
+          closestCoords = lensCoords;
+        }
       }
 
       // Render Endless Ocean Books with 3D Stacked Elevation Illusion
@@ -520,7 +527,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
 
         const isFocused =
           focusedBookRef.current?.id === book.id || selectedBookRef.current?.id === book.id;
-        const isHovered = closestBook?.id === book.id;
+        const isHovered = !isDockOpen && closestBook?.id === book.id;
 
         ctx.save();
         ctx.globalAlpha = opacity;
@@ -530,15 +537,13 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
         const halfH = h / 2;
         const cornerRadius = Math.min(halfW, halfH) * 0.32;
 
-        // 3D Drop Shadows serving the "pulled from above towards viewer" illusion:
+        // 3D Drop Shadows
         if (isSelectedHero) {
-          // Apex hero book casts a dramatic, deep 3D drop-shadow onto the stacked ocean below
           ctx.shadowColor = 'rgba(0, 0, 0, 0.88)';
           ctx.shadowBlur = 45 * elevation;
           ctx.shadowOffsetX = 0;
           ctx.shadowOffsetY = 24 * elevation;
         } else if (elevation > 0.05) {
-          // Neighboring books cast stepped shadows serving the stacked pedestal illusion
           ctx.shadowColor = 'rgba(0, 0, 0, 0.65)';
           ctx.shadowBlur = 18 * elevation;
           ctx.shadowOffsetX = 0;
@@ -578,7 +583,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
           }
         }
 
-        // 2. Oceanic Inner Vignette: perimeters melt smoothly into the dark aquatic matrix
+        // 2. Oceanic Inner Vignette
         const innerVignette = ctx.createRadialGradient(
           0,
           0,
@@ -593,22 +598,19 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
         ctx.fillStyle = innerVignette;
         ctx.fillRect(-halfW, -halfH, w, h);
 
-        // 3. Tactile 3D Ocean Sheen (water moonlight reflection)
+        // 3. Tactile 3D Ocean Sheen
         const waterSheen = ctx.createLinearGradient(-halfW, -halfH, halfW, halfH);
         if (isSelectedHero) {
-          // Pulled towards viewer: bright specular shine
           waterSheen.addColorStop(0, 'rgba(255, 255, 255, 0.28)');
           waterSheen.addColorStop(0.35, 'rgba(125, 211, 252, 0.15)');
           waterSheen.addColorStop(0.7, 'rgba(0, 0, 0, 0)');
           waterSheen.addColorStop(1, 'rgba(0, 0, 0, 0.4)');
         } else if (elevation > 0.05) {
-          // Stacked neighbor: light bevel sloping toward the hero
           waterSheen.addColorStop(0, 'rgba(186, 230, 253, 0.2)');
           waterSheen.addColorStop(0.4, 'rgba(56, 189, 248, 0.06)');
           waterSheen.addColorStop(0.75, 'rgba(0, 0, 0, 0.12)');
           waterSheen.addColorStop(1, 'rgba(0, 0, 0, 0.45)');
         } else {
-          // Deep ocean base tile
           waterSheen.addColorStop(0, 'rgba(125, 211, 252, 0.12)');
           waterSheen.addColorStop(0.4, 'rgba(255, 255, 255, 0)');
           waterSheen.addColorStop(0.75, 'rgba(0, 0, 0, 0.15)');
@@ -617,7 +619,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
         ctx.fillStyle = waterSheen;
         ctx.fillRect(-halfW, -halfH, w, h);
 
-        // 4. Ocean Depth Fog: tiles far from cursor/selection fade into ocean blue depth
+        // 4. Ocean Depth Fog
         if (elevation < 0.1 && totalBulge < 0.2 && !isFocused && !isHovered) {
           const depthFog = (0.2 - totalBulge) * 2.2;
           ctx.fillStyle = `rgba(2, 9, 20, ${depthFog * 0.38})`;
@@ -628,7 +630,6 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
 
         // 5. Bioluminescent Aura & High-Contrast Halo
         if (isSelectedHero) {
-          // Radiant oceanic levitation ring for the pulled book
           ctx.save();
           ctx.translate(screenX, screenY);
           ctx.strokeStyle = 'rgba(56, 189, 248, 0.98)';
@@ -639,7 +640,6 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
           ctx.roundRect(-halfW - 1.5, -halfH - 1.5, w + 3, h + 3, cornerRadius + 1.5);
           ctx.stroke();
 
-          // Outer secondary shimmer ring
           ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
           ctx.lineWidth = 1.0;
           ctx.shadowBlur = 10;
@@ -649,7 +649,6 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
 
           ctx.restore();
         } else if (elevation > 0.05) {
-          // Subtle stepped crest ring for stacked neighbors
           ctx.save();
           ctx.translate(screenX, screenY);
           ctx.strokeStyle = `rgba(56, 189, 248, ${0.35 + elevation * 0.4})`;
@@ -660,8 +659,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
           ctx.roundRect(-halfW - 0.5, -halfH - 0.5, w + 1, h + 1, cornerRadius + 0.5);
           ctx.stroke();
           ctx.restore();
-        } else if (isFocused || isHovered) {
-          // Cursor hover halo
+        } else if (!isDockOpen && (isFocused || isHovered)) {
           ctx.save();
           ctx.translate(screenX, screenY);
           ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
@@ -675,64 +673,67 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
         }
       }
 
-      // Update Floating Near-Book Preview Tag
+      // Update Floating Near-Book Preview Tag (suppressed when dock is open)
       const floatingEl = floatingPreviewElRef.current;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       if (floatingEl) {
-        let targetX = -9999;
-        let targetY = -9999;
-        let targetOpacity = 0;
-
-        if (cam.hasActiveMouse && closestBook && !cam.isDragging && !selectedBookRef.current) {
-          const cardCenterX = closestCoords.screenX / dpr;
-          const cardCenterY = closestCoords.screenY / dpr;
-          const cardHalfW = closestCoords.w / (2 * dpr);
-          const cardHalfH = closestCoords.h / (2 * dpr);
-
-          const containerW = width / dpr;
-          const containerH = height / dpr;
-
-          const previewW = 270;
-          const previewH = 95;
-
-          // Default: float to right of book
-          let posX = cardCenterX + cardHalfW + 16;
-          // Flip to left if overflowing
-          if (posX + previewW > containerW - 14) {
-            posX = cardCenterX - cardHalfW - previewW - 16;
-          }
-          posX = Math.max(14, Math.min(containerW - previewW - 14, posX));
-
-          let posY = cardCenterY - previewH * 0.45;
-          posY = Math.max(14, Math.min(containerH - previewH - 14, posY));
-
-          targetX = posX;
-          targetY = posY;
-          targetOpacity = 1;
-        }
-
-        const pos = floatingPosRef.current;
-        if (pos.x < -5000 && targetX > 0) {
-          pos.x = targetX;
-          pos.y = targetY;
-        } else if (targetX > 0) {
-          pos.x += (targetX - pos.x) * 0.25;
-          pos.y += (targetY - pos.y) * 0.25;
-        }
-        pos.opacity += (targetOpacity - pos.opacity) * 0.22;
-
-        if (pos.opacity > 0.02) {
-          floatingEl.style.transform = `translate3d(${pos.x.toFixed(1)}px, ${pos.y.toFixed(1)}px, 0)`;
-          floatingEl.style.opacity = pos.opacity.toFixed(3);
-          floatingEl.style.display = 'block';
-        } else {
+        if (isDockOpen || !closestBook || selectedBookRef.current) {
           floatingEl.style.opacity = '0';
           floatingEl.style.display = 'none';
+        } else {
+          let targetX = -9999;
+          let targetY = -9999;
+          let targetOpacity = 0;
+
+          if (cam.hasActiveMouse && closestBook && !cam.isDragging) {
+            const cardCenterX = closestCoords.screenX / dpr;
+            const cardCenterY = closestCoords.screenY / dpr;
+            const cardHalfW = closestCoords.w / (2 * dpr);
+            const cardHalfH = closestCoords.h / (2 * dpr);
+
+            const containerW = width / dpr;
+            const containerH = height / dpr;
+
+            const previewW = 270;
+            const previewH = 95;
+
+            let posX = cardCenterX + cardHalfW + 16;
+            if (posX + previewW > containerW - 14) {
+              posX = cardCenterX - cardHalfW - previewW - 16;
+            }
+            posX = Math.max(14, Math.min(containerW - previewW - 14, posX));
+
+            let posY = cardCenterY - previewH * 0.45;
+            posY = Math.max(14, Math.min(containerH - previewH - 14, posY));
+
+            targetX = posX;
+            targetY = posY;
+            targetOpacity = 1;
+          }
+
+          const pos = floatingPosRef.current;
+          if (pos.x < -5000 && targetX > 0) {
+            pos.x = targetX;
+            pos.y = targetY;
+          } else if (targetX > 0) {
+            pos.x += (targetX - pos.x) * 0.25;
+            pos.y += (targetY - pos.y) * 0.25;
+          }
+          pos.opacity += (targetOpacity - pos.opacity) * 0.22;
+
+          if (pos.opacity > 0.02) {
+            floatingEl.style.transform = `translate3d(${pos.x.toFixed(1)}px, ${pos.y.toFixed(1)}px, 0)`;
+            floatingEl.style.opacity = pos.opacity.toFixed(3);
+            floatingEl.style.display = 'block';
+          } else {
+            floatingEl.style.opacity = '0';
+            floatingEl.style.display = 'none';
+          }
         }
       }
 
-      // Throttled store update for focused book and preview
-      if (time - lastHoverCheckTime > 50) {
+      // Throttled store update for focused book and preview (only when dock is closed)
+      if (!isDockOpen && time - lastHoverCheckTime > 50) {
         lastHoverCheckTime = time;
         if (cam.hasActiveMouse && !cam.isDragging) {
           if (closestBook) {
@@ -757,7 +758,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
     return () => {
       cancelAnimationFrame(animationId);
     };
-  }, []);
+  }, [isDockOpen]);
 
   // Global window pointermove with motion-resting detection
   useEffect(() => {
@@ -777,7 +778,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
       cam.isPointerResting = false;
 
       // 1:1 Direct Pan while Dragging
-      if (cam.isDragging) {
+      if (cam.isDragging && !isDockOpen) {
         const dx = (e.clientX - cam.lastDragX) * dpr;
         const dy = (e.clientY - cam.lastDragY) * dpr;
         const now = performance.now();
@@ -805,7 +806,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
       window.removeEventListener('pointermove', onWindowPointerMove);
       window.removeEventListener('pointerup', onWindowPointerUp);
     };
-  }, []);
+  }, [isDockOpen]);
 
   // Wheel Zoom listener
   useEffect(() => {
@@ -813,6 +814,7 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
     if (!container) return;
 
     const onWheel = (e: WheelEvent) => {
+      if (isDockOpen) return;
       e.preventDefault();
       const cam = cameraRef.current;
       const zoomDelta = e.deltaY * -0.0012;
@@ -821,10 +823,11 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
 
     container.addEventListener('wheel', onWheel, { passive: false });
     return () => container.removeEventListener('wheel', onWheel);
-  }, []);
+  }, [isDockOpen]);
 
   // Pointer Down on container starts drag
   const handlePointerDown = (e: React.PointerEvent) => {
+    if (isDockOpen) return;
     const cam = cameraRef.current;
     cam.isDragging = true;
     cam.dragStartX = e.clientX;
@@ -839,10 +842,16 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
   };
 
   const handleClick = (e: React.MouseEvent) => {
-    // Only register click if not a drag gesture
     const cam = cameraRef.current;
     const dragDist = Math.hypot(e.clientX - cam.dragStartX, e.clientY - cam.dragStartY);
     if (dragDist < 6) {
+      // If dock is already open, clicking on the canvas outside the dock closes it and resumes animation
+      if (isDockOpen) {
+        onCloseDock?.();
+        return;
+      }
+
+      // If dock is closed, clicking a book selects it and opens the dock
       const current = focusedBookRef.current || previewBook;
       if (current) {
         useBookStore.getState().setSelectedBook(current);
@@ -854,19 +863,21 @@ export default function BookSphere({ onSelectBook }: BookSphereProps) {
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 w-full h-full overflow-hidden select-none cursor-grab active:cursor-grabbing bg-[#020712]"
+      className={`absolute inset-0 w-full h-full overflow-hidden select-none bg-[#020712] ${
+        isDockOpen ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'
+      }`}
       onPointerDown={handlePointerDown}
       onClick={handleClick}
     >
       <canvas ref={canvasRef} className="w-full h-full block" />
 
-      {/* Floating Ethereal Preview Tag on Hover */}
+      {/* Floating Ethereal Preview Tag on Hover (Only when dock is closed) */}
       <div
         ref={floatingPreviewElRef}
         style={{ display: 'none', opacity: 0 }}
         className="pointer-events-none absolute top-0 left-0 z-20 w-72 p-3 rounded-2xl bg-slate-950/85 backdrop-blur-xl border border-sky-500/20 shadow-[0_12px_32px_rgba(0,0,0,0.85)] text-zinc-100"
       >
-        {previewBook && (
+        {previewBook && !isDockOpen && (
           <div className="flex items-start justify-between gap-3 select-none">
             <div className="flex-1 min-w-0">
               <p className="text-[11px] font-medium text-sky-300/80 truncate flex items-center gap-1.5 mb-0.5">

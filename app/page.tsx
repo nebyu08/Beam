@@ -70,6 +70,11 @@ export default function Home() {
     syncBooks();
   }, [books.length, setBooks]);
 
+  const handleCloseDock = useCallback(() => {
+    setActiveModal(null);
+    setSelectedBook(null);
+  }, [setSelectedBook]);
+
   // Global Keyboard Navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -83,42 +88,59 @@ export default function Home() {
 
       if (e.code === 'Space') {
         e.preventDefault();
-        selectRandomBook();
+        const chosen = selectRandomBook();
+        if (chosen) {
+          setActiveModal('details');
+        }
       } else if (e.key === 'Escape') {
-        setActiveModal(null);
-      } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        e.preventDefault();
-        if (filteredBooks.length === 0) return;
-        const currentIndex = filteredBooks.findIndex((b) => b.id === focusedBook?.id);
-        const nextIndex = (currentIndex + 1) % filteredBooks.length;
-        setFocusedBook(filteredBooks[nextIndex]);
-      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        e.preventDefault();
-        if (filteredBooks.length === 0) return;
-        const currentIndex = filteredBooks.findIndex((b) => b.id === focusedBook?.id);
-        const prevIndex = (currentIndex - 1 + filteredBooks.length) % filteredBooks.length;
-        setFocusedBook(filteredBooks[prevIndex]);
+        handleCloseDock();
+      } else if (activeModal !== 'details') {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (filteredBooks.length === 0) return;
+          const currentIndex = filteredBooks.findIndex((b) => b.id === focusedBook?.id);
+          const nextIndex = (currentIndex + 1) % filteredBooks.length;
+          setFocusedBook(filteredBooks[nextIndex]);
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (filteredBooks.length === 0) return;
+          const currentIndex = filteredBooks.findIndex((b) => b.id === focusedBook?.id);
+          const prevIndex = (currentIndex - 1 + filteredBooks.length) % filteredBooks.length;
+          setFocusedBook(filteredBooks[prevIndex]);
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [filteredBooks, focusedBook, selectRandomBook, setFocusedBook]);
+  }, [activeModal, filteredBooks, focusedBook, handleCloseDock, selectRandomBook, setFocusedBook]);
 
-  const handleSelectBook = useCallback((book: Book) => {
-    setSelectedBook(book);
-    setActiveModal('details');
-  }, [setSelectedBook]);
+  const handleSelectBook = useCallback(
+    (book: Book) => {
+      setSelectedBook(book);
+      setActiveModal('details');
+    },
+    [setSelectedBook]
+  );
 
   const handleLoadingFinished = useCallback(() => {
-    // Cinematic random zoom in to a book on the sphere (modal opens strictly on select)
-    selectRandomBook();
+    // Select first book on load, elevate it towards viewer, and open its details dock
+    const chosen = selectRandomBook();
+    if (chosen) {
+      setActiveModal('details');
+    }
   }, [selectRandomBook]);
 
+  const isDetailsDockOpen = activeModal === 'details' && !!selectedBook;
+
   return (
-    <main className="relative w-screen h-screen overflow-hidden bg-[#060608] text-zinc-100">
-      {/* Interactive 3D Book Sphere Canvas with Near-Book Floating Details */}
-      <BookSphere onSelectBook={handleSelectBook} />
+    <main className="relative w-screen h-screen overflow-hidden bg-[#020712] text-zinc-100">
+      {/* Interactive Endless Ocean Canvas in Top View */}
+      <BookSphere
+        onSelectBook={handleSelectBook}
+        isDockOpen={isDetailsDockOpen}
+        onCloseDock={handleCloseDock}
+      />
 
       {/* Discreet Corner Toggle & Tools */}
       <BookHeader
@@ -129,14 +151,11 @@ export default function Home() {
       {/* Bottom Hint Bar */}
       <FooterBar />
 
-      {/* Top-Left Sliding Book Detail Card with Cover Background - Strictly on Select */}
+      {/* Top-Left Sliding Book Detail Card with Cover Background */}
       <BookDetailsModal
-        isOpen={activeModal === 'details' && !!selectedBook}
+        isOpen={isDetailsDockOpen}
         book={selectedBook}
-        onClose={() => {
-          setActiveModal(null);
-          setSelectedBook(null);
-        }}
+        onClose={handleCloseDock}
       />
 
       <BookListModal
