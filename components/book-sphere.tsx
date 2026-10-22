@@ -65,7 +65,9 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
     lensY: 0,
     hasActiveMouse: false,
     lastPointerMoveTime: 0,
-    isPointerResting: true,
+    lastClientX: 0,
+    lastClientY: 0,
+    motionIntensity: 1.0,
     width: 0,
     height: 0,
   });
@@ -213,34 +215,48 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
       pullProgressRef.current += (targetPull - pullProgressRef.current) * 0.075;
       const pullProgress = pullProgressRef.current;
 
-      // Pointer resting detection: if pointer hasn't moved in > 100ms, it is at rest!
-      const timeSinceLastMove = time - cam.lastPointerMoveTime;
-      if (timeSinceLastMove > 100) {
-        cam.isPointerResting = true;
-      }
-
       // Smooth mouse tracking
       if (cam.hasActiveMouse) {
-        cam.mouseX += (cam.targetMouseX - cam.mouseX) * 0.18;
-        cam.mouseY += (cam.targetMouseY - cam.mouseY) * 0.18;
+        cam.mouseX += (cam.targetMouseX - cam.mouseX) * 0.2;
+        cam.mouseY += (cam.targetMouseY - cam.mouseY) * 0.2;
         cam.lensX += (cam.mouseX - cam.lensX) * 0.22;
         cam.lensY += (cam.mouseY - cam.lensY) * 0.22;
       }
 
-      // If dock is open, stop camera motion completely
-      if (isDockOpen || cam.isPointerResting || cam.isDragging || !cam.hasActiveMouse) {
+      // Fluid Viewport Navigation:
+      // Whenever the mouse moves towards a direction/edge, the view glides with it so you don't have to drag!
+      // When the mouse rests (stopped for > 220ms), the camera halts completely and sits still.
+      const timeSinceMove = time - cam.lastPointerMoveTime;
+
+      if (!isDockOpen && !cam.isDragging && cam.hasActiveMouse) {
+        if (timeSinceMove < 240) {
+          // Active motion window: camera smoothly glides in the direction the user is guiding the mouse
+          const activeRatio = Math.max(0, 1.0 - timeSinceMove / 240);
+          const normX = (cam.mouseX - screenCenterX) / screenCenterX;
+          const normY = (cam.mouseY - screenCenterY) / screenCenterY;
+          const distFromCenter = Math.hypot(normX, normY);
+
+          if (distFromCenter > 0.06) {
+            const intensity = Math.pow(Math.min(1.0, (distFromCenter - 0.06) / 0.94), 1.15);
+            const cruiseSpeed = 22.0 * Math.max(0.65, cam.zoom) * cam.motionIntensity;
+            cam.targetVx = -(normX / distFromCenter) * intensity * cruiseSpeed * activeRatio;
+            cam.targetVy = -(normY / distFromCenter) * intensity * cruiseSpeed * activeRatio;
+          } else {
+            cam.targetVx = 0;
+            cam.targetVy = 0;
+          }
+        } else {
+          // Pointer is resting: stop camera target velocity completely
+          cam.targetVx = 0;
+          cam.targetVy = 0;
+        }
+      } else {
         cam.targetVx = 0;
         cam.targetVy = 0;
-        cam.vx *= 0.82;
-        cam.vy *= 0.82;
-        if (Math.hypot(cam.vx, cam.vy) < 0.015) {
-          cam.vx = 0;
-          cam.vy = 0;
-        }
       }
 
-      // If manual dragging, cancel auto-swoop
-      if (cam.isDragging) {
+      // If manual dragging or edge-flying, cancel auto-swoop
+      if (cam.isDragging || Math.abs(cam.targetVx) > 0.2 || Math.abs(cam.targetVy) > 0.2) {
         cam.targetX = null;
         cam.targetY = null;
       }
@@ -261,14 +277,16 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
 
       // Physics integration with fluid damping
       if (!cam.isDragging) {
-        cam.vx += (cam.targetVx - cam.vx) * 0.09;
-        cam.vy += (cam.targetVy - cam.vy) * 0.09;
+        const isResting = Math.abs(cam.targetVx) < 0.01 && Math.abs(cam.targetVy) < 0.01;
+        const damping = isResting ? 0.84 : 0.09;
+        cam.vx += (cam.targetVx - cam.vx) * damping;
+        cam.vy += (cam.targetVy - cam.vy) * damping;
 
         cam.x += cam.vx * (dt / 16);
         cam.y += cam.vy * (dt / 16);
 
-        if (Math.abs(cam.targetVx) < 0.01 && Math.abs(cam.vx) < 0.02) cam.vx = 0;
-        if (Math.abs(cam.targetVy) < 0.01 && Math.abs(cam.vy) < 0.02) cam.vy = 0;
+        if (isResting && Math.abs(cam.vx) < 0.02) cam.vx = 0;
+        if (isResting && Math.abs(cam.vy) < 0.02) cam.vy = 0;
       }
 
       // Smooth zoom interpolation
@@ -760,7 +778,7 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
     };
   }, [isDockOpen]);
 
-  // Global window pointermove with motion-resting detection
+  // Global window pointermove with mouse-guided navigation & motion intensity
   useEffect(() => {
     const onWindowPointerMove = (e: PointerEvent) => {
       const container = containerRef.current;
@@ -773,15 +791,20 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
       cam.targetMouseX = (e.clientX - rect.left) * dpr;
       cam.targetMouseY = (e.clientY - rect.top) * dpr;
 
-      // Reset resting state whenever pointer actively moves
-      cam.lastPointerMoveTime = performance.now();
-      cam.isPointerResting = false;
+      const now = performance.now();
+      if (cam.lastClientX !== 0 || cam.lastClientY !== 0) {
+        const dt = Math.max(1, now - cam.lastPointerMoveTime);
+        const distMoved = Math.hypot(e.clientX - cam.lastClientX, e.clientY - cam.lastClientY);
+        cam.motionIntensity = Math.max(0.6, Math.min(2.2, 0.5 + distMoved / (dt * 0.75)));
+      }
+      cam.lastPointerMoveTime = now;
+      cam.lastClientX = e.clientX;
+      cam.lastClientY = e.clientY;
 
       // 1:1 Direct Pan while Dragging
       if (cam.isDragging && !isDockOpen) {
         const dx = (e.clientX - cam.lastDragX) * dpr;
         const dy = (e.clientY - cam.lastDragY) * dpr;
-        const now = performance.now();
         const dt = Math.max(1, now - cam.lastDragTime);
 
         cam.x += dx;
