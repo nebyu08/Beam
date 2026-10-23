@@ -124,10 +124,12 @@ export default function Home() {
   );
 
   const handleLoadingFinished = useCallback(() => {
-    // Select first book on load, elevate it towards viewer, and open its details dock
+    // Select first book on load, bubble up books, and present the elevated book
     const chosen = selectRandomBook();
     if (chosen) {
-      setActiveModal('details');
+      setTimeout(() => {
+        setActiveModal('details');
+      }, 750);
     }
   }, [selectRandomBook]);
 

@@ -34,7 +34,10 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
   // Elevation pull progress for the selected book (0 = in ocean, 1 = pulled up towards viewer)
   const pullProgressRef = useRef(0);
 
-  // Simulation time ref: only advances when dock is closed so ocean freezes while inspecting book
+  // Bubble-up entrance progress on initial load (0 = submerged in abyss, 1 = surfaced)
+  const bubbleEntranceRef = useRef(0);
+
+  // Continuous simulation time for living, breathing ocean waves (never paused!)
   const simTimeRef = useRef(0);
 
   // Infinite Ocean Camera & Physics state
@@ -196,10 +199,8 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
       const dt = Math.min(32, Math.max(8, time - lastTime));
       lastTime = time;
 
-      // When the dock is open, pause the ocean simulation time so the scene freezes peacefully
-      if (!isDockOpen) {
-        simTimeRef.current += dt;
-      }
+      // Always advance ocean simulation time so the breathing waves never stop!
+      simTimeRef.current += dt;
       const animTime = simTimeRef.current;
 
       const cam = cameraRef.current;
@@ -208,6 +209,13 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
 
       const screenCenterX = width / 2;
       const screenCenterY = height / 2;
+
+      // Initial bubble-up entrance progress (smoothly bubbles up from ocean depths on load)
+      if (bubbleEntranceRef.current < 0.999) {
+        bubbleEntranceRef.current += (1.0 - bubbleEntranceRef.current) * 0.035;
+        if (bubbleEntranceRef.current > 0.995) bubbleEntranceRef.current = 1.0;
+      }
+      const bubbleEntrance = bubbleEntranceRef.current;
 
       // Animate Elevation Pull Progress for the Selected Hero Book
       // 1.0 when selected, 0.0 when cleared
@@ -230,7 +238,6 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
 
       if (!isDockOpen && !cam.isDragging && cam.hasActiveMouse) {
         if (timeSinceMove < 240) {
-          // Active motion window: camera smoothly glides in the direction the user is guiding the mouse
           const activeRatio = Math.max(0, 1.0 - timeSinceMove / 240);
           const normX = (cam.mouseX - screenCenterX) / screenCenterX;
           const normY = (cam.mouseY - screenCenterY) / screenCenterY;
@@ -395,13 +402,30 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
           const baseX = screenCenterX + c * stepX + offsetX + cam.x;
           const baseY = screenCenterY + r * stepY + cam.y;
 
-          // 1. Organic Ocean Swell Wave (uses animTime which freezes when dock is open)
-          const swell1 =
-            Math.sin(baseX * 0.0032 + animTime * 0.0012) * Math.cos(baseY * 0.0032 + animTime * 0.001);
-          const swell2 = Math.sin((baseX + baseY) * 0.0048 + animTime * 0.0016) * 0.45;
-          const oceanSwell = (swell1 + swell2) * 0.7; // -1.0 to +1.0
+          // 1. Initial "Bubble Up" entrance calculation
+          let bubbleScale = 1.0;
+          let bubbleAlpha = 1.0;
 
-          // 2. Toroidal Distance to Selected Book
+          if (bubbleEntrance < 0.999) {
+            const distFromCenter = Math.hypot(baseX - screenCenterX, baseY - screenCenterY);
+            const maxSpread = Math.max(width, height) * 0.8;
+            const bookDelay = Math.min(0.55, (distFromCenter / maxSpread) * 0.48);
+
+            const localT = Math.min(1.0, Math.max(0, (bubbleEntrance - bookDelay) / (1.0 - bookDelay)));
+            const pop = 1.0 + Math.sin(localT * Math.PI) * 0.22 * (1.0 - localT);
+            bubbleScale = Math.max(0, localT * pop);
+            bubbleAlpha = Math.min(1.0, localT * 1.6);
+          }
+
+          if (bubbleScale <= 0.02) continue;
+
+          // 2. Living Breathing Ocean Waves
+          const breathFreq = animTime * 0.0016;
+          const wave1 = Math.sin(baseX * 0.0032 + breathFreq) * Math.cos(baseY * 0.0032 + breathFreq * 0.85);
+          const wave2 = Math.sin((baseX * 0.75 - baseY * 0.75) * 0.0045 + breathFreq * 1.25) * 0.5;
+          const oceanBreathing = (wave1 + wave2) * 0.75; // -1.0 to +1.0
+
+          // 3. Toroidal Distance to Selected Book
           let dSelX = 99999;
           let dSelY = 99999;
           let distToSelected = 99999;
@@ -413,7 +437,7 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
             distToSelected = Math.hypot(dSelX, dSelY);
           }
 
-          // 3. Elevation & 3D Stacking Calculation
+          // 4. Elevation & 3D Stacking Calculation
           let elevation = 0;
           let isSelectedHero = false;
 
@@ -426,12 +450,14 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
             elevation = stepped * 0.65 * pullProgress;
           }
 
-          // Base position with ocean wave swell
-          const waveWeight = Math.max(0, 1.0 - elevation * 1.5);
-          let screenX = baseX + oceanSwell * 3.6 * waveWeight;
-          let screenY = baseY + oceanSwell * 2.8 * waveWeight;
+          // 5. Wave Displacement:
+          // The selected hero book is fixed and steady in focus (swayWeight = 0, "only the flatten gets fixed on")
+          // All other books in the ocean continue to have this living wave UX as if they are breathing!
+          const swayWeight = Math.max(0, 1.0 - elevation * 1.5);
+          let screenX = baseX + oceanBreathing * 5.5 * swayWeight;
+          let screenY = baseY + oceanBreathing * 4.2 * swayWeight;
 
-          // 4. Stacking Displacement: Neighbors pull inward toward hero book
+          // 6. Stacking Displacement: Neighbors pull inward toward hero book
           if (!isSelectedHero && elevation > 0.02 && distToSelected > 1) {
             const pullTowardsHero =
               (1.0 - distToSelected / stackRadius) * (stepX * 0.22) * pullProgress;
@@ -439,7 +465,7 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
             screenY -= (dSelY / distToSelected) * pullTowardsHero;
           }
 
-          // 5. Cursor Hover Hydrodynamic Ripple (active only when dock is closed)
+          // 7. Cursor Hover Hydrodynamic Ripple (active when dock is closed)
           let totalBulge = 0;
           let scale = 1.0;
           let opacity = 0.92;
@@ -464,16 +490,21 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
             }
           }
 
-          // 6. Scale
+          // 8. Scale Calculation: incorporates living wave breathing and initial bubble-up
+          const breathScale = 1.0 + oceanBreathing * 0.065 * swayWeight;
+
           if (isSelectedHero) {
-            scale = 1.0 + 1.15 * elevation; // Ascends high towards viewer
-            opacity = 1.0;
+            // Selected hero book: rises high towards viewer and is fixed in focus
+            scale = (1.0 + 1.15 * elevation) * bubbleScale;
+            opacity = 1.0 * bubbleAlpha;
           } else if (elevation > 0) {
-            scale = 1.0 + 0.42 * elevation; // Stepped up
-            opacity = 0.95 + elevation * 0.05;
+            // Stacked neighbor pedestal
+            scale = (1.0 + 0.42 * elevation) * breathScale * bubbleScale;
+            opacity = (0.95 + elevation * 0.05) * bubbleAlpha;
           } else {
-            scale = 1.0 + totalBulge * 0.45;
-            opacity = 0.88 + totalBulge * 0.12;
+            // Endless ocean books breathing like living waves
+            scale = (1.0 + totalBulge * 0.45) * breathScale * bubbleScale;
+            opacity = (0.86 + totalBulge * 0.12 + oceanBreathing * 0.06) * bubbleAlpha;
           }
 
           const w = cardW * scale;
@@ -537,7 +568,7 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
         }
       }
 
-      // Render Endless Ocean Books with 3D Stacked Elevation Illusion
+      // Render Endless Ocean Books with Breathing Waves and 3D Elevation
       for (let i = 0; i < drawList.length; i++) {
         const item = drawList[i];
         const { book, screenX, screenY, w, h, elevation, isSelectedHero, totalBulge, opacity } =
