@@ -184,7 +184,7 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
     return () => observer.disconnect();
   }, []);
 
-  // Main 60FPS Endless Ocean Top-View Render Loop
+  // Main 60FPS Endless Ocean Top-View Render Loop with Mountain Stacking Architecture
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -218,7 +218,6 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
       const bubbleEntrance = bubbleEntranceRef.current;
 
       // Animate Elevation Pull Progress for the Selected Hero Book
-      // 1.0 when selected, 0.0 when cleared
       const targetPull = selectedBookRef.current ? 1.0 : 0.0;
       pullProgressRef.current += (targetPull - pullProgressRef.current) * 0.075;
       const pullProgress = pullProgressRef.current;
@@ -232,8 +231,8 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
       }
 
       // Fluid Viewport Navigation:
-      // Whenever the mouse moves towards a direction/edge, the view glides with it so you don't have to drag!
-      // When the mouse rests (stopped for > 220ms), the camera halts completely and sits still.
+      // When moving mouse towards an edge, view glides in that direction.
+      // When mouse rests (stopped for > 220ms), camera halts completely.
       const timeSinceMove = time - cam.lastPointerMoveTime;
 
       if (!isDockOpen && !cam.isDragging && cam.hasActiveMouse) {
@@ -253,7 +252,6 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
             cam.targetVy = 0;
           }
         } else {
-          // Pointer is resting: stop camera target velocity completely
           cam.targetVx = 0;
           cam.targetVy = 0;
         }
@@ -342,8 +340,8 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
       const gridW = cols * stepX;
       const gridH = rows * stepY;
 
-      // Lens radius for gentle cursor ripple
-      const lensRadius = Math.max(width, height) * 0.55 * Math.sqrt(cam.zoom);
+      // Mountain influence radius: spans across 3-4 rings of books to form a majestic mountain range
+      const mountainRadius = stepX * 3.4;
 
       // Selected book coordinates on the plane
       const selectedIndex = selectedBookRef.current
@@ -355,17 +353,38 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
       const selBaseX = screenCenterX + selCol * stepX + selOffsetX + cam.x;
       const selBaseY = screenCenterY + selRow * stepY + cam.y;
 
-      // Radius within which neighboring books are stacked to support the pulled book
-      const stackRadius = stepX * 2.85;
+      // Endless ocean grid buffer
+      const bufferPadding = Math.max(width, height) * 0.6;
+      const minCol = Math.floor((-cam.x - screenCenterX - bufferPadding) / stepX) - 3;
+      const maxCol = Math.ceil((width - cam.x - screenCenterX + bufferPadding) / stepX) + 3;
+      const minRow = Math.floor((-cam.y - screenCenterY - bufferPadding) / stepY) - 3;
+      const maxRow = Math.ceil((height - cam.y - screenCenterY + bufferPadding) / stepY) + 3;
 
-      let closestBook: Book | null = isDockOpen ? selectedBookRef.current : null;
-      let closestCoords = { screenX: 0, screenY: 0, w: 0, h: 0 };
-      let directHitBook: Book | null = null;
-      let directHitCoords = { screenX: 0, screenY: 0, w: 0, h: 0 };
-      let highestDirectElevation = -1;
-      let minDistanceToLens = Infinity;
-      let lensBook: Book | null = null;
-      let lensCoords = { screenX: 0, screenY: 0, w: 0, h: 0 };
+      // FAST PRE-PASS: Find the exact book directly under the cursor (the Apex Peak)
+      let hoverApexBook: Book | null = isDockOpen ? selectedBookRef.current : null;
+      let minApexDist = Infinity;
+      let hoverApexCoords = { screenX: 0, screenY: 0, w: 0, h: 0 };
+
+      if (!isDockOpen && cam.hasActiveMouse) {
+        for (let r = minRow; r <= maxRow; r++) {
+          const rowWrapped = ((r % rows) + rows) % rows;
+          const offsetX = (r % 2) * (stepX * 0.5);
+          for (let c = minCol; c <= maxCol; c++) {
+            const colWrapped = ((c % cols) + cols) % cols;
+            const bIndex = rowWrapped * cols + colWrapped;
+            const b = books[bIndex % booksCount];
+            if (!b) continue;
+
+            const bx = screenCenterX + c * stepX + offsetX + cam.x;
+            const by = screenCenterY + r * stepY + cam.y;
+            const d = Math.hypot(bx - cam.lensX, by - cam.lensY);
+            if (d < minApexDist) {
+              minApexDist = d;
+              hoverApexBook = b;
+            }
+          }
+        }
+      }
 
       interface OceanBookItem {
         book: Book;
@@ -375,18 +394,12 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
         h: number;
         elevation: number;
         isSelectedHero: boolean;
-        totalBulge: number;
+        isHoverApex: boolean;
+        slopeAngle: number;
         opacity: number;
       }
 
       const drawList: OceanBookItem[] = [];
-
-      // Endless ocean grid buffer
-      const bufferPadding = Math.max(width, height) * 0.6;
-      const minCol = Math.floor((-cam.x - screenCenterX - bufferPadding) / stepX) - 3;
-      const maxCol = Math.ceil((width - cam.x - screenCenterX + bufferPadding) / stepX) + 3;
-      const minRow = Math.floor((-cam.y - screenCenterY - bufferPadding) / stepY) - 3;
-      const maxRow = Math.ceil((height - cam.y - screenCenterY + bufferPadding) / stepY) + 3;
 
       for (let r = minRow; r <= maxRow; r++) {
         const rowWrapped = ((r % rows) + rows) % rows;
@@ -437,108 +450,85 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
             distToSelected = Math.hypot(dSelX, dSelY);
           }
 
-          // 4. Elevation & 3D Stacking Calculation
-          let elevation = 0;
-          let isSelectedHero = false;
+          // 4. Distance to Hover Cursor Peak
+          const dxCursor = baseX - cam.lensX;
+          const dyCursor = baseY - cam.lensY;
+          const distToCursor = Math.hypot(dxCursor, dyCursor);
 
-          if (pullProgress > 0.01 && book.id === selectedBookRef.current?.id) {
-            isSelectedHero = true;
-            elevation = 1.0 * pullProgress;
-          } else if (pullProgress > 0.01 && distToSelected < stackRadius) {
-            const norm = distToSelected / stackRadius;
-            const stepped = Math.pow(Math.max(0, 1.0 - norm), 1.55);
-            elevation = stepped * 0.65 * pullProgress;
+          // 5. MOUNTAIN PEAK & PENCIL-SPIRE ELEVATION CALCULATION:
+          // A single book stands out at the apex summit, and surrounding books are dragged with it into tiered mountain flanks!
+          const isSelectedHero = pullProgress > 0.01 && book.id === selectedBookRef.current?.id;
+          const isHoverApex = !isDockOpen && book.id === hoverApexBook?.id && distToCursor < stepX * 1.3;
+
+          let hoverSlope = 0;
+          if (!isDockOpen && cam.hasActiveMouse && distToCursor < mountainRadius) {
+            const normCursor = distToCursor / mountainRadius;
+            // Steep conical / pencil-type mountain curve: sharp apex spire, terraced slope
+            hoverSlope = Math.pow(Math.max(0, 1.0 - normCursor), 2.2);
+            if (isHoverApex) {
+              hoverSlope = 1.0; // The apex summit stands out completely!
+            }
           }
 
-          // 5. Wave Displacement:
-          // The selected hero book is fixed and steady in focus (swayWeight = 0, "only the flatten gets fixed on")
-          // All other books in the ocean continue to have this living wave UX as if they are breathing!
+          let selSlope = 0;
+          if (selectedIndex >= 0 && pullProgress > 0.01 && distToSelected < mountainRadius) {
+            const normSel = distToSelected / mountainRadius;
+            selSlope = Math.pow(Math.max(0, 1.0 - normSel), 2.0) * pullProgress;
+            if (isSelectedHero) {
+              selSlope = 1.0 * pullProgress;
+            }
+          }
+
+          // Combined mountain elevation
+          const elevation = Math.min(1.0, Math.max(hoverSlope, selSlope));
+
+          // 6. Wave Displacement (Living breathing ocean):
+          // The selected apex peak stays steady in focus (swayWeight = 0, "only the flatten gets fixed on")
+          // All other books in the ocean continue breathing with their wave UX!
           const swayWeight = Math.max(0, 1.0 - elevation * 1.5);
           let screenX = baseX + oceanBreathing * 5.5 * swayWeight;
           let screenY = baseY + oceanBreathing * 4.2 * swayWeight;
 
-          // 6. Stacking Displacement: Neighbors pull inward toward hero book
-          if (!isSelectedHero && elevation > 0.02 && distToSelected > 1) {
-            const pullTowardsHero =
-              (1.0 - distToSelected / stackRadius) * (stepX * 0.22) * pullProgress;
-            screenX -= (dSelX / distToSelected) * pullTowardsHero;
-            screenY -= (dSelY / distToSelected) * pullTowardsHero;
-          }
-
-          // 7. Cursor Hover Hydrodynamic Ripple (active when dock is closed)
-          let totalBulge = 0;
-          let scale = 1.0;
-          let opacity = 0.92;
-
-          if (cam.hasActiveMouse && !isDockOpen) {
-            const dx = screenX - cam.lensX;
-            const dy = screenY - cam.lensY;
-            const distToMouse = Math.hypot(dx, dy);
-
-            if (distToMouse < lensRadius) {
-              const normDist = distToMouse / lensRadius;
-              const bulge = Math.pow(Math.max(0, 1.0 - normDist), 1.8);
-              const ripple =
-                Math.sin(normDist * 16.0 - animTime * 0.0032) * 0.05 * (1.0 - normDist);
-              totalBulge = Math.max(0, bulge + ripple);
-
-              if (elevation < 0.2 && distToMouse > 0.01) {
-                const push = totalBulge * (cardW * 0.35);
-                screenX += (dx / distToMouse) * push;
-                screenY += (dy / distToMouse) * push;
-              }
+          // 7. INWARD MOUNTAIN DRAG (The rest feel dragged with the one selected/hovered over):
+          // Pulls neighboring books inward and upward toward the summit apex to form an orderly stacked mountain
+          let slopeAngle = 0;
+          if (!isSelectedHero && !isHoverApex && elevation > 0.02) {
+            if (hoverSlope >= selSlope && distToCursor > 2 && distToCursor < mountainRadius) {
+              const dragPull = hoverSlope * (stepX * 0.22);
+              screenX -= (dxCursor / distToCursor) * dragPull;
+              screenY -= (dyCursor / distToCursor) * dragPull;
+              slopeAngle = Math.atan2(dyCursor, dxCursor);
+            } else if (selSlope > 0 && distToSelected > 2 && distToSelected < mountainRadius) {
+              const dragPull = selSlope * (stepX * 0.22);
+              screenX -= (dSelX / distToSelected) * dragPull;
+              screenY -= (dSelY / distToSelected) * dragPull;
+              slopeAngle = Math.atan2(dSelY, dSelX);
             }
           }
 
-          // 8. Scale Calculation: incorporates living wave breathing and initial bubble-up
+          // 8. Scale Calculation:
+          // The apex stands out tall and prominent (~1.95x scale), flanked by terraced stepped books
           const breathScale = 1.0 + oceanBreathing * 0.065 * swayWeight;
-
-          if (isSelectedHero) {
-            // Selected hero book: rises high towards viewer and is fixed in focus
-            scale = (1.0 + 1.15 * elevation) * bubbleScale;
-            opacity = 1.0 * bubbleAlpha;
-          } else if (elevation > 0) {
-            // Stacked neighbor pedestal
-            scale = (1.0 + 0.42 * elevation) * breathScale * bubbleScale;
-            opacity = (0.95 + elevation * 0.05) * bubbleAlpha;
-          } else {
-            // Endless ocean books breathing like living waves
-            scale = (1.0 + totalBulge * 0.45) * breathScale * bubbleScale;
-            opacity = (0.86 + totalBulge * 0.12 + oceanBreathing * 0.06) * bubbleAlpha;
-          }
+          const mountainScale = 1.0 + elevation * 0.95;
+          const scale = mountainScale * breathScale * bubbleScale;
 
           const w = cardW * scale;
           const h = cardH * scale;
 
+          let opacity = (0.86 + elevation * 0.14 + oceanBreathing * 0.06 * swayWeight) * bubbleAlpha;
+
           // Frustum culling
           if (
-            screenX + w < -100 ||
-            screenX - w > width + 100 ||
-            screenY + h < -100 ||
-            screenY - h > height + 100
+            screenX + w < -120 ||
+            screenX - w > width + 120 ||
+            screenY + h < -120 ||
+            screenY - h > height + 120
           ) {
             continue;
           }
 
-          // If dock is closed, calculate active pebble under cursor
-          if (!isDockOpen && cam.hasActiveMouse && !cam.isDragging) {
-            const isInside =
-              Math.abs(screenX - cam.lensX) <= (w / 2) * 1.05 &&
-              Math.abs(screenY - cam.lensY) <= (h / 2) * 1.05;
-
-            const effectiveElev = elevation + totalBulge;
-            if (isInside && effectiveElev > highestDirectElevation) {
-              highestDirectElevation = effectiveElev;
-              directHitBook = book;
-              directHitCoords = { screenX, screenY, w, h };
-            }
-
-            const distToLens = Math.hypot(screenX - cam.lensX, screenY - cam.lensY);
-            if (distToLens < minDistanceToLens && (totalBulge > 0.3 || elevation > 0.3)) {
-              minDistanceToLens = distToLens;
-              lensBook = book;
-              lensCoords = { screenX, screenY, w, h };
-            }
+          if (isHoverApex || isSelectedHero) {
+            hoverApexCoords = { screenX, screenY, w, h };
           }
 
           drawList.push({
@@ -549,65 +539,73 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
             h,
             elevation,
             isSelectedHero,
-            totalBulge,
+            isHoverApex,
+            slopeAngle,
             opacity,
           });
         }
       }
 
+      // CRUCIAL FOR MOUNTAIN STACKING:
       // Sort strictly by elevation (Painter's Algorithm)
+      // Lower elevation tiles are drawn underneath -> higher mountain tiers are drawn on top ->
+      // The standout apex summit book is drawn LAST on top of all!
       drawList.sort((a, b) => a.elevation - b.elevation);
 
-      if (!isDockOpen) {
-        if (directHitBook) {
-          closestBook = directHitBook;
-          closestCoords = directHitCoords;
-        } else if (lensBook) {
-          closestBook = lensBook;
-          closestCoords = lensCoords;
-        }
-      }
+      const activeApexBook = isDockOpen ? selectedBookRef.current : hoverApexBook;
 
-      // Render Endless Ocean Books with Breathing Waves and 3D Elevation
+      // Render Mountain Stack of Books with Tiered Overlaps and 3D Cast Shadows
       for (let i = 0; i < drawList.length; i++) {
         const item = drawList[i];
-        const { book, screenX, screenY, w, h, elevation, isSelectedHero, totalBulge, opacity } =
-          item;
+        const {
+          book,
+          screenX,
+          screenY,
+          w,
+          h,
+          elevation,
+          isSelectedHero,
+          isHoverApex,
+          slopeAngle,
+          opacity,
+        } = item;
 
-        const isFocused =
-          focusedBookRef.current?.id === book.id || selectedBookRef.current?.id === book.id;
-        const isHovered = !isDockOpen && closestBook?.id === book.id;
+        const isApexPeak = isSelectedHero || isHoverApex;
+        const isHovered = !isDockOpen && activeApexBook?.id === book.id;
 
         ctx.save();
         ctx.globalAlpha = opacity;
         ctx.translate(screenX, screenY);
 
+        // Subtle 3D slope tilt towards the mountain apex
+        if (elevation > 0.04 && !isApexPeak) {
+          ctx.rotate(slopeAngle * 0.07 * elevation);
+        }
+
         const halfW = w / 2;
         const halfH = h / 2;
         const cornerRadius = Math.min(halfW, halfH) * 0.32;
 
-        // 3D Drop Shadows
-        if (isSelectedHero) {
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.88)';
-          ctx.shadowBlur = 45 * elevation;
+        // TIERED STACK DROP SHADOWS:
+        // Every book in the mountain stack casts a clean, crisp drop-shadow down onto the book underneath it!
+        if (isApexPeak) {
+          // Apex summit casts a deep, majestic 3D shadow across all the tiers below
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.92)';
+          ctx.shadowBlur = 48;
           ctx.shadowOffsetX = 0;
-          ctx.shadowOffsetY = 24 * elevation;
-        } else if (elevation > 0.05) {
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.65)';
-          ctx.shadowBlur = 18 * elevation;
+          ctx.shadowOffsetY = 24;
+        } else if (elevation > 0.04) {
+          // Stepped stack shadows creating the distinct "stacked on top of each other" feel
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.84)';
+          ctx.shadowBlur = Math.min(40, 6 + 30 * elevation);
           ctx.shadowOffsetX = 0;
-          ctx.shadowOffsetY = 10 * elevation;
-        } else if (isHovered) {
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
-          ctx.shadowBlur = 16;
-          ctx.shadowOffsetX = 0;
-          ctx.shadowOffsetY = 6;
+          ctx.shadowOffsetY = 3 + 16 * elevation;
         } else {
           ctx.shadowColor = 'transparent';
           ctx.shadowBlur = 0;
         }
 
-        // Clip to organic ocean pebble contour
+        // Clip to organic rounded pebble contour
         ctx.beginPath();
         ctx.roundRect(-halfW, -halfH, w, h, cornerRadius);
         ctx.clip();
@@ -632,7 +630,32 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
           }
         }
 
-        // 2. Oceanic Inner Vignette
+        // 2. Mountain Facet Shading & Sunlight:
+        // Overhead mountain illumination: top-left catches crisp sunlight, bottom-right has deep contact bevel
+        const mountainSunlight = ctx.createLinearGradient(-halfW, -halfH, halfW, halfH);
+        if (isApexPeak) {
+          // Summit peak catches full direct celestial light
+          mountainSunlight.addColorStop(0, 'rgba(255, 255, 255, 0.32)');
+          mountainSunlight.addColorStop(0.35, 'rgba(125, 211, 252, 0.16)');
+          mountainSunlight.addColorStop(0.7, 'rgba(0, 0, 0, 0)');
+          mountainSunlight.addColorStop(1, 'rgba(0, 0, 0, 0.35)');
+        } else if (elevation > 0.05) {
+          // Terraced flanks: directional light catching the exposed stacked rim
+          mountainSunlight.addColorStop(0, `rgba(255, 255, 255, ${0.14 + elevation * 0.18})`);
+          mountainSunlight.addColorStop(0.4, 'rgba(56, 189, 248, 0.08)');
+          mountainSunlight.addColorStop(0.75, 'rgba(0, 0, 0, 0.12)');
+          mountainSunlight.addColorStop(1, `rgba(0, 0, 0, ${0.35 + elevation * 0.2})`);
+        } else {
+          // Base ocean level
+          mountainSunlight.addColorStop(0, 'rgba(125, 211, 252, 0.12)');
+          mountainSunlight.addColorStop(0.4, 'rgba(255, 255, 255, 0)');
+          mountainSunlight.addColorStop(0.75, 'rgba(0, 0, 0, 0.15)');
+          mountainSunlight.addColorStop(1, 'rgba(0, 0, 0, 0.5)');
+        }
+        ctx.fillStyle = mountainSunlight;
+        ctx.fillRect(-halfW, -halfH, w, h);
+
+        // 3. Oceanic edge vignette softening into water matrix
         const innerVignette = ctx.createRadialGradient(
           0,
           0,
@@ -642,91 +665,57 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
           Math.max(halfW, halfH)
         );
         innerVignette.addColorStop(0, 'rgba(0, 0, 0, 0)');
-        innerVignette.addColorStop(0.75, 'rgba(0, 0, 0, 0.25)');
-        innerVignette.addColorStop(1, 'rgba(1, 8, 18, 0.75)');
+        innerVignette.addColorStop(0.75, 'rgba(0, 0, 0, 0.22)');
+        innerVignette.addColorStop(1, 'rgba(1, 8, 18, 0.7)');
         ctx.fillStyle = innerVignette;
         ctx.fillRect(-halfW, -halfH, w, h);
 
-        // 3. Tactile 3D Ocean Sheen
-        const waterSheen = ctx.createLinearGradient(-halfW, -halfH, halfW, halfH);
-        if (isSelectedHero) {
-          waterSheen.addColorStop(0, 'rgba(255, 255, 255, 0.28)');
-          waterSheen.addColorStop(0.35, 'rgba(125, 211, 252, 0.15)');
-          waterSheen.addColorStop(0.7, 'rgba(0, 0, 0, 0)');
-          waterSheen.addColorStop(1, 'rgba(0, 0, 0, 0.4)');
-        } else if (elevation > 0.05) {
-          waterSheen.addColorStop(0, 'rgba(186, 230, 253, 0.2)');
-          waterSheen.addColorStop(0.4, 'rgba(56, 189, 248, 0.06)');
-          waterSheen.addColorStop(0.75, 'rgba(0, 0, 0, 0.12)');
-          waterSheen.addColorStop(1, 'rgba(0, 0, 0, 0.45)');
-        } else {
-          waterSheen.addColorStop(0, 'rgba(125, 211, 252, 0.12)');
-          waterSheen.addColorStop(0.4, 'rgba(255, 255, 255, 0)');
-          waterSheen.addColorStop(0.75, 'rgba(0, 0, 0, 0.15)');
-          waterSheen.addColorStop(1, 'rgba(0, 0, 0, 0.5)');
-        }
-        ctx.fillStyle = waterSheen;
-        ctx.fillRect(-halfW, -halfH, w, h);
-
-        // 4. Ocean Depth Fog
-        if (elevation < 0.1 && totalBulge < 0.2 && !isFocused && !isHovered) {
-          const depthFog = (0.2 - totalBulge) * 2.2;
-          ctx.fillStyle = `rgba(2, 9, 20, ${depthFog * 0.38})`;
-          ctx.fillRect(-halfW, -halfH, w, h);
-        }
-
         ctx.restore();
 
-        // 5. Bioluminescent Aura & High-Contrast Halo
-        if (isSelectedHero) {
+        // 4. MOUNTAIN STACK BORDERS & CREST HALOS:
+        if (isApexPeak) {
+          // Standout Summit Peak Halo: sharp, glowing pencil-spire crest
           ctx.save();
           ctx.translate(screenX, screenY);
           ctx.strokeStyle = 'rgba(56, 189, 248, 0.98)';
-          ctx.lineWidth = 3.0;
+          ctx.lineWidth = 3.2;
           ctx.shadowColor = '#38bdf8';
-          ctx.shadowBlur = 28;
+          ctx.shadowBlur = 32;
           ctx.beginPath();
           ctx.roundRect(-halfW - 1.5, -halfH - 1.5, w + 3, h + 3, cornerRadius + 1.5);
           ctx.stroke();
 
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+          // Outer secondary shimmer ring
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
           ctx.lineWidth = 1.0;
           ctx.shadowBlur = 10;
           ctx.beginPath();
           ctx.roundRect(-halfW - 3, -halfH - 3, w + 6, h + 6, cornerRadius + 3);
           ctx.stroke();
-
           ctx.restore();
-        } else if (elevation > 0.05) {
+        } else if (elevation > 0.12) {
+          // Terraced mountain shingle rim: makes each stacked layer crisp and clean
           ctx.save();
           ctx.translate(screenX, screenY);
-          ctx.strokeStyle = `rgba(56, 189, 248, ${0.35 + elevation * 0.4})`;
-          ctx.lineWidth = 1.2;
+          if (elevation > 0.04 && !isApexPeak) {
+            ctx.rotate(slopeAngle * 0.07 * elevation);
+          }
+          ctx.strokeStyle = `rgba(56, 189, 248, ${0.25 + elevation * 0.45})`;
+          ctx.lineWidth = 1.4;
           ctx.shadowColor = '#38bdf8';
-          ctx.shadowBlur = 10;
+          ctx.shadowBlur = Math.min(16, 6 + 10 * elevation);
           ctx.beginPath();
           ctx.roundRect(-halfW - 0.5, -halfH - 0.5, w + 1, h + 1, cornerRadius + 0.5);
-          ctx.stroke();
-          ctx.restore();
-        } else if (!isDockOpen && (isFocused || isHovered)) {
-          ctx.save();
-          ctx.translate(screenX, screenY);
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
-          ctx.lineWidth = 1.8;
-          ctx.shadowColor = '#ffffff';
-          ctx.shadowBlur = 14;
-          ctx.beginPath();
-          ctx.roundRect(-halfW - 1, -halfH - 1, w + 2, h + 2, cornerRadius + 1);
           ctx.stroke();
           ctx.restore();
         }
       }
 
-      // Update Floating Near-Book Preview Tag (suppressed when dock is open)
+      // Update Floating Near-Book Preview Tag (tracks the active apex book)
       const floatingEl = floatingPreviewElRef.current;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       if (floatingEl) {
-        if (isDockOpen || !closestBook || selectedBookRef.current) {
+        if (isDockOpen || !activeApexBook || selectedBookRef.current) {
           floatingEl.style.opacity = '0';
           floatingEl.style.display = 'none';
         } else {
@@ -734,11 +723,11 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
           let targetY = -9999;
           let targetOpacity = 0;
 
-          if (cam.hasActiveMouse && closestBook && !cam.isDragging) {
-            const cardCenterX = closestCoords.screenX / dpr;
-            const cardCenterY = closestCoords.screenY / dpr;
-            const cardHalfW = closestCoords.w / (2 * dpr);
-            const cardHalfH = closestCoords.h / (2 * dpr);
+          if (cam.hasActiveMouse && activeApexBook && !cam.isDragging && hoverApexCoords.w > 0) {
+            const cardCenterX = hoverApexCoords.screenX / dpr;
+            const cardCenterY = hoverApexCoords.screenY / dpr;
+            const cardHalfW = hoverApexCoords.w / (2 * dpr);
+            const cardHalfH = hoverApexCoords.h / (2 * dpr);
 
             const containerW = width / dpr;
             const containerH = height / dpr;
@@ -746,9 +735,9 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
             const previewW = 270;
             const previewH = 95;
 
-            let posX = cardCenterX + cardHalfW + 16;
+            let posX = cardCenterX + cardHalfW + 18;
             if (posX + previewW > containerW - 14) {
-              posX = cardCenterX - cardHalfW - previewW - 16;
+              posX = cardCenterX - cardHalfW - previewW - 18;
             }
             posX = Math.max(14, Math.min(containerW - previewW - 14, posX));
 
@@ -781,15 +770,15 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
         }
       }
 
-      // Throttled store update for focused book and preview (only when dock is closed)
+      // Throttled store update for focused book (only when dock is closed)
       if (!isDockOpen && time - lastHoverCheckTime > 50) {
         lastHoverCheckTime = time;
         if (cam.hasActiveMouse && !cam.isDragging) {
-          if (closestBook) {
-            if (closestBook.id !== currentPreviewIdRef.current) {
-              currentPreviewIdRef.current = closestBook.id;
-              setPreviewBook(closestBook);
-              useBookStore.getState().setFocusedBook(closestBook);
+          if (activeApexBook) {
+            if (activeApexBook.id !== currentPreviewIdRef.current) {
+              currentPreviewIdRef.current = activeApexBook.id;
+              setPreviewBook(activeApexBook);
+              useBookStore.getState().setFocusedBook(activeApexBook);
             }
           } else if (currentPreviewIdRef.current !== null) {
             currentPreviewIdRef.current = null;
