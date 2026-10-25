@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { X, Sparkles, Move, MousePointer, ZoomIn, ExternalLink } from 'lucide-react';
+import { X, Sparkles, Move, MousePointer, ZoomIn, ExternalLink, Globe } from 'lucide-react';
 
 interface AboutModalProps {
   isOpen: boolean;
@@ -25,21 +25,21 @@ export default function AboutModal({ isOpen, onClose }: AboutModalProps) {
         </button>
 
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-            <Sparkles className="w-5 h-5" />
+          <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+            <Globe className="w-5 h-5" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-white tracking-tight">
-              Nothing to Read
+              Atlas of World Literature
             </h3>
             <p className="text-xs text-zinc-400">
-              Interactive 3D Book Discovery
+              Interactive 3D Earth Globe & Cultural Origins
             </p>
           </div>
         </div>
 
-        <p className="text-sm text-zinc-300 leading-relaxed mb-6">
-          Decision paralysis affects book lovers everywhere. This interactive spherical lens visualization lets you explore hundreds of timeless literature masterpieces and modern classics in an exploratory 3D space.
+        <p className="text-sm text-zinc-300 leading-relaxed mb-6 font-light">
+          An interactive, minimalistic 3D Earth globe that organizes world literature by geographical and cultural origin. Spin the Earth to discover canonical masterpieces and Nobel-winning authors from Russia, Japan, Colombia, Nigeria, France, and beyond.
         </p>
 
         {/* Controls Guide */}
@@ -48,33 +48,33 @@ export default function AboutModal({ isOpen, onClose }: AboutModalProps) {
         </h4>
         <div className="grid grid-cols-2 gap-3 mb-6 text-xs text-zinc-300">
           <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
-            <Move className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+            <Move className="w-4 h-4 text-indigo-400 flex-shrink-0" />
             <div>
               <p className="font-semibold text-white">Click & Drag</p>
-              <p className="text-[11px] text-zinc-400">Rotate and pan</p>
+              <p className="text-[11px] text-zinc-400">Spin the Earth globe</p>
             </div>
           </div>
           <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
-            <ZoomIn className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+            <ZoomIn className="w-4 h-4 text-indigo-400 flex-shrink-0" />
             <div>
               <p className="font-semibold text-white">Scroll Wheel</p>
               <p className="text-[11px] text-zinc-400">Zoom in and out</p>
             </div>
           </div>
           <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
-            <MousePointer className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+            <MousePointer className="w-4 h-4 text-indigo-400 flex-shrink-0" />
             <div>
-              <p className="font-semibold text-white">Hover / Click</p>
-              <p className="text-[11px] text-zinc-400">Inspect book cover</p>
+              <p className="font-semibold text-white">Click Country</p>
+              <p className="text-[11px] text-zinc-400">Deep-dive into authors</p>
             </div>
           </div>
           <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
-            <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-[10px] font-mono text-emerald-400 font-bold">
-              SPACE
+            <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-[10px] font-mono text-indigo-400 font-bold">
+              ESC
             </kbd>
             <div>
-              <p className="font-semibold text-white">Spacebar</p>
-              <p className="text-[11px] text-zinc-400">Surprise me / Random</p>
+              <p className="font-semibold text-white">Escape Key</p>
+              <p className="text-[11px] text-zinc-400">Return to Earth Globe</p>
             </div>
           </div>
         </div>

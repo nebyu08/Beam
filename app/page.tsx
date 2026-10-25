@@ -2,7 +2,11 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useBookStore } from '@/lib/book-store';
+import { useGeoStore } from '@/lib/geo-store';
 import { Book } from '@/lib/types';
+import EarthGlobe from '@/components/earth-globe';
+import CountryView from '@/components/country-view';
+import GlobeNav from '@/components/globe-nav';
 import BookSphere from '@/components/book-sphere';
 import BookHeader from '@/components/book-header';
 import FooterBar from '@/components/footer-bar';
@@ -15,15 +19,24 @@ export default function Home() {
   const {
     books,
     setBooks,
-    focusedBook,
-    setFocusedBook,
     selectedBook,
     setSelectedBook,
     selectRandomBook,
-    filteredBooks,
   } = useBookStore();
 
+  const {
+    countries,
+    activeCountry,
+    hoveredCountry,
+    appMode,
+    enterCountry,
+    exitToGlobe,
+    setHoveredCountry,
+    selectRandomCountry,
+  } = useGeoStore();
+
   const [activeModal, setActiveModal] = useState<'about' | 'list' | 'details' | null>(null);
+  const [viewMode, setViewMode] = useState<'globe' | 'ocean'>('globe');
   const [isReady, setIsReady] = useState(false);
 
   // Preload initial visible batch of covers for smooth entrance
@@ -45,7 +58,7 @@ export default function Home() {
       img.src = src;
       img.onload = img.onerror = () => {
         loaded++;
-        if (loaded >= Math.min(10, initialCovers.length)) {
+        if (loaded >= Math.min(8, initialCovers.length)) {
           setIsReady(true);
         }
       };
@@ -87,33 +100,36 @@ export default function Home() {
       }
 
       if (e.code === 'Space') {
-        e.preventDefault();
-        const chosen = selectRandomBook();
-        if (chosen) {
-          setActiveModal('details');
+        if (viewMode === 'globe' && appMode === 'globe') {
+          e.preventDefault();
+          selectRandomCountry();
+        } else if (viewMode === 'ocean') {
+          e.preventDefault();
+          const chosen = selectRandomBook();
+          if (chosen) {
+            setActiveModal('details');
+          }
         }
       } else if (e.key === 'Escape') {
-        handleCloseDock();
-      } else if (activeModal !== 'details') {
-        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-          e.preventDefault();
-          if (filteredBooks.length === 0) return;
-          const currentIndex = filteredBooks.findIndex((b) => b.id === focusedBook?.id);
-          const nextIndex = (currentIndex + 1) % filteredBooks.length;
-          setFocusedBook(filteredBooks[nextIndex]);
-        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-          e.preventDefault();
-          if (filteredBooks.length === 0) return;
-          const currentIndex = filteredBooks.findIndex((b) => b.id === focusedBook?.id);
-          const prevIndex = (currentIndex - 1 + filteredBooks.length) % filteredBooks.length;
-          setFocusedBook(filteredBooks[prevIndex]);
+        if (activeModal) {
+          handleCloseDock();
+        } else if (viewMode === 'globe' && appMode === 'country') {
+          exitToGlobe();
         }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeModal, filteredBooks, focusedBook, handleCloseDock, selectRandomBook, setFocusedBook]);
+  }, [
+    activeModal,
+    viewMode,
+    appMode,
+    handleCloseDock,
+    selectRandomCountry,
+    selectRandomBook,
+    exitToGlobe,
+  ]);
 
   const handleSelectBook = useCallback(
     (book: Book) => {
@@ -124,42 +140,71 @@ export default function Home() {
   );
 
   const handleLoadingFinished = useCallback(() => {
-    // Select first book on load, bubble up books, and present the elevated book
-    const chosen = selectRandomBook();
-    if (chosen) {
-      setTimeout(() => {
-        setActiveModal('details');
-      }, 750);
-    }
-  }, [selectRandomBook]);
+    // Finished loading screen
+  }, []);
 
   const isDetailsDockOpen = activeModal === 'details' && !!selectedBook;
 
   return (
-    <main className="relative w-screen h-screen overflow-hidden bg-[#020712] text-zinc-100">
-      {/* Interactive Endless Ocean Canvas in Top View */}
-      <BookSphere
-        onSelectBook={handleSelectBook}
-        isDockOpen={isDetailsDockOpen}
-        onCloseDock={handleCloseDock}
-      />
+    <main className="relative w-screen h-screen overflow-hidden bg-[#020612] text-zinc-100">
+      {viewMode === 'globe' ? (
+        appMode === 'country' && activeCountry ? (
+          <CountryView
+            country={activeCountry}
+            onBackToGlobe={exitToGlobe}
+            onSelectBook={(b) => setSelectedBook(b as unknown as Book)}
+          />
+        ) : (
+          <>
+            <EarthGlobe
+              countries={countries}
+              onSelectCountry={enterCountry}
+              hoveredCountry={hoveredCountry}
+              onHoverCountry={setHoveredCountry}
+            />
+            <GlobeNav
+              currentView="globe"
+              onToggleView={setViewMode}
+              onOpenAbout={() => setActiveModal('about')}
+              onOpenCatalog={() => setActiveModal('list')}
+            />
+          </>
+        )
+      ) : (
+        <>
+          {/* Interactive Endless Ocean Canvas in Top View */}
+          <BookSphere
+            onSelectBook={handleSelectBook}
+            isDockOpen={isDetailsDockOpen}
+            onCloseDock={handleCloseDock}
+          />
 
-      {/* Discreet Corner Toggle & Tools */}
-      <BookHeader
-        onOpenAbout={() => setActiveModal('about')}
-        onOpenList={() => setActiveModal('list')}
-      />
+          <GlobeNav
+            currentView="ocean"
+            onToggleView={setViewMode}
+            onOpenAbout={() => setActiveModal('about')}
+            onOpenCatalog={() => setActiveModal('list')}
+          />
 
-      {/* Bottom Hint Bar */}
-      <FooterBar />
+          {/* Discreet Corner Toggle & Tools for Ocean */}
+          <BookHeader
+            onOpenAbout={() => setActiveModal('about')}
+            onOpenList={() => setActiveModal('list')}
+          />
 
-      {/* Top-Left Sliding Book Detail Card with Cover Background */}
-      <BookDetailsModal
-        isOpen={isDetailsDockOpen}
-        book={selectedBook}
-        onClose={handleCloseDock}
-      />
+          {/* Bottom Hint Bar */}
+          <FooterBar />
 
+          {/* Top-Left Sliding Book Detail Card with Cover Background */}
+          <BookDetailsModal
+            isOpen={isDetailsDockOpen}
+            book={selectedBook}
+            onClose={handleCloseDock}
+          />
+        </>
+      )}
+
+      {/* Shared Modals */}
       <BookListModal
         isOpen={activeModal === 'list'}
         onClose={() => setActiveModal(null)}
@@ -171,7 +216,7 @@ export default function Home() {
         onClose={() => setActiveModal(null)}
       />
 
-      {/* Intro Loading Screen with sequential dot ellipsis */}
+      {/* Intro Loading Screen */}
       <LoadingScreen isReady={isReady} onFinished={handleLoadingFinished} />
     </main>
   );
