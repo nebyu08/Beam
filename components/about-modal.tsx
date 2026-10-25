@@ -39,7 +39,7 @@ export default function AboutModal({ isOpen, onClose }: AboutModalProps) {
         </div>
 
         <p className="text-sm text-zinc-300 leading-relaxed mb-6 font-light">
-          An interactive, minimalistic 3D Earth globe that organizes world literature by geographical and cultural origin. Spin the Earth to discover canonical masterpieces and Nobel-winning authors from Russia, Japan, Colombia, Nigeria, France, and beyond.
+          An interactive, minimalistic 3D Earth globe that organizes world literature by geographical and cultural origin across 164 sovereign nations and nearly 600 canonical works. Spin the Earth to discover canonical masterpieces and Nobel-winning authors from Russia, Japan, Colombia, Ethiopia, Nigeria, France, and beyond.
         </p>
 
         {/* Controls Guide */}

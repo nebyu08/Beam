@@ -37,6 +37,11 @@ export default function EarthGlobe({
   const [isLoaded, setIsLoaded] = useState(false);
   const [mouseScreenPos, setMouseScreenPos] = useState<{ x: number; y: number } | null>(null);
 
+  const totalBooksCount = useMemo(
+    () => countries.reduce((acc, c) => acc + c.books.length, 0),
+    [countries]
+  );
+
   // Map country ID / name to GeoCountry for fast O(1) lookup
   const countryLookup = useMemo(() => {
     const map = new Map<string, GeoCountry>();
@@ -444,8 +449,8 @@ export default function EarthGlobe({
           <div>
             <h1 className="text-sm font-semibold tracking-wide text-zinc-100 flex items-center gap-2">
               Atlas of World Literature
-              <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                37 Nations • 150+ Masterpieces
+              <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                {countries.length} Nations • {totalBooksCount} Masterpieces
               </span>
             </h1>
             <p className="text-xs text-zinc-400 font-light tracking-wide">
