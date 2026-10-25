@@ -53,18 +53,18 @@ export default function LoadingScreen({ isReady, onFinished }: LoadingScreenProp
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#060608] select-none transition-opacity duration-700 ease-out ${
+      className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-black select-none transition-opacity duration-700 ease-out ${
         isFading ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'
       }`}
     >
-      {/* Subtle ambient glow behind text */}
-      <div className="absolute w-96 h-96 rounded-full bg-emerald-500/5 blur-3xl pointer-events-none" />
+      {/* Subtle monochrome ambient glow behind text */}
+      <div className="absolute w-96 h-96 rounded-full bg-white/[0.04] blur-3xl pointer-events-none" />
 
       <div className="relative z-10 flex flex-col items-center px-6 text-center">
         {/* Main "theres nothing to read" Title with Sequential Dots OUTSIDE the quotes */}
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white italic drop-shadow-2xl">
           <span>&ldquo;theres nothing to read&rdquo;</span>
-          <span className="inline-flex tracking-wider not-italic text-emerald-400 font-mono pl-1.5">
+          <span className="inline-flex tracking-wider not-italic text-zinc-300 font-mono pl-1.5">
             <span
               className={`inline-block transition-opacity duration-150 ${
                 dotCount >= 1 ? 'opacity-100' : 'opacity-0'
@@ -88,6 +88,9 @@ export default function LoadingScreen({ isReady, onFinished }: LoadingScreenProp
             </span>
           </span>
         </h1>
+        <p className="mt-4 text-[11px] font-mono uppercase tracking-[0.28em] text-zinc-500">
+          calibrating literary orbit
+        </p>
       </div>
     </div>
   );

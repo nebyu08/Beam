@@ -58,8 +58,10 @@ export const useGeoStore = create<GeoStore>((set, get) => ({
   },
 
   exitToGlobe: () => {
+    const { activeCountry } = get();
     set({
       appMode: 'globe',
+      hoveredCountry: activeCountry,
       activeCountry: null,
       selectedBook: null,
       isDetailOpen: false,

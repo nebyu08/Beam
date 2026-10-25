@@ -7,6 +7,7 @@ import { Book } from '@/lib/types';
 import EarthGlobe from '@/components/earth-globe';
 import BookSphere from '@/components/book-sphere';
 import BookDetailsModal from '@/components/book-details-modal';
+import LoadingScreen from '@/components/loading-screen';
 
 export default function Home() {
   const {
@@ -28,6 +29,16 @@ export default function Home() {
   } = useGeoStore();
 
   const [activeModal, setActiveModal] = useState<'details' | null>(null);
+  const [isIntroReady, setIsIntroReady] = useState(false);
+  const [introDismissed, setIntroDismissed] = useState(false);
+
+  // Trigger intro readiness once topology and initial assets settle
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsIntroReady(true);
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Sync books from /data/books.json in background if needed
   useEffect(() => {
@@ -76,10 +87,12 @@ export default function Home() {
             setActiveModal('details');
           }
         }
-      } else if (e.key === 'Escape') {
+      } else if (e.key === 'Escape' || e.key === 'Backspace') {
         if (activeModal) {
+          e.preventDefault();
           handleCloseDock();
         } else if (appMode === 'country') {
+          e.preventDefault();
           exitToGlobe();
         }
       }
@@ -129,12 +142,22 @@ export default function Home() {
         />
       )}
 
-      {/* Top-Left Sliding Book Detail Modal with Full Cover Background */}
+      {/* Top-Left Sliding Book Detail Modal with Full Cover Background & Direct Navigation */}
       <BookDetailsModal
         isOpen={isDetailsDockOpen}
         book={selectedBook}
+        countryName={activeCountry?.name}
         onClose={handleCloseDock}
+        onBackToGlobe={exitToGlobe}
       />
+
+      {/* Atmospheric Intro Loading Screen: "theres nothing to read" with animated dots */}
+      {!introDismissed && (
+        <LoadingScreen
+          isReady={isIntroReady}
+          onFinished={() => setIntroDismissed(true)}
+        />
+      )}
     </main>
   );
 }

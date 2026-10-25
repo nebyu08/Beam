@@ -1053,11 +1053,11 @@ export default function BookSphere({
 
   // Pointer Down on container starts drag
   const handlePointerDown = (e: React.PointerEvent) => {
-    if (isDockOpen) return;
     const cam = cameraRef.current;
-    cam.isDragging = true;
     cam.dragStartX = e.clientX;
     cam.dragStartY = e.clientY;
+    if (isDockOpen) return;
+    cam.isDragging = true;
     cam.lastDragX = e.clientX;
     cam.lastDragY = e.clientY;
     cam.lastDragTime = performance.now();
@@ -1068,15 +1068,15 @@ export default function BookSphere({
   };
 
   const handleClick = (e: React.MouseEvent) => {
+    // If dock is already open, clicking on the canvas outside the dock closes it and resumes animation
+    if (isDockOpen) {
+      onCloseDock?.();
+      return;
+    }
+
     const cam = cameraRef.current;
     const dragDist = Math.hypot(e.clientX - cam.dragStartX, e.clientY - cam.dragStartY);
     if (dragDist < 6) {
-      // If dock is already open, clicking on the canvas outside the dock closes it and resumes animation
-      if (isDockOpen) {
-        onCloseDock?.();
-        return;
-      }
-
       // If dock is closed, clicking a book selects it and opens the dock
       const current = focusedBookRef.current || previewBook;
       if (current) {
@@ -1089,7 +1089,7 @@ export default function BookSphere({
   return (
     <div
       ref={containerRef}
-      className={`absolute inset-0 w-full h-full overflow-hidden select-none bg-[#020712] ${
+      className={`absolute inset-0 w-full h-full overflow-hidden select-none bg-black ${
         isDockOpen ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'
       }`}
       onPointerDown={handlePointerDown}
@@ -1097,21 +1097,50 @@ export default function BookSphere({
     >
       <canvas ref={canvasRef} className="w-full h-full block" />
 
-      {/* Floating Ethereal Preview Tag on Hover (Only when dock is closed) */}
+      {/* Prominent Floating Navigation: Always Accessible Back to Earth Globe Header */}
+      {onBackToGlobe && activeCountry && (
+        <div className="absolute top-5 left-5 z-30 pointer-events-auto">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onBackToGlobe();
+            }}
+            className="group flex items-center gap-2.5 px-4 py-2 rounded-full bg-black/90 hover:bg-zinc-900 backdrop-blur-xl border border-white/25 hover:border-white/60 text-white text-xs font-medium transition-all shadow-[0_8px_32px_rgba(0,0,0,0.85)] hover:scale-105 active:scale-95 cursor-pointer"
+            title="Return to Earth Globe (Esc)"
+          >
+            <span className="text-zinc-400 group-hover:text-white transition-colors">←</span>
+            <span className="text-sm">{activeCountry.flag}</span>
+            <span className="font-semibold tracking-wide text-white">{activeCountry.name}</span>
+            <span className="text-zinc-600">•</span>
+            <span className="text-zinc-300 font-mono text-[11px]">
+              {currentBooks.length} works
+            </span>
+            <span className="text-zinc-600">•</span>
+            <span className="text-[11px] text-zinc-400 group-hover:text-zinc-200">
+              Earth Globe
+            </span>
+            <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-400 border border-zinc-800">
+              Esc
+            </kbd>
+          </button>
+        </div>
+      )}
+
+      {/* Floating Ethereal Preview Tag on Hover (Only when dock is closed, Monochrome) */}
       <div
         ref={floatingPreviewElRef}
         style={{ display: 'none', opacity: 0 }}
-        className="pointer-events-none absolute top-0 left-0 z-20 w-72 p-3 rounded-2xl bg-slate-950/85 backdrop-blur-xl border border-sky-500/20 shadow-[0_12px_32px_rgba(0,0,0,0.85)] text-zinc-100"
+        className="pointer-events-none absolute top-0 left-0 z-20 w-72 p-3.5 rounded-2xl bg-black/90 backdrop-blur-2xl border border-white/20 shadow-[0_16px_40px_rgba(0,0,0,0.95)] text-zinc-100"
       >
         {previewBook && !isDockOpen && (
           <div className="flex items-start justify-between gap-3 select-none">
             <div className="flex-1 min-w-0">
-              <p className="text-[11px] font-medium text-sky-300/80 truncate flex items-center gap-1.5 mb-0.5">
+              <p className="text-[11px] font-medium text-zinc-400 truncate flex items-center gap-1.5 mb-0.5">
                 <span className="truncate">{previewBook.author}</span>
                 {previewBook.year > 0 && (
                   <>
-                    <span className="text-sky-600">•</span>
-                    <span className="text-sky-400 font-mono text-[10px]">
+                    <span className="text-zinc-600">•</span>
+                    <span className="text-zinc-300 font-mono text-[10px]">
                       {previewBook.year}
                     </span>
                   </>
@@ -1122,19 +1151,19 @@ export default function BookSphere({
                 {previewBook.title}
               </h3>
 
-              <div className="mt-2 flex items-center justify-between gap-2">
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-900/90 text-sky-200 border border-sky-700/40 truncate max-w-[120px]">
+              <div className="mt-2.5 flex items-center justify-between gap-2">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-zinc-900 text-zinc-200 border border-zinc-700 truncate max-w-[120px]">
                   {previewBook.genre}
                 </span>
-                <span className="text-[10px] text-sky-400 font-mono font-medium">
+                <span className="text-[10px] text-zinc-400 font-mono font-medium">
                   Click to inspect ↗
                 </span>
               </div>
             </div>
 
-            {/* Circular Rating Dial */}
+            {/* Circular Rating Dial (Monochrome) */}
             <div
-              className="shrink-0 flex flex-col items-center justify-center w-9 h-9 rounded-full bg-slate-900 border border-sky-800/60"
+              className="shrink-0 flex flex-col items-center justify-center w-9 h-9 rounded-full bg-zinc-900 border border-zinc-700"
               title={`${previewBook.rating || 85}% Rating`}
             >
               <div className="relative w-7 h-7 flex items-center justify-center">
@@ -1145,7 +1174,7 @@ export default function BookSphere({
                     r={10}
                     stroke="currentColor"
                     strokeWidth="2.5"
-                    className="text-slate-800"
+                    className="text-zinc-800"
                     fill="transparent"
                   />
                   <circle
@@ -1154,7 +1183,7 @@ export default function BookSphere({
                     r={10}
                     stroke="currentColor"
                     strokeWidth="2.5"
-                    className="text-sky-400"
+                    className="text-white"
                     fill="transparent"
                     strokeDasharray={2 * Math.PI * 10}
                     strokeDashoffset={
@@ -1164,30 +1193,11 @@ export default function BookSphere({
                     strokeLinecap="round"
                   />
                 </svg>
-                <span className="absolute text-[8.5px] font-mono font-bold text-sky-100">
+                <span className="absolute text-[8.5px] font-mono font-bold text-white">
                   {previewBook.rating || 85}
                 </span>
               </div>
             </div>
-          </div>
-        )}
-
-        {/* Discreet Minimal Floating Back to Globe Pill */}
-        {onBackToGlobe && activeCountry && (
-          <div className="absolute top-5 left-5 z-30 pointer-events-auto">
-            <button
-              onClick={onBackToGlobe}
-              className="group flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/85 hover:bg-zinc-900 backdrop-blur-xl border border-white/20 text-white text-xs font-medium transition-all shadow-2xl hover:border-white/40 active:scale-95"
-              title="Return to Earth Globe (Esc)"
-            >
-              <span className="text-sm">{activeCountry.flag}</span>
-              <span className="font-semibold tracking-wide">{activeCountry.name}</span>
-              <span className="text-zinc-600">•</span>
-              <span className="text-[11px] text-zinc-400 group-hover:text-zinc-200">Globe</span>
-              <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-400 border border-zinc-800">
-                Esc
-              </kbd>
-            </button>
           </div>
         )}
       </div>
