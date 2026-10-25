@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import * as d3 from 'd3-geo';
 import * as topojson from 'topojson-client';
 import { GeoCountry, GeoBook } from '@/lib/geo-types';
-import { Compass, Globe, Sparkles, ZoomIn, ZoomOut, RotateCcw, ChevronRight, BookOpen } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCcw, ChevronRight } from 'lucide-react';
 
 interface EarthGlobeProps {
   countries: GeoCountry[];
@@ -36,11 +36,6 @@ export default function EarthGlobe({
   const [worldFeatures, setWorldFeatures] = useState<any[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [mouseScreenPos, setMouseScreenPos] = useState<{ x: number; y: number } | null>(null);
-
-  const totalBooksCount = useMemo(
-    () => countries.reduce((acc, c) => acc + c.books.length, 0),
-    [countries]
-  );
 
   // Map country ID / name to GeoCountry for fast O(1) lookup
   const countryLookup = useMemo(() => {
@@ -165,18 +160,18 @@ export default function EarthGlobe({
 
       const path = d3.geoPath(projection, ctx);
 
-      // --- 1. Atmospheric Outer Halo ---
+      // --- 1. Atmospheric Outer Halo (Monochrome) ---
       const outerGlow = ctx.createRadialGradient(cx, cy, currentScale, cx, cy, currentScale * 1.15);
-      outerGlow.addColorStop(0, 'rgba(56, 189, 248, 0.22)');
-      outerGlow.addColorStop(0.4, 'rgba(99, 102, 241, 0.08)');
-      outerGlow.addColorStop(1, 'rgba(2, 6, 23, 0)');
+      outerGlow.addColorStop(0, 'rgba(255, 255, 255, 0.16)');
+      outerGlow.addColorStop(0.35, 'rgba(255, 255, 255, 0.04)');
+      outerGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
 
       ctx.beginPath();
       ctx.arc(cx, cy, currentScale * 1.15, 0, Math.PI * 2);
       ctx.fillStyle = outerGlow;
       ctx.fill();
 
-      // --- 2. Ocean Disc ---
+      // --- 2. Ocean Disc (Obsidian Black) ---
       const oceanGrad = ctx.createRadialGradient(
         cx - currentScale * 0.25,
         cy - currentScale * 0.25,
@@ -185,9 +180,9 @@ export default function EarthGlobe({
         cy,
         currentScale
       );
-      oceanGrad.addColorStop(0, '#0d1836');
-      oceanGrad.addColorStop(0.6, '#070f24');
-      oceanGrad.addColorStop(1, '#020614');
+      oceanGrad.addColorStop(0, '#151515');
+      oceanGrad.addColorStop(0.55, '#090909');
+      oceanGrad.addColorStop(1, '#000000');
 
       ctx.beginPath();
       ctx.arc(cx, cy, currentScale, 0, Math.PI * 2);
@@ -197,7 +192,7 @@ export default function EarthGlobe({
       // Atmospheric rim highlight
       ctx.beginPath();
       ctx.arc(cx, cy, currentScale, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(147, 197, 253, 0.35)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.32)';
       ctx.lineWidth = 1.25;
       ctx.stroke();
 
@@ -205,7 +200,7 @@ export default function EarthGlobe({
       ctx.beginPath();
       path(graticule);
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
-      ctx.lineWidth = 0.6;
+      ctx.lineWidth = 0.5;
       ctx.stroke();
 
       // --- 4. Render Landmass Polygons ---
@@ -225,30 +220,30 @@ export default function EarthGlobe({
         path(feature);
 
         if (isHovered) {
-          // Vibrant glowing highlight on hover
-          ctx.fillStyle = 'rgba(99, 102, 241, 0.45)';
+          // Luminous white highlight on hover
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.38)';
           ctx.fill();
-          ctx.strokeStyle = '#a5b4fc';
+          ctx.strokeStyle = '#ffffff';
           ctx.lineWidth = 1.8;
           ctx.stroke();
         } else if (matchedGeoCountry) {
           // Land with registered literary history
-          ctx.fillStyle = '#172545';
+          ctx.fillStyle = '#1c1c1c';
           ctx.fill();
-          ctx.strokeStyle = 'rgba(129, 140, 248, 0.3)';
-          ctx.lineWidth = 0.9;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+          ctx.lineWidth = 0.8;
           ctx.stroke();
         } else {
           // Standard landmass
-          ctx.fillStyle = '#0f172a';
+          ctx.fillStyle = '#0c0c0c';
           ctx.fill();
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
           ctx.lineWidth = 0.5;
           ctx.stroke();
         }
       }
 
-      // --- 5. Literary Beacons (Pulsing Capital Pins) ---
+      // --- 5. Literary Beacons (Pulsing Capital Pins in Pure White) ---
       const now = performance.now();
       for (const country of countries) {
         const coord: [number, number] = [country.viewLng, country.viewLat];
@@ -269,24 +264,24 @@ export default function EarthGlobe({
         ctx.beginPath();
         ctx.arc(bx, by, pulseRadius, 0, Math.PI * 2);
         ctx.strokeStyle = isHovered
-          ? `rgba(168, 85, 247, ${1 - pulse})`
-          : `rgba(96, 165, 250, ${(1 - pulse) * 0.65})`;
+          ? `rgba(255, 255, 255, ${1 - pulse})`
+          : `rgba(255, 255, 255, ${(1 - pulse) * 0.6})`;
         ctx.lineWidth = 1;
         ctx.stroke();
 
         // Core luminous pin
         ctx.beginPath();
         ctx.arc(bx, by, isHovered ? 4.5 : 2.8, 0, Math.PI * 2);
-        ctx.fillStyle = isHovered ? '#c084fc' : '#60a5fa';
-        ctx.shadowColor = isHovered ? '#c084fc' : '#60a5fa';
-        ctx.shadowBlur = isHovered ? 12 : 6;
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = '#ffffff';
+        ctx.shadowBlur = isHovered ? 14 : 5;
         ctx.fill();
         ctx.shadowBlur = 0; // reset
 
         // Country title label if hovered or high scale
         if (isHovered || currentScale > baseScale * 1.3) {
           ctx.font = '500 11px Inter, system-ui, sans-serif';
-          ctx.fillStyle = '#f8fafc';
+          ctx.fillStyle = '#ffffff';
           ctx.shadowColor = '#000000';
           ctx.shadowBlur = 4;
           ctx.fillText(`${country.flag} ${country.name}`, bx + 8, by + 3);
@@ -427,8 +422,8 @@ export default function EarthGlobe({
   };
 
   return (
-    <div className="relative w-full h-full select-none overflow-hidden bg-[#020612]">
-      {/* 3D Earth Globe Canvas */}
+    <div className="relative w-full h-full select-none overflow-hidden bg-black">
+      {/* 3D Black & White Earth Globe Canvas */}
       <canvas
         ref={canvasRef}
         onPointerDown={handlePointerDown}
@@ -440,27 +435,7 @@ export default function EarthGlobe({
         }`}
       />
 
-      {/* Modern Minimal Top Header */}
-      <div className="absolute top-6 left-8 pointer-events-none z-10">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-indigo-500/10 border border-indigo-400/30 flex items-center justify-center backdrop-blur-md shadow-lg shadow-indigo-950/40">
-            <Globe className="w-4 h-4 text-indigo-400" />
-          </div>
-          <div>
-            <h1 className="text-sm font-semibold tracking-wide text-zinc-100 flex items-center gap-2">
-              Atlas of World Literature
-              <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                {countries.length} Nations • {totalBooksCount} Masterpieces
-              </span>
-            </h1>
-            <p className="text-xs text-zinc-400 font-light tracking-wide">
-              Click any nation on the globe to explore its literary origins and canonical authors
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Minimal Floating HUD Tooltip when Hovering a Literary Nation */}
+      {/* Minimal Floating HUD Tooltip when Hovering a Literary Nation (Monochrome) */}
       {hoveredCountry && mouseScreenPos && (
         <div
           className="fixed pointer-events-none z-30 transition-all duration-150 ease-out"
@@ -469,23 +444,23 @@ export default function EarthGlobe({
             top: `${Math.min(window.innerHeight - 200, mouseScreenPos.y - 40)}px`,
           }}
         >
-          <div className="w-72 p-4 rounded-2xl bg-zinc-950/80 backdrop-blur-xl border border-indigo-500/30 shadow-2xl shadow-indigo-950/60 text-zinc-100">
-            <div className="flex items-center justify-between pb-2 mb-2 border-b border-zinc-800/80">
+          <div className="w-72 p-4 rounded-2xl bg-black/95 backdrop-blur-2xl border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.95)] text-white">
+            <div className="flex items-center justify-between pb-2 mb-2 border-b border-zinc-800">
               <div className="flex items-center gap-2">
                 <span className="text-2xl leading-none">{hoveredCountry.flag}</span>
                 <div>
-                  <h3 className="font-semibold text-sm tracking-wide text-zinc-100">
+                  <h3 className="font-semibold text-sm tracking-wide text-white">
                     {hoveredCountry.name}
                   </h3>
-                  <span className="text-[10px] text-indigo-400 font-mono">
+                  <span className="text-[10px] text-zinc-400 font-mono">
                     {hoveredCountry.books.length} canonical works
                   </span>
                 </div>
               </div>
-              <ChevronRight className="w-4 h-4 text-indigo-400" />
+              <ChevronRight className="w-4 h-4 text-zinc-400" />
             </div>
 
-            <p className="text-xs font-medium text-zinc-300 mb-2 line-clamp-1">
+            <p className="text-xs font-medium text-zinc-200 mb-2 line-clamp-1">
               {hoveredCountry.title}
             </p>
             <p className="text-[11px] text-zinc-400 leading-relaxed mb-3 line-clamp-2 font-light">
@@ -508,7 +483,7 @@ export default function EarthGlobe({
               )}
             </div>
 
-            <div className="pt-2 border-t border-zinc-800/60 flex items-center justify-between text-[10px] text-indigo-400 font-medium">
+            <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between text-[10px] text-zinc-300 font-medium">
               <span>Click to deep-dive</span>
               <span>Explore →</span>
             </div>
@@ -516,65 +491,28 @@ export default function EarthGlobe({
         </div>
       )}
 
-      {/* Floating Bottom Quick Navigator Bar */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 pointer-events-auto">
-        <div className="flex items-center gap-1.5 p-1.5 rounded-full bg-zinc-950/70 backdrop-blur-xl border border-zinc-800/80 shadow-2xl">
-          <button
-            onClick={() => {
-              const random = countries[Math.floor(Math.random() * countries.length)];
-              targetRotationRef.current = [-random.viewLng, -random.viewLat, 0];
-              setTimeout(() => onSelectCountry(random), 500);
-            }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 hover:text-indigo-200 border border-indigo-500/30 text-xs font-medium transition-all"
-            title="Random Literary Journey"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-            <span>Surprise Me</span>
-          </button>
-
-          <div className="h-4 w-px bg-zinc-800 mx-1" />
-
-          {/* Quick jump nation pills */}
-          <div className="flex items-center gap-1 max-w-[60vw] overflow-x-auto no-scrollbar py-0.5">
-            {countries.slice(0, 8).map((c) => (
-              <button
-                key={c.id}
-                onClick={() => {
-                  targetRotationRef.current = [-c.viewLng, -c.viewLat, 0];
-                  setTimeout(() => onSelectCountry(c), 500);
-                }}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-900/60 hover:bg-zinc-800/90 text-zinc-300 hover:text-zinc-100 border border-zinc-800 text-xs transition-all whitespace-nowrap"
-              >
-                <span>{c.flag}</span>
-                <span>{c.name}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Minimal Zoom & Compass Controls */}
-      <div className="absolute bottom-6 right-8 flex flex-col gap-2 z-10 pointer-events-auto">
+      {/* Minimal Subtle Zoom Controls */}
+      <div className="absolute bottom-6 right-6 flex flex-col gap-2 z-10 pointer-events-auto">
         <button
           onClick={() => handleZoom('in')}
-          className="w-9 h-9 rounded-full bg-zinc-950/70 hover:bg-zinc-900 backdrop-blur-md border border-zinc-800 text-zinc-300 hover:text-zinc-100 flex items-center justify-center transition-all shadow-lg"
+          className="w-8 h-8 rounded-full bg-black/60 hover:bg-zinc-900 backdrop-blur-md border border-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition-all shadow-lg active:scale-95"
           title="Zoom In"
         >
-          <ZoomIn className="w-4 h-4" />
+          <ZoomIn className="w-3.5 h-3.5" />
         </button>
         <button
           onClick={() => handleZoom('out')}
-          className="w-9 h-9 rounded-full bg-zinc-950/70 hover:bg-zinc-900 backdrop-blur-md border border-zinc-800 text-zinc-300 hover:text-zinc-100 flex items-center justify-center transition-all shadow-lg"
+          className="w-8 h-8 rounded-full bg-black/60 hover:bg-zinc-900 backdrop-blur-md border border-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition-all shadow-lg active:scale-95"
           title="Zoom Out"
         >
-          <ZoomOut className="w-4 h-4" />
+          <ZoomOut className="w-3.5 h-3.5" />
         </button>
         <button
           onClick={handleResetGlobe}
-          className="w-9 h-9 rounded-full bg-zinc-950/70 hover:bg-zinc-900 backdrop-blur-md border border-zinc-800 text-zinc-300 hover:text-zinc-100 flex items-center justify-center transition-all shadow-lg"
-          title="Reset Globe View"
+          className="w-8 h-8 rounded-full bg-black/60 hover:bg-zinc-900 backdrop-blur-md border border-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition-all shadow-lg active:scale-95"
+          title="Reset View"
         >
-          <RotateCcw className="w-4 h-4" />
+          <RotateCcw className="w-3.5 h-3.5" />
         </button>
       </div>
     </div>

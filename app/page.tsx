@@ -5,14 +5,8 @@ import { useBookStore } from '@/lib/book-store';
 import { useGeoStore } from '@/lib/geo-store';
 import { Book } from '@/lib/types';
 import EarthGlobe from '@/components/earth-globe';
-import CountryView from '@/components/country-view';
-import GlobeNav from '@/components/globe-nav';
 import BookSphere from '@/components/book-sphere';
-import BookHeader from '@/components/book-header';
-import FooterBar from '@/components/footer-bar';
 import BookDetailsModal from '@/components/book-details-modal';
-import BookListModal from '@/components/book-list-modal';
-import AboutModal from '@/components/about-modal';
 import LoadingScreen from '@/components/loading-screen';
 
 export default function Home() {
@@ -35,11 +29,10 @@ export default function Home() {
     selectRandomCountry,
   } = useGeoStore();
 
-  const [activeModal, setActiveModal] = useState<'about' | 'list' | 'details' | null>(null);
-  const [viewMode, setViewMode] = useState<'globe' | 'ocean'>('globe');
+  const [activeModal, setActiveModal] = useState<'details' | null>(null);
   const [isReady, setIsReady] = useState(false);
 
-  // Preload initial visible batch of covers for smooth entrance
+  // Preload initial batch of covers for smooth entrance
   useEffect(() => {
     if (books.length === 0) return;
     const initialCovers = books
@@ -100,20 +93,22 @@ export default function Home() {
       }
 
       if (e.code === 'Space') {
-        if (viewMode === 'globe' && appMode === 'globe') {
+        if (appMode === 'globe') {
           e.preventDefault();
           selectRandomCountry();
-        } else if (viewMode === 'ocean') {
+        } else if (appMode === 'country') {
           e.preventDefault();
-          const chosen = selectRandomBook();
-          if (chosen) {
+          if (activeCountry && activeCountry.books.length > 0) {
+            const chosen =
+              activeCountry.books[Math.floor(Math.random() * activeCountry.books.length)];
+            setSelectedBook(chosen);
             setActiveModal('details');
           }
         }
       } else if (e.key === 'Escape') {
         if (activeModal) {
           handleCloseDock();
-        } else if (viewMode === 'globe' && appMode === 'country') {
+        } else if (appMode === 'country') {
           exitToGlobe();
         }
       }
@@ -123,11 +118,11 @@ export default function Home() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [
     activeModal,
-    viewMode,
     appMode,
+    activeCountry,
     handleCloseDock,
     selectRandomCountry,
-    selectRandomBook,
+    setSelectedBook,
     exitToGlobe,
   ]);
 
@@ -146,74 +141,32 @@ export default function Home() {
   const isDetailsDockOpen = activeModal === 'details' && !!selectedBook;
 
   return (
-    <main className="relative w-screen h-screen overflow-hidden bg-[#020612] text-zinc-100">
-      {viewMode === 'globe' ? (
-        appMode === 'country' && activeCountry ? (
-          <CountryView
-            country={activeCountry}
-            onBackToGlobe={exitToGlobe}
-            onSelectBook={(b) => setSelectedBook(b as unknown as Book)}
-          />
-        ) : (
-          <>
-            <EarthGlobe
-              countries={countries}
-              onSelectCountry={enterCountry}
-              hoveredCountry={hoveredCountry}
-              onHoverCountry={setHoveredCountry}
-            />
-            <GlobeNav
-              currentView="globe"
-              onToggleView={setViewMode}
-              onOpenAbout={() => setActiveModal('about')}
-              onOpenCatalog={() => setActiveModal('list')}
-            />
-          </>
-        )
+    <main className="relative w-screen h-screen overflow-hidden bg-black text-zinc-100 select-none">
+      {appMode === 'country' && activeCountry ? (
+        /* The Country's Books crawling over screen with living wave heartbeat */
+        <BookSphere
+          books={activeCountry.books}
+          activeCountry={activeCountry}
+          onSelectBook={handleSelectBook}
+          isDockOpen={isDetailsDockOpen}
+          onCloseDock={handleCloseDock}
+          onBackToGlobe={exitToGlobe}
+        />
       ) : (
-        <>
-          {/* Interactive Endless Ocean Canvas in Top View */}
-          <BookSphere
-            onSelectBook={handleSelectBook}
-            isDockOpen={isDetailsDockOpen}
-            onCloseDock={handleCloseDock}
-          />
-
-          <GlobeNav
-            currentView="ocean"
-            onToggleView={setViewMode}
-            onOpenAbout={() => setActiveModal('about')}
-            onOpenCatalog={() => setActiveModal('list')}
-          />
-
-          {/* Discreet Corner Toggle & Tools for Ocean */}
-          <BookHeader
-            onOpenAbout={() => setActiveModal('about')}
-            onOpenList={() => setActiveModal('list')}
-          />
-
-          {/* Bottom Hint Bar */}
-          <FooterBar />
-
-          {/* Top-Left Sliding Book Detail Card with Cover Background */}
-          <BookDetailsModal
-            isOpen={isDetailsDockOpen}
-            book={selectedBook}
-            onClose={handleCloseDock}
-          />
-        </>
+        /* 3D Monochrome Black & White Earth Globe */
+        <EarthGlobe
+          countries={countries}
+          onSelectCountry={enterCountry}
+          hoveredCountry={hoveredCountry}
+          onHoverCountry={setHoveredCountry}
+        />
       )}
 
-      {/* Shared Modals */}
-      <BookListModal
-        isOpen={activeModal === 'list'}
-        onClose={() => setActiveModal(null)}
-        onSelectBook={handleSelectBook}
-      />
-
-      <AboutModal
-        isOpen={activeModal === 'about'}
-        onClose={() => setActiveModal(null)}
+      {/* Top-Left Sliding Book Detail Modal with Full Cover Background */}
+      <BookDetailsModal
+        isOpen={isDetailsDockOpen}
+        book={selectedBook}
+        onClose={handleCloseDock}
       />
 
       {/* Intro Loading Screen */}

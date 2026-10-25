@@ -3,14 +3,25 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useBookStore } from '@/lib/book-store';
 import { Book } from '@/lib/types';
+import { GeoCountry } from '@/lib/geo-types';
 
 interface BookSphereProps {
+  books?: Book[];
+  activeCountry?: GeoCountry | null;
   onSelectBook?: (book: Book) => void;
   isDockOpen?: boolean;
   onCloseDock?: () => void;
+  onBackToGlobe?: () => void;
 }
 
-export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDock }: BookSphereProps) {
+export default function BookSphere({
+  books,
+  activeCountry,
+  onSelectBook,
+  isDockOpen = false,
+  onCloseDock,
+  onBackToGlobe,
+}: BookSphereProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -20,8 +31,9 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
   const floatingPosRef = useRef({ x: -9999, y: -9999, opacity: 0 });
 
   const filteredBooks = useBookStore((s) => s.filteredBooks);
-  const booksRef = useRef<Book[]>(filteredBooks);
-  booksRef.current = filteredBooks;
+  const currentBooks = books && books.length > 0 ? books : filteredBooks;
+  const booksRef = useRef<Book[]>(currentBooks);
+  booksRef.current = currentBooks;
 
   const focusedBook = useBookStore((s) => s.focusedBook);
   const focusedBookRef = useRef<Book | null>(focusedBook);
@@ -36,6 +48,17 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
 
   // Bubble-up entrance progress on initial load (0 = submerged in abyss, 1 = surfaced)
   const bubbleEntranceRef = useRef(0);
+
+  // When active country or book set changes, reset entrance so books bubble up into the ocean
+  useEffect(() => {
+    bubbleEntranceRef.current = 0;
+    if (currentBooks.length > 0) {
+      const hero = currentBooks[0];
+      useBookStore.getState().setSelectedBook(hero);
+      useBookStore.getState().setFocusedBook(hero);
+      pullProgressRef.current = 1.0;
+    }
+  }, [activeCountry, books]);
 
   // Continuous simulation time for living, breathing ocean waves (never paused!)
   const simTimeRef = useRef(0);
@@ -80,9 +103,9 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
 
   // Preload covers
   useEffect(() => {
-    if (!filteredBooks || filteredBooks.length === 0) return;
+    if (!currentBooks || currentBooks.length === 0) return;
 
-    filteredBooks.forEach((book) => {
+    currentBooks.forEach((book) => {
       const src = book.cover || book.cover_url;
       if (!src || imagesRef.current.has(src)) return;
 
@@ -101,7 +124,7 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
         }
       };
     });
-  }, [filteredBooks]);
+  }, [currentBooks]);
 
   // Center camera on book when selected (e.g. initial random pick, Surprise Me, or click)
   const lastCenteringIdRef = useRef<number | null>(null);
@@ -297,11 +320,11 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
       // Smooth zoom interpolation
       cam.zoom += (cam.targetZoom - cam.zoom) * 0.055;
 
-      // Abyssal Ocean Top-View Background
-      ctx.fillStyle = '#020712';
+      // Abyssal Ocean Top-View Background (Pure Monochrome Black)
+      ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, width, height);
 
-      // Deep Ocean Bioluminescent Ambient Glow
+      // Deep Ocean Ambient Glow (Monochrome Vignette)
       const oceanAmbient = ctx.createRadialGradient(
         cam.lensX,
         cam.lensY,
@@ -310,10 +333,10 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
         cam.lensY,
         Math.max(width, height) * 0.88
       );
-      oceanAmbient.addColorStop(0, '#0c273e');
-      oceanAmbient.addColorStop(0.4, '#051829');
-      oceanAmbient.addColorStop(0.75, '#030d17');
-      oceanAmbient.addColorStop(1, '#01050a');
+      oceanAmbient.addColorStop(0, '#1a1a1a');
+      oceanAmbient.addColorStop(0.4, '#0f0f0f');
+      oceanAmbient.addColorStop(0.75, '#060606');
+      oceanAmbient.addColorStop(1, '#000000');
       ctx.fillStyle = oceanAmbient;
       ctx.fillRect(0, 0, width, height);
 
@@ -325,9 +348,9 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
         return;
       }
 
-      // Top-view book pebble dimensions
-      const cols = 20;
-      const rows = Math.ceil(booksCount / cols);
+      // Top-view book dimensions: dynamically scale cols & rows so small sets (e.g. 5-10 books) tile richly
+      const cols = Math.max(5, Math.min(20, Math.ceil(Math.sqrt(booksCount * 3.5))));
+      const rows = Math.max(4, Math.ceil(booksCount / cols));
 
       const cardW = 74 * cam.zoom;
       const cardH = 108 * cam.zoom;
@@ -986,6 +1009,25 @@ export default function BookSphere({ onSelectBook, isDockOpen = false, onCloseDo
                 </span>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Discreet Minimal Floating Back to Globe Pill */}
+        {onBackToGlobe && activeCountry && (
+          <div className="absolute top-5 left-5 z-30 pointer-events-auto">
+            <button
+              onClick={onBackToGlobe}
+              className="group flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/85 hover:bg-zinc-900 backdrop-blur-xl border border-white/20 text-white text-xs font-medium transition-all shadow-2xl hover:border-white/40 active:scale-95"
+              title="Return to Earth Globe (Esc)"
+            >
+              <span className="text-sm">{activeCountry.flag}</span>
+              <span className="font-semibold tracking-wide">{activeCountry.name}</span>
+              <span className="text-zinc-600">•</span>
+              <span className="text-[11px] text-zinc-400 group-hover:text-zinc-200">Globe</span>
+              <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-400 border border-zinc-800">
+                Esc
+              </kbd>
+            </button>
           </div>
         )}
       </div>
