@@ -348,67 +348,6 @@ export default function BookSphere({
         return;
       }
 
-      // Top-view book dimensions: dynamically scale cols & rows so small sets (e.g. 5-10 books) tile richly
-      const cols = Math.max(5, Math.min(20, Math.ceil(Math.sqrt(booksCount * 3.5))));
-      const rows = Math.max(4, Math.ceil(booksCount / cols));
-
-      const cardW = 74 * cam.zoom;
-      const cardH = 108 * cam.zoom;
-
-      // Tight ocean stone lattice spacing
-      const stepX = 77 * cam.zoom;
-      const stepY = 111 * cam.zoom;
-
-      // Total wrapped grid dimensions for toroidal distance calculations
-      const gridW = cols * stepX;
-      const gridH = rows * stepY;
-
-      // Mountain influence radius: spans across 3-4 rings of books to form a majestic mountain range
-      const mountainRadius = stepX * 3.4;
-
-      // Selected book coordinates on the plane
-      const selectedIndex = selectedBookRef.current
-        ? books.findIndex((b) => b.id === selectedBookRef.current?.id)
-        : -1;
-      const selCol = selectedIndex >= 0 ? selectedIndex % cols : -1;
-      const selRow = selectedIndex >= 0 ? Math.floor(selectedIndex / cols) : -1;
-      const selOffsetX = selRow >= 0 ? (selRow % 2) * (stepX * 0.5) : 0;
-      const selBaseX = screenCenterX + selCol * stepX + selOffsetX + cam.x;
-      const selBaseY = screenCenterY + selRow * stepY + cam.y;
-
-      // Endless ocean grid buffer
-      const bufferPadding = Math.max(width, height) * 0.6;
-      const minCol = Math.floor((-cam.x - screenCenterX - bufferPadding) / stepX) - 3;
-      const maxCol = Math.ceil((width - cam.x - screenCenterX + bufferPadding) / stepX) + 3;
-      const minRow = Math.floor((-cam.y - screenCenterY - bufferPadding) / stepY) - 3;
-      const maxRow = Math.ceil((height - cam.y - screenCenterY + bufferPadding) / stepY) + 3;
-
-      // FAST PRE-PASS: Find the exact book directly under the cursor (the Apex Peak)
-      let hoverApexBook: Book | null = isDockOpen ? selectedBookRef.current : null;
-      let minApexDist = Infinity;
-      let hoverApexCoords = { screenX: 0, screenY: 0, w: 0, h: 0 };
-
-      if (!isDockOpen && cam.hasActiveMouse) {
-        for (let r = minRow; r <= maxRow; r++) {
-          const rowWrapped = ((r % rows) + rows) % rows;
-          const offsetX = (r % 2) * (stepX * 0.5);
-          for (let c = minCol; c <= maxCol; c++) {
-            const colWrapped = ((c % cols) + cols) % cols;
-            const bIndex = rowWrapped * cols + colWrapped;
-            const b = books[bIndex % booksCount];
-            if (!b) continue;
-
-            const bx = screenCenterX + c * stepX + offsetX + cam.x;
-            const by = screenCenterY + r * stepY + cam.y;
-            const d = Math.hypot(bx - cam.lensX, by - cam.lensY);
-            if (d < minApexDist) {
-              minApexDist = d;
-              hoverApexBook = b;
-            }
-          }
-        }
-      }
-
       interface OceanBookItem {
         book: Book;
         screenX: number;
@@ -423,132 +362,149 @@ export default function BookSphere({
       }
 
       const drawList: OceanBookItem[] = [];
+      const isCountryMode = Boolean(activeCountry);
 
-      for (let r = minRow; r <= maxRow; r++) {
-        const rowWrapped = ((r % rows) + rows) % rows;
-        const offsetX = (r % 2) * (stepX * 0.5);
+      let hoverApexBook: Book | null = isDockOpen ? selectedBookRef.current : null;
+      let minApexDist = Infinity;
+      let hoverApexCoords = { screenX: 0, screenY: 0, w: 0, h: 0 };
 
-        for (let c = minCol; c <= maxCol; c++) {
-          const colWrapped = ((c % cols) + cols) % cols;
-          const bookIndex = rowWrapped * cols + colWrapped;
-          const book = books[bookIndex % booksCount];
-          if (!book) continue;
+      if (isCountryMode) {
+        // =========================================================================
+        // COUNTRY MODE: RENDER EXACT REGIONAL BOOKS ONCE (NO ENDLESS REPETITION)
+        // =========================================================================
+        const cardW = 135 * cam.zoom;
+        const cardH = 195 * cam.zoom;
+        const stepX = 168 * cam.zoom;
+        const stepY = 230 * cam.zoom;
 
-          // Undistorted grid coordinate
-          const baseX = screenCenterX + c * stepX + offsetX + cam.x;
-          const baseY = screenCenterY + r * stepY + cam.y;
+        // 1. FAST PRE-PASS: Find the book closest to cursor
+        if (!isDockOpen && cam.hasActiveMouse) {
+          for (let i = 0; i < booksCount; i++) {
+            const b = books[i];
+            let px = 0;
+            let py = 0;
+            if (booksCount === 1) {
+              px = 0; py = 0;
+            } else if (booksCount <= 4) {
+              px = (i - (booksCount - 1) / 2) * stepX;
+              const arcT = booksCount > 1 ? (i / (booksCount - 1)) * 2 - 1 : 0;
+              py = -(1 - arcT * arcT) * 16 * cam.zoom;
+            } else if (booksCount <= 8) {
+              const r0 = Math.ceil(booksCount / 2);
+              if (i < r0) {
+                px = (i - (r0 - 1) / 2) * stepX;
+                py = -stepY * 0.52;
+              } else {
+                const i1 = i - r0;
+                const r1 = booksCount - r0;
+                px = (i1 - (r1 - 1) / 2) * stepX + (stepX * 0.25);
+                py = stepY * 0.52;
+              }
+            } else {
+              const colsPerRow = Math.ceil(booksCount / 3);
+              const row = Math.floor(i / colsPerRow);
+              const colInRow = i % colsPerRow;
+              const inRow = Math.min(colsPerRow, booksCount - row * colsPerRow);
+              px = (colInRow - (inRow - 1) / 2) * stepX + ((row % 2) * stepX * 0.25);
+              py = (row - 1) * stepY;
+            }
 
-          // 1. Initial "Bubble Up" entrance calculation
+            const bx = screenCenterX + px + cam.x;
+            const by = screenCenterY + py + cam.y;
+            const d = Math.hypot(bx - cam.lensX, by - cam.lensY);
+            if (d < minApexDist) {
+              minApexDist = d;
+              hoverApexBook = b;
+            }
+          }
+        }
+
+        // 2. BUILD DRAW LIST FOR THE EXACT N BOOKS
+        for (let i = 0; i < booksCount; i++) {
+          const book = books[i];
+          let px = 0;
+          let py = 0;
+          if (booksCount === 1) {
+            px = 0; py = 0;
+          } else if (booksCount <= 4) {
+            px = (i - (booksCount - 1) / 2) * stepX;
+            const arcT = booksCount > 1 ? (i / (booksCount - 1)) * 2 - 1 : 0;
+            py = -(1 - arcT * arcT) * 16 * cam.zoom;
+          } else if (booksCount <= 8) {
+            const r0 = Math.ceil(booksCount / 2);
+            if (i < r0) {
+              px = (i - (r0 - 1) / 2) * stepX;
+              py = -stepY * 0.52;
+            } else {
+              const i1 = i - r0;
+              const r1 = booksCount - r0;
+              px = (i1 - (r1 - 1) / 2) * stepX + (stepX * 0.25);
+              py = stepY * 0.52;
+            }
+          } else {
+            const colsPerRow = Math.ceil(booksCount / 3);
+            const row = Math.floor(i / colsPerRow);
+            const colInRow = i % colsPerRow;
+            const inRow = Math.min(colsPerRow, booksCount - row * colsPerRow);
+            px = (colInRow - (inRow - 1) / 2) * stepX + ((row % 2) * stepX * 0.25);
+            py = (row - 1) * stepY;
+          }
+
+          const baseX = screenCenterX + px + cam.x;
+          const baseY = screenCenterY + py + cam.y;
+
+          // Bubble-up entrance calculation
           let bubbleScale = 1.0;
           let bubbleAlpha = 1.0;
-
           if (bubbleEntrance < 0.999) {
-            const distFromCenter = Math.hypot(baseX - screenCenterX, baseY - screenCenterY);
-            const maxSpread = Math.max(width, height) * 0.8;
-            const bookDelay = Math.min(0.55, (distFromCenter / maxSpread) * 0.48);
-
-            const localT = Math.min(1.0, Math.max(0, (bubbleEntrance - bookDelay) / (1.0 - bookDelay)));
+            const distFromCenter = Math.hypot(px, py);
+            const delay = Math.min(0.5, (distFromCenter / 600) * 0.4);
+            const localT = Math.min(1.0, Math.max(0, (bubbleEntrance - delay) / (1.0 - delay)));
             const pop = 1.0 + Math.sin(localT * Math.PI) * 0.22 * (1.0 - localT);
             bubbleScale = Math.max(0, localT * pop);
             bubbleAlpha = Math.min(1.0, localT * 1.6);
           }
-
           if (bubbleScale <= 0.02) continue;
 
-          // 2. Living Breathing Ocean Waves
-          const breathFreq = animTime * 0.0016;
-          const wave1 = Math.sin(baseX * 0.0032 + breathFreq) * Math.cos(baseY * 0.0032 + breathFreq * 0.85);
-          const wave2 = Math.sin((baseX * 0.75 - baseY * 0.75) * 0.0045 + breathFreq * 1.25) * 0.5;
-          const oceanBreathing = (wave1 + wave2) * 0.75; // -1.0 to +1.0
+          // Living Breathing Wave Heartbeat
+          const breathFreq = animTime * 0.0022;
+          const wave = Math.sin(px * 0.005 + breathFreq + i * 0.9) * Math.cos(py * 0.005 + breathFreq * 0.75 + i * 0.6);
+          const breathY = wave * 7.5;
+          const breathScale = 1.0 + wave * 0.04;
 
-          // 3. Toroidal Distance to Selected Book
-          let dSelX = 99999;
-          let dSelY = 99999;
-          let distToSelected = 99999;
-          if (selectedIndex >= 0 && pullProgress > 0.01) {
-            dSelX = baseX - selBaseX;
-            dSelY = baseY - selBaseY;
-            dSelX = dSelX - Math.round(dSelX / gridW) * gridW;
-            dSelY = dSelY - Math.round(dSelY / gridH) * gridH;
-            distToSelected = Math.hypot(dSelX, dSelY);
-          }
-
-          // 4. Distance to Hover Cursor Peak
           const dxCursor = baseX - cam.lensX;
           const dyCursor = baseY - cam.lensY;
           const distToCursor = Math.hypot(dxCursor, dyCursor);
 
-          // 5. MOUNTAIN PEAK & PENCIL-SPIRE ELEVATION CALCULATION:
-          // A single book stands out at the apex summit, and surrounding books are dragged with it into tiered mountain flanks!
           const isSelectedHero = pullProgress > 0.01 && book.id === selectedBookRef.current?.id;
-          const isHoverApex = !isDockOpen && book.id === hoverApexBook?.id && distToCursor < stepX * 1.3;
+          const isHoverApex = !isDockOpen && book.id === hoverApexBook?.id && distToCursor < (cardW * 1.25);
 
-          let hoverSlope = 0;
-          if (!isDockOpen && cam.hasActiveMouse && distToCursor < mountainRadius) {
-            const normCursor = distToCursor / mountainRadius;
-            // Steep conical / pencil-type mountain curve: sharp apex spire, terraced slope
-            hoverSlope = Math.pow(Math.max(0, 1.0 - normCursor), 2.2);
-            if (isHoverApex) {
-              hoverSlope = 1.0; // The apex summit stands out completely!
-            }
+          let elevation = 0;
+          if (isSelectedHero) {
+            elevation = 1.0 * pullProgress;
+          } else if (isHoverApex) {
+            elevation = 1.0;
+          } else if (distToCursor < stepX * 2.4) {
+            elevation = Math.pow(Math.max(0, 1.0 - distToCursor / (stepX * 2.4)), 2.0);
           }
 
-          let selSlope = 0;
-          if (selectedIndex >= 0 && pullProgress > 0.01 && distToSelected < mountainRadius) {
-            const normSel = distToSelected / mountainRadius;
-            selSlope = Math.pow(Math.max(0, 1.0 - normSel), 2.0) * pullProgress;
-            if (isSelectedHero) {
-              selSlope = 1.0 * pullProgress;
-            }
-          }
-
-          // Combined mountain elevation
-          const elevation = Math.min(1.0, Math.max(hoverSlope, selSlope));
-
-          // 6. Wave Displacement (Living breathing ocean):
-          // The selected apex peak stays steady in focus (swayWeight = 0, "only the flatten gets fixed on")
-          // All other books in the ocean continue breathing with their wave UX!
-          const swayWeight = Math.max(0, 1.0 - elevation * 1.5);
-          let screenX = baseX + oceanBreathing * 5.5 * swayWeight;
-          let screenY = baseY + oceanBreathing * 4.2 * swayWeight;
-
-          // 7. INWARD MOUNTAIN DRAG (The rest feel dragged with the one selected/hovered over):
-          // Pulls neighboring books inward and upward toward the summit apex to form an orderly stacked mountain
-          let slopeAngle = 0;
-          if (!isSelectedHero && !isHoverApex && elevation > 0.02) {
-            if (hoverSlope >= selSlope && distToCursor > 2 && distToCursor < mountainRadius) {
-              const dragPull = hoverSlope * (stepX * 0.22);
-              screenX -= (dxCursor / distToCursor) * dragPull;
-              screenY -= (dyCursor / distToCursor) * dragPull;
-              slopeAngle = Math.atan2(dyCursor, dxCursor);
-            } else if (selSlope > 0 && distToSelected > 2 && distToSelected < mountainRadius) {
-              const dragPull = selSlope * (stepX * 0.22);
-              screenX -= (dSelX / distToSelected) * dragPull;
-              screenY -= (dSelY / distToSelected) * dragPull;
-              slopeAngle = Math.atan2(dSelY, dSelX);
-            }
-          }
-
-          // 8. Scale Calculation:
-          // The apex stands out tall and prominent (~1.95x scale), flanked by terraced stepped books
-          const breathScale = 1.0 + oceanBreathing * 0.065 * swayWeight;
-          const mountainScale = 1.0 + elevation * 0.95;
-          const scale = mountainScale * breathScale * bubbleScale;
-
+          const scale = (1.0 + elevation * 0.28) * breathScale * bubbleScale;
           const w = cardW * scale;
           const h = cardH * scale;
 
-          let opacity = (0.86 + elevation * 0.14 + oceanBreathing * 0.06 * swayWeight) * bubbleAlpha;
+          let screenX = baseX;
+          let screenY = baseY + breathY - elevation * (24 * cam.zoom);
 
-          // Frustum culling
-          if (
-            screenX + w < -120 ||
-            screenX - w > width + 120 ||
-            screenY + h < -120 ||
-            screenY - h > height + 120
-          ) {
-            continue;
+          // Subtle drag of neighboring books toward the apex
+          let slopeAngle = 0;
+          if (!isHoverApex && !isSelectedHero && elevation > 0.02 && distToCursor > 2) {
+            const dragPull = elevation * (stepX * 0.16);
+            screenX -= (dxCursor / distToCursor) * dragPull;
+            screenY -= (dyCursor / distToCursor) * dragPull;
+            slopeAngle = Math.atan2(dyCursor, dxCursor);
           }
+
+          const opacity = (0.9 + elevation * 0.1) * bubbleAlpha;
 
           if (isHoverApex || isSelectedHero) {
             hoverApexCoords = { screenX, screenY, w, h };
@@ -566,6 +522,174 @@ export default function BookSphere({
             slopeAngle,
             opacity,
           });
+        }
+      } else {
+        // =========================================================================
+        // GLOBAL INFINITE OCEAN MODE
+        // =========================================================================
+        const cols = 20;
+        const rows = Math.ceil(booksCount / cols);
+        const cardW = 74 * cam.zoom;
+        const cardH = 108 * cam.zoom;
+        const stepX = 77 * cam.zoom;
+        const stepY = 111 * cam.zoom;
+        const gridW = cols * stepX;
+        const gridH = rows * stepY;
+        const mountainRadius = stepX * 3.4;
+
+        const selectedIndex = selectedBookRef.current
+          ? books.findIndex((b) => b.id === selectedBookRef.current?.id)
+          : -1;
+        const selCol = selectedIndex >= 0 ? selectedIndex % cols : -1;
+        const selRow = selectedIndex >= 0 ? Math.floor(selectedIndex / cols) : -1;
+        const selOffsetX = selRow >= 0 ? (selRow % 2) * (stepX * 0.5) : 0;
+        const selBaseX = screenCenterX + selCol * stepX + selOffsetX + cam.x;
+        const selBaseY = screenCenterY + selRow * stepY + cam.y;
+
+        const bufferPadding = Math.max(width, height) * 0.6;
+        const minCol = Math.floor((-cam.x - screenCenterX - bufferPadding) / stepX) - 3;
+        const maxCol = Math.ceil((width - cam.x - screenCenterX + bufferPadding) / stepX) + 3;
+        const minRow = Math.floor((-cam.y - screenCenterY - bufferPadding) / stepY) - 3;
+        const maxRow = Math.ceil((height - cam.y - screenCenterY + bufferPadding) / stepY) + 3;
+
+        if (!isDockOpen && cam.hasActiveMouse) {
+          for (let r = minRow; r <= maxRow; r++) {
+            const rowWrapped = ((r % rows) + rows) % rows;
+            const offsetX = (r % 2) * (stepX * 0.5);
+            for (let c = minCol; c <= maxCol; c++) {
+              const colWrapped = ((c % cols) + cols) % cols;
+              const bIndex = rowWrapped * cols + colWrapped;
+              const b = books[bIndex % booksCount];
+              if (!b) continue;
+
+              const bx = screenCenterX + c * stepX + offsetX + cam.x;
+              const by = screenCenterY + r * stepY + cam.y;
+              const d = Math.hypot(bx - cam.lensX, by - cam.lensY);
+              if (d < minApexDist) {
+                minApexDist = d;
+                hoverApexBook = b;
+              }
+            }
+          }
+        }
+
+        for (let r = minRow; r <= maxRow; r++) {
+          const rowWrapped = ((r % rows) + rows) % rows;
+          const offsetX = (r % 2) * (stepX * 0.5);
+
+          for (let c = minCol; c <= maxCol; c++) {
+            const colWrapped = ((c % cols) + cols) % cols;
+            const bookIndex = rowWrapped * cols + colWrapped;
+            const book = books[bookIndex % booksCount];
+            if (!book) continue;
+
+            const baseX = screenCenterX + c * stepX + offsetX + cam.x;
+            const baseY = screenCenterY + r * stepY + cam.y;
+
+            let bubbleScale = 1.0;
+            let bubbleAlpha = 1.0;
+            if (bubbleEntrance < 0.999) {
+              const distFromCenter = Math.hypot(baseX - screenCenterX, baseY - screenCenterY);
+              const maxSpread = Math.max(width, height) * 0.8;
+              const bookDelay = Math.min(0.55, (distFromCenter / maxSpread) * 0.48);
+              const localT = Math.min(1.0, Math.max(0, (bubbleEntrance - bookDelay) / (1.0 - bookDelay)));
+              const pop = 1.0 + Math.sin(localT * Math.PI) * 0.22 * (1.0 - localT);
+              bubbleScale = Math.max(0, localT * pop);
+              bubbleAlpha = Math.min(1.0, localT * 1.6);
+            }
+            if (bubbleScale <= 0.02) continue;
+
+            const breathFreq = animTime * 0.0016;
+            const wave1 = Math.sin(baseX * 0.0032 + breathFreq) * Math.cos(baseY * 0.0032 + breathFreq * 0.85);
+            const wave2 = Math.sin((baseX * 0.75 - baseY * 0.75) * 0.0045 + breathFreq * 1.25) * 0.5;
+            const oceanBreathing = (wave1 + wave2) * 0.75;
+
+            let dSelX = 99999;
+            let dSelY = 99999;
+            let distToSelected = 99999;
+            if (selectedIndex >= 0 && pullProgress > 0.01) {
+              dSelX = baseX - selBaseX;
+              dSelY = baseY - selBaseY;
+              dSelX = dSelX - Math.round(dSelX / gridW) * gridW;
+              dSelY = dSelY - Math.round(dSelY / gridH) * gridH;
+              distToSelected = Math.hypot(dSelX, dSelY);
+            }
+
+            const dxCursor = baseX - cam.lensX;
+            const dyCursor = baseY - cam.lensY;
+            const distToCursor = Math.hypot(dxCursor, dyCursor);
+
+            const isSelectedHero = pullProgress > 0.01 && book.id === selectedBookRef.current?.id;
+            const isHoverApex = !isDockOpen && book.id === hoverApexBook?.id && distToCursor < stepX * 1.3;
+
+            let hoverSlope = 0;
+            if (!isDockOpen && cam.hasActiveMouse && distToCursor < mountainRadius) {
+              const normCursor = distToCursor / mountainRadius;
+              hoverSlope = Math.pow(Math.max(0, 1.0 - normCursor), 2.2);
+              if (isHoverApex) hoverSlope = 1.0;
+            }
+
+            let selSlope = 0;
+            if (selectedIndex >= 0 && pullProgress > 0.01 && distToSelected < mountainRadius) {
+              const normSel = distToSelected / mountainRadius;
+              selSlope = Math.pow(Math.max(0, 1.0 - normSel), 2.0) * pullProgress;
+              if (isSelectedHero) selSlope = 1.0 * pullProgress;
+            }
+
+            const elevation = Math.min(1.0, Math.max(hoverSlope, selSlope));
+            const swayWeight = Math.max(0, 1.0 - elevation * 1.5);
+            let screenX = baseX + oceanBreathing * 5.5 * swayWeight;
+            let screenY = baseY + oceanBreathing * 4.2 * swayWeight;
+
+            let slopeAngle = 0;
+            if (!isSelectedHero && !isHoverApex && elevation > 0.02) {
+              if (hoverSlope >= selSlope && distToCursor > 2 && distToCursor < mountainRadius) {
+                const dragPull = hoverSlope * (stepX * 0.22);
+                screenX -= (dxCursor / distToCursor) * dragPull;
+                screenY -= (dyCursor / distToCursor) * dragPull;
+                slopeAngle = Math.atan2(dyCursor, dxCursor);
+              } else if (selSlope > 0 && distToSelected > 2 && distToSelected < mountainRadius) {
+                const dragPull = selSlope * (stepX * 0.22);
+                screenX -= (dSelX / distToSelected) * dragPull;
+                screenY -= (dSelY / distToSelected) * dragPull;
+                slopeAngle = Math.atan2(dSelY, dSelX);
+              }
+            }
+
+            const breathScale = 1.0 + oceanBreathing * 0.065 * swayWeight;
+            const mountainScale = 1.0 + elevation * 0.95;
+            const scale = mountainScale * breathScale * bubbleScale;
+
+            const w = cardW * scale;
+            const h = cardH * scale;
+            let opacity = (0.86 + elevation * 0.14 + oceanBreathing * 0.06 * swayWeight) * bubbleAlpha;
+
+            if (
+              screenX + w < -120 ||
+              screenX - w > width + 120 ||
+              screenY + h < -120 ||
+              screenY - h > height + 120
+            ) {
+              continue;
+            }
+
+            if (isHoverApex || isSelectedHero) {
+              hoverApexCoords = { screenX, screenY, w, h };
+            }
+
+            drawList.push({
+              book,
+              screenX,
+              screenY,
+              w,
+              h,
+              elevation,
+              isSelectedHero,
+              isHoverApex,
+              slopeAngle,
+              opacity,
+            });
+          }
         }
       }
 
@@ -633,44 +757,98 @@ export default function BookSphere({
         ctx.roundRect(-halfW, -halfH, w, h, cornerRadius);
         ctx.clip();
 
-        // 1. Draw book cover
+        // 1. Draw book cover or bespoke embossed jacket
         const src = book.cover || book.cover_url;
         const img = imagesRef.current.get(src);
+        const hasImg = img && img.complete && img.naturalWidth > 10;
 
-        if (img && img.complete && img.naturalWidth > 0) {
+        if (hasImg) {
           ctx.drawImage(img, -halfW, -halfH, w, h);
         } else {
-          const hash = book.id * 47;
-          const hue = hash % 360;
-          ctx.fillStyle = `hsl(${hue}, 22%, 12%)`;
+          // Bespoke embossed book jacket directly on canvas
+          const grad = ctx.createLinearGradient(-halfW, -halfH, halfW, halfH);
+          grad.addColorStop(0, '#222222');
+          grad.addColorStop(0.5, '#141414');
+          grad.addColorStop(1, '#0a0a0a');
+          ctx.fillStyle = grad;
           ctx.fillRect(-halfW, -halfH, w, h);
 
-          if (w > 38) {
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-            ctx.font = `600 ${Math.max(8, Math.floor(w * 0.11))}px sans-serif`;
+          // Subtle spine crease on left
+          const spineW = Math.max(6, 12 * (w / 100));
+          const spineGrad = ctx.createLinearGradient(-halfW, 0, -halfW + spineW, 0);
+          spineGrad.addColorStop(0, 'rgba(0, 0, 0, 0.7)');
+          spineGrad.addColorStop(1, 'rgba(255, 255, 255, 0.04)');
+          ctx.fillStyle = spineGrad;
+          ctx.fillRect(-halfW, -halfH, spineW, h);
+
+          // Decorative border
+          ctx.strokeStyle = elevation > 0.4 ? 'rgba(255, 255, 255, 0.35)' : 'rgba(255, 255, 255, 0.12)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(-halfW + 6, -halfH + 6, w - 12, h - 12);
+
+          // Country Flag and Year Badge at top
+          if (w > 50) {
+            ctx.font = `500 ${Math.max(9, Math.floor(10 * (w / 120)))}px Inter, sans-serif`;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
             ctx.textAlign = 'center';
-            ctx.fillText(book.title.slice(0, 18), 0, 0);
+            const flag = (book as any).countryFlag || '📖';
+            const yearStr = book.year ? `${book.year}` : '';
+            ctx.fillText(`${flag}  ${yearStr}`, 0, -halfH + 16);
+
+            // Book Title
+            ctx.font = `700 ${Math.max(10, Math.floor(12 * (w / 120)))}px Inter, sans-serif`;
+            ctx.fillStyle = '#ffffff';
+
+            const words = book.title.split(' ');
+            let line = '';
+            let lineY = -halfH + 38;
+            const maxTitleW = w - 20;
+            for (let n = 0; n < words.length; n++) {
+              const testLine = line + words[n] + ' ';
+              const metrics = ctx.measureText(testLine);
+              if (metrics.width > maxTitleW && n > 0) {
+                ctx.fillText(line.trim(), 0, lineY);
+                line = words[n] + ' ';
+                lineY += 14 * (w / 120);
+                if (lineY > -halfH + 95) {
+                  line = '...';
+                  break;
+                }
+              } else {
+                line = testLine;
+              }
+            }
+            ctx.fillText(line.trim(), 0, lineY);
+
+            // Author
+            ctx.font = `500 ${Math.max(8, Math.floor(10 * (w / 120)))}px Inter, sans-serif`;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+            ctx.fillText(book.author, 0, lineY + 18);
+
+            // Rating badge at bottom
+            if (book.rating) {
+              ctx.font = `700 ${Math.max(8, Math.floor(9.5 * (w / 120)))}px monospace`;
+              ctx.fillStyle = '#ffffff';
+              ctx.fillText(`★ ${book.rating}%`, 0, halfH - 18);
+            }
+            ctx.textAlign = 'left';
           }
         }
 
         // 2. Mountain Facet Shading & Sunlight:
-        // Overhead mountain illumination: top-left catches crisp sunlight, bottom-right has deep contact bevel
         const mountainSunlight = ctx.createLinearGradient(-halfW, -halfH, halfW, halfH);
         if (isApexPeak) {
-          // Summit peak catches full direct celestial light
-          mountainSunlight.addColorStop(0, 'rgba(255, 255, 255, 0.32)');
-          mountainSunlight.addColorStop(0.35, 'rgba(125, 211, 252, 0.16)');
+          mountainSunlight.addColorStop(0, 'rgba(255, 255, 255, 0.28)');
+          mountainSunlight.addColorStop(0.35, 'rgba(255, 255, 255, 0.08)');
           mountainSunlight.addColorStop(0.7, 'rgba(0, 0, 0, 0)');
           mountainSunlight.addColorStop(1, 'rgba(0, 0, 0, 0.35)');
         } else if (elevation > 0.05) {
-          // Terraced flanks: directional light catching the exposed stacked rim
-          mountainSunlight.addColorStop(0, `rgba(255, 255, 255, ${0.14 + elevation * 0.18})`);
-          mountainSunlight.addColorStop(0.4, 'rgba(56, 189, 248, 0.08)');
-          mountainSunlight.addColorStop(0.75, 'rgba(0, 0, 0, 0.12)');
-          mountainSunlight.addColorStop(1, `rgba(0, 0, 0, ${0.35 + elevation * 0.2})`);
+          mountainSunlight.addColorStop(0, `rgba(255, 255, 255, ${0.12 + elevation * 0.15})`);
+          mountainSunlight.addColorStop(0.4, 'rgba(255, 255, 255, 0.04)');
+          mountainSunlight.addColorStop(0.75, 'rgba(0, 0, 0, 0.1)');
+          mountainSunlight.addColorStop(1, `rgba(0, 0, 0, ${0.3 + elevation * 0.2})`);
         } else {
-          // Base ocean level
-          mountainSunlight.addColorStop(0, 'rgba(125, 211, 252, 0.12)');
+          mountainSunlight.addColorStop(0, 'rgba(255, 255, 255, 0.06)');
           mountainSunlight.addColorStop(0.4, 'rgba(255, 255, 255, 0)');
           mountainSunlight.addColorStop(0.75, 'rgba(0, 0, 0, 0.15)');
           mountainSunlight.addColorStop(1, 'rgba(0, 0, 0, 0.5)');
@@ -678,55 +856,37 @@ export default function BookSphere({
         ctx.fillStyle = mountainSunlight;
         ctx.fillRect(-halfW, -halfH, w, h);
 
-        // 3. Oceanic edge vignette softening into water matrix
-        const innerVignette = ctx.createRadialGradient(
-          0,
-          0,
-          halfW * 0.45,
-          0,
-          0,
-          Math.max(halfW, halfH)
-        );
-        innerVignette.addColorStop(0, 'rgba(0, 0, 0, 0)');
-        innerVignette.addColorStop(0.75, 'rgba(0, 0, 0, 0.22)');
-        innerVignette.addColorStop(1, 'rgba(1, 8, 18, 0.7)');
-        ctx.fillStyle = innerVignette;
-        ctx.fillRect(-halfW, -halfH, w, h);
-
         ctx.restore();
 
-        // 4. MOUNTAIN STACK BORDERS & CREST HALOS:
+        // 3. MOUNTAIN STACK BORDERS & CREST HALOS (Monochrome):
         if (isApexPeak) {
-          // Standout Summit Peak Halo: sharp, glowing pencil-spire crest
           ctx.save();
           ctx.translate(screenX, screenY);
-          ctx.strokeStyle = 'rgba(56, 189, 248, 0.98)';
-          ctx.lineWidth = 3.2;
-          ctx.shadowColor = '#38bdf8';
-          ctx.shadowBlur = 32;
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2.8;
+          ctx.shadowColor = '#ffffff';
+          ctx.shadowBlur = 24;
           ctx.beginPath();
           ctx.roundRect(-halfW - 1.5, -halfH - 1.5, w + 3, h + 3, cornerRadius + 1.5);
           ctx.stroke();
 
-          // Outer secondary shimmer ring
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
           ctx.lineWidth = 1.0;
-          ctx.shadowBlur = 10;
+          ctx.shadowBlur = 8;
           ctx.beginPath();
           ctx.roundRect(-halfW - 3, -halfH - 3, w + 6, h + 6, cornerRadius + 3);
           ctx.stroke();
           ctx.restore();
         } else if (elevation > 0.12) {
-          // Terraced mountain shingle rim: makes each stacked layer crisp and clean
           ctx.save();
           ctx.translate(screenX, screenY);
           if (elevation > 0.04 && !isApexPeak) {
             ctx.rotate(slopeAngle * 0.07 * elevation);
           }
-          ctx.strokeStyle = `rgba(56, 189, 248, ${0.25 + elevation * 0.45})`;
-          ctx.lineWidth = 1.4;
-          ctx.shadowColor = '#38bdf8';
-          ctx.shadowBlur = Math.min(16, 6 + 10 * elevation);
+          ctx.strokeStyle = `rgba(255, 255, 255, ${0.2 + elevation * 0.35})`;
+          ctx.lineWidth = 1.2;
+          ctx.shadowColor = '#ffffff';
+          ctx.shadowBlur = Math.min(12, 4 + 8 * elevation);
           ctx.beginPath();
           ctx.roundRect(-halfW - 0.5, -halfH - 0.5, w + 1, h + 1, cornerRadius + 0.5);
           ctx.stroke();

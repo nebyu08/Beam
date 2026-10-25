@@ -7,7 +7,6 @@ import { Book } from '@/lib/types';
 import EarthGlobe from '@/components/earth-globe';
 import BookSphere from '@/components/book-sphere';
 import BookDetailsModal from '@/components/book-details-modal';
-import LoadingScreen from '@/components/loading-screen';
 
 export default function Home() {
   const {
@@ -15,7 +14,6 @@ export default function Home() {
     setBooks,
     selectedBook,
     setSelectedBook,
-    selectRandomBook,
   } = useBookStore();
 
   const {
@@ -30,35 +28,8 @@ export default function Home() {
   } = useGeoStore();
 
   const [activeModal, setActiveModal] = useState<'details' | null>(null);
-  const [isReady, setIsReady] = useState(false);
 
-  // Preload initial batch of covers for smooth entrance
-  useEffect(() => {
-    if (books.length === 0) return;
-    const initialCovers = books
-      .slice(0, 24)
-      .map((b) => b.cover || b.cover_url)
-      .filter(Boolean) as string[];
-
-    if (initialCovers.length === 0) {
-      setIsReady(true);
-      return;
-    }
-
-    let loaded = 0;
-    initialCovers.forEach((src) => {
-      const img = new Image();
-      img.src = src;
-      img.onload = img.onerror = () => {
-        loaded++;
-        if (loaded >= Math.min(8, initialCovers.length)) {
-          setIsReady(true);
-        }
-      };
-    });
-  }, [books]);
-
-  // Sync books from /data/books.json when updated
+  // Sync books from /data/books.json in background if needed
   useEffect(() => {
     async function syncBooks() {
       try {
@@ -134,16 +105,12 @@ export default function Home() {
     [setSelectedBook]
   );
 
-  const handleLoadingFinished = useCallback(() => {
-    // Finished loading screen
-  }, []);
-
   const isDetailsDockOpen = activeModal === 'details' && !!selectedBook;
 
   return (
     <main className="relative w-screen h-screen overflow-hidden bg-black text-zinc-100 select-none">
       {appMode === 'country' && activeCountry ? (
-        /* The Country's Books crawling over screen with living wave heartbeat */
+        /* The Country's Exact Canonical Books breathing with living wave heartbeat */
         <BookSphere
           books={activeCountry.books}
           activeCountry={activeCountry}
@@ -168,9 +135,6 @@ export default function Home() {
         book={selectedBook}
         onClose={handleCloseDock}
       />
-
-      {/* Intro Loading Screen */}
-      <LoadingScreen isReady={isReady} onFinished={handleLoadingFinished} />
     </main>
   );
 }
