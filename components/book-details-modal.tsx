@@ -10,6 +10,7 @@ interface BookDetailsModalProps {
   countryName?: string;
   onClose: () => void;
   onBackToGlobe?: () => void;
+  clearOfBar?: boolean;
 }
 
 export default function BookDetailsModal({
@@ -18,11 +19,12 @@ export default function BookDetailsModal({
   countryName,
   onClose,
   onBackToGlobe,
+  clearOfBar = false,
 }: BookDetailsModalProps) {
   if (!isOpen || !book) return null;
 
   const coverSrc = book.cover || book.cover_url;
-  const rating = book.rating || 85;
+  const rating = book.rating || 0;
 
   return (
     <>
@@ -36,7 +38,11 @@ export default function BookDetailsModal({
       {/* Floating Modal Card */}
       <aside
         aria-label="Book details"
-        className="fixed top-4 left-4 z-40 max-w-sm sm:max-w-md w-[calc(100vw-2rem)] sm:w-[410px] pointer-events-auto select-none animate-in fade-in slide-in-from-top-4 slide-in-from-left-4 duration-250"
+        className={`fixed z-40 max-w-sm sm:max-w-md pointer-events-auto select-none ${
+          clearOfBar
+            ? 'top-20 left-4 right-4 sm:left-auto sm:right-5 sm:w-[410px]'
+            : 'top-4 left-4 w-[calc(100vw-2rem)] sm:w-[410px]'
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="relative rounded-3xl border border-white/20 shadow-[0_25px_60px_rgba(0,0,0,0.95)] overflow-hidden min-h-[380px] flex flex-col justify-between text-zinc-100">
@@ -70,10 +76,12 @@ export default function BookDetailsModal({
 
             <div className="flex items-center gap-2">
               {/* Rating Score Badge */}
-              <div className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-black/60 backdrop-blur-md text-zinc-200 border border-white/20 shadow-md">
-                <Star className="w-3 h-3 fill-zinc-300 text-zinc-300" />
-                <span>{rating}%</span>
-              </div>
+              {rating > 0 && (
+                <div className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-black/60 backdrop-blur-md text-zinc-200 border border-white/20 shadow-md">
+                  <Star className="w-3 h-3 fill-zinc-300 text-zinc-300" />
+                  <span>{rating}%</span>
+                </div>
+              )}
 
               {/* Close Button */}
               <button
@@ -112,8 +120,7 @@ export default function BookDetailsModal({
 
             {/* Description Snippet */}
             <p className="text-xs text-zinc-300 leading-relaxed line-clamp-3 drop-shadow mb-3 font-light">
-              {book.description ||
-                `A masterpiece of ${book.genre.toLowerCase()} literature exploring profound themes and timeless storytelling in the infinite library orbit.`}
+              {book.description || `${book.title} by ${book.author}.`}
             </p>
 
             {/* Theme Badges */}
@@ -164,7 +171,7 @@ export default function BookDetailsModal({
                   title="Return directly to Earth Globe"
                 >
                   <Globe className="w-3 h-3" />
-                  <span>Globe</span>
+                  <span>To globe</span>
                 </button>
               )}
             </div>

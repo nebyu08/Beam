@@ -38,3 +38,16 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #3f3f50;
 }
+
+@keyframes shelf-rise {
+  from {
+    transform: translateY(28px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.shelf-rise {
+  animation: shelf-rise 460ms cubic-bezier(0.16, 1, 0.3, 1);
+}

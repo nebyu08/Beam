@@ -11,6 +11,7 @@ interface EarthGlobeProps {
   onSelectCountry: (country: GeoCountry) => void;
   hoveredCountry: GeoCountry | null;
   onHoverCountry: (country: GeoCountry | null) => void;
+  interactive?: boolean;
 }
 
 export default function EarthGlobe({
@@ -18,6 +19,7 @@ export default function EarthGlobe({
   onSelectCountry,
   hoveredCountry,
   onHoverCountry,
+  interactive = true,
 }: EarthGlobeProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -302,6 +304,7 @@ export default function EarthGlobe({
 
   // Handle Drag / Rotation Interaction
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    if (!interactive) return;
     isDraggingRef.current = true;
     lastMousePosRef.current = [e.clientX, e.clientY];
     dragDistanceRef.current = 0;
@@ -309,12 +312,12 @@ export default function EarthGlobe({
     targetRotationRef.current = null; // stop any ongoing auto-slerp
     lastInteractTimeRef.current = Date.now();
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
-  }, []);
+  }, [interactive]);
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent) => {
       const canvas = canvasRef.current;
-      if (!canvas) return;
+      if (!canvas || !interactive) return;
 
       const rect = canvas.getBoundingClientRect();
       const mouseX = e.clientX - rect.left;
@@ -370,11 +373,12 @@ export default function EarthGlobe({
         }
       }
     },
-    [worldFeatures, countryLookup, hoveredCountry, onHoverCountry]
+    [worldFeatures, countryLookup, hoveredCountry, onHoverCountry, interactive]
   );
 
   const handlePointerUp = useCallback(
     (e: React.PointerEvent) => {
+      if (!interactive) return;
       isDraggingRef.current = false;
       try {
         (e.target as HTMLElement).releasePointerCapture(e.pointerId);
@@ -392,18 +396,19 @@ export default function EarthGlobe({
         }, 550);
       }
     },
-    [hoveredCountry, onSelectCountry]
+    [hoveredCountry, onSelectCountry, interactive]
   );
 
   // Wheel zoom handler
   const handleWheel = useCallback((e: React.WheelEvent) => {
+    if (!interactive) return;
     e.preventDefault();
     lastInteractTimeRef.current = Date.now();
     const zoomFactor = e.deltaY < 0 ? 1.12 : 0.89;
     const baseScale = Math.min(window.innerWidth, window.innerHeight) * 0.42;
     const newScale = Math.max(baseScale * 0.7, Math.min(baseScale * 2.8, scaleRef.current * zoomFactor));
     targetScaleRef.current = newScale;
-  }, []);
+  }, [interactive]);
 
   const handleResetGlobe = () => {
     const baseScale = Math.min(window.innerWidth, window.innerHeight) * 0.42;
@@ -436,7 +441,7 @@ export default function EarthGlobe({
       />
 
       {/* Minimal Floating HUD Tooltip when Hovering a Literary Nation (Monochrome) */}
-      {hoveredCountry && mouseScreenPos && (
+      {interactive && hoveredCountry && mouseScreenPos && (
         <div
           className="fixed pointer-events-none z-30 transition-all duration-150 ease-out"
           style={{
@@ -484,7 +489,7 @@ export default function EarthGlobe({
             </div>
 
             <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between text-[10px] text-zinc-300 font-medium">
-              <span>Click to deep-dive</span>
+              <span>Click to open this shelf</span>
               <span>Explore →</span>
             </div>
           </div>
@@ -492,6 +497,7 @@ export default function EarthGlobe({
       )}
 
       {/* Minimal Subtle Zoom Controls */}
+      {interactive && (
       <div className="absolute bottom-6 right-6 flex flex-col gap-2 z-10 pointer-events-auto">
         <button
           onClick={() => handleZoom('in')}
@@ -515,6 +521,7 @@ export default function EarthGlobe({
           <RotateCcw className="w-3.5 h-3.5" />
         </button>
       </div>
+      )}
     </div>
   );
 }

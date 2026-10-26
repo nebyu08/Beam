@@ -5,7 +5,7 @@ import { useBookStore } from '@/lib/book-store';
 import { useGeoStore } from '@/lib/geo-store';
 import { Book } from '@/lib/types';
 import EarthGlobe from '@/components/earth-globe';
-import BookSphere from '@/components/book-sphere';
+import CountryView, { BackToGlobeButton } from '@/components/country-view';
 import BookDetailsModal from '@/components/book-details-modal';
 import LoadingScreen from '@/components/loading-screen';
 
@@ -66,13 +66,10 @@ export default function Home() {
   // Global Keyboard Navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't capture when typing in an input
-      if (
+      const typing =
         document.activeElement?.tagName === 'INPUT' ||
-        document.activeElement?.tagName === 'TEXTAREA'
-      ) {
-        return;
-      }
+        document.activeElement?.tagName === 'TEXTAREA';
+      if (typing && e.key !== 'Escape') return;
 
       if (e.code === 'Space') {
         if (appMode === 'globe') {
@@ -93,6 +90,7 @@ export default function Home() {
           handleCloseDock();
         } else if (appMode === 'country') {
           e.preventDefault();
+          handleCloseDock();
           exitToGlobe();
         }
       }
@@ -118,37 +116,43 @@ export default function Home() {
     [setSelectedBook]
   );
 
+  const handleBackToGlobe = useCallback(() => {
+    handleCloseDock();
+    exitToGlobe();
+  }, [exitToGlobe, handleCloseDock]);
+
   const isDetailsDockOpen = activeModal === 'details' && !!selectedBook;
+  const shelfOpen = appMode === 'country' && !!activeCountry;
 
   return (
     <main className="relative w-screen h-screen overflow-hidden bg-black text-zinc-100 select-none">
-      {appMode === 'country' && activeCountry ? (
-        /* The Country's Exact Canonical Books breathing with living wave heartbeat */
-        <BookSphere
-          books={activeCountry.books}
-          activeCountry={activeCountry}
-          onSelectBook={handleSelectBook}
-          isDockOpen={isDetailsDockOpen}
-          onCloseDock={handleCloseDock}
-          onBackToGlobe={exitToGlobe}
-        />
-      ) : (
-        /* 3D Monochrome Black & White Earth Globe */
-        <EarthGlobe
-          countries={countries}
-          onSelectCountry={enterCountry}
-          hoveredCountry={hoveredCountry}
-          onHoverCountry={setHoveredCountry}
-        />
+      <EarthGlobe
+        countries={countries}
+        onSelectCountry={enterCountry}
+        hoveredCountry={hoveredCountry}
+        onHoverCountry={setHoveredCountry}
+        interactive={!shelfOpen}
+      />
+
+      {shelfOpen && activeCountry && (
+        <>
+          <BackToGlobeButton onClick={handleBackToGlobe} />
+          <CountryView
+            key={activeCountry.id}
+            country={activeCountry}
+            onBackToGlobe={handleBackToGlobe}
+            onSelectBook={handleSelectBook}
+          />
+        </>
       )}
 
-      {/* Top-Left Sliding Book Detail Modal with Full Cover Background & Direct Navigation */}
       <BookDetailsModal
         isOpen={isDetailsDockOpen}
         book={selectedBook}
         countryName={activeCountry?.name}
         onClose={handleCloseDock}
-        onBackToGlobe={exitToGlobe}
+        onBackToGlobe={handleBackToGlobe}
+        clearOfBar={shelfOpen}
       />
 
       {/* Atmospheric Intro Loading Screen: "theres nothing to read" with animated dots */}
