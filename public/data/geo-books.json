@@ -17868,6 +17868,84 @@
         "edition_count": 29,
         "tagline": "Essential Sierra Leone literature",
         "description": "A seminal work of Sierra Leone literature by Ishmael Beah, acclaimed for its evocative portrayal of cultural identity, regional history, and human resonance."
+      },
+      {
+        "id": 40000,
+        "key": "/works/SL_40000",
+        "title": "The Devil That Danced on the Water: A Daughter's Quest",
+        "author": "Aminatta Forna",
+        "year": 0,
+        "rating": 0,
+        "genre": "Literature",
+        "genres": [
+          "Fiction"
+        ],
+        "country": "Sierra Leone",
+        "countryCode": "SL",
+        "countryId": "694",
+        "countryFlag": "🇸🇱",
+        "city": "",
+        "lat": 8.5,
+        "lng": -11.5,
+        "cover": "",
+        "cover_url": "",
+        "cover_id": 0,
+        "openlibrary_url": "",
+        "edition_count": 1,
+        "tagline": "",
+        "description": ""
+      },
+      {
+        "id": 40001,
+        "key": "/works/OL5957952W",
+        "title": "Ancestor Stones",
+        "author": "Aminatta Forna",
+        "year": 0,
+        "rating": 0,
+        "genre": "Literature",
+        "genres": [
+          "Fiction"
+        ],
+        "country": "Sierra Leone",
+        "countryCode": "SL",
+        "countryId": "694",
+        "countryFlag": "🇸🇱",
+        "city": "",
+        "lat": 8.5,
+        "lng": -11.5,
+        "cover": "https://covers.openlibrary.org/b/id/8346100-M.jpg",
+        "cover_url": "https://covers.openlibrary.org/b/id/8346100-M.jpg",
+        "cover_id": 8346100,
+        "openlibrary_url": "https://openlibrary.org/works/OL5957952W",
+        "edition_count": 1,
+        "tagline": "",
+        "description": ""
+      },
+      {
+        "id": 40002,
+        "key": "/works/OL17915395W",
+        "title": "The Hired Man",
+        "author": "Aminatta Forna",
+        "year": 0,
+        "rating": 0,
+        "genre": "Literature",
+        "genres": [
+          "Fiction"
+        ],
+        "country": "Sierra Leone",
+        "countryCode": "SL",
+        "countryId": "694",
+        "countryFlag": "🇸🇱",
+        "city": "",
+        "lat": 8.5,
+        "lng": -11.5,
+        "cover": "https://covers.openlibrary.org/b/id/8346101-M.jpg",
+        "cover_url": "https://covers.openlibrary.org/b/id/8346101-M.jpg",
+        "cover_id": 8346101,
+        "openlibrary_url": "https://openlibrary.org/works/OL17915395W",
+        "edition_count": 1,
+        "tagline": "",
+        "description": ""
       }
     ]
   },
@@ -24177,6 +24255,32 @@
         "edition_count": 5,
         "tagline": "Essential Kyrgyzstan literature",
         "description": "A seminal work of Kyrgyzstan literature by Chinghiz Aitmatov, acclaimed for its evocative portrayal of cultural identity, regional history, and human resonance."
+      },
+      {
+        "id": 40004,
+        "key": "/works/KG_40004",
+        "title": "The Day Lasts More Than a Hundred Years",
+        "author": "Chinghiz Aitmatov",
+        "year": 0,
+        "rating": 0,
+        "genre": "Literature",
+        "genres": [
+          "Fiction"
+        ],
+        "country": "Kyrgyzstan",
+        "countryCode": "KG",
+        "countryId": "417",
+        "countryFlag": "🇰🇬",
+        "city": "",
+        "lat": 41.0,
+        "lng": 75.0,
+        "cover": "",
+        "cover_url": "",
+        "cover_id": 0,
+        "openlibrary_url": "",
+        "edition_count": 1,
+        "tagline": "",
+        "description": ""
       }
     ]
   },
@@ -25100,6 +25204,32 @@
         "edition_count": 5,
         "tagline": "Essential Ukraine literature",
         "description": "A seminal work of Ukraine literature by Oleg Sentsov, acclaimed for its evocative portrayal of cultural identity, regional history, and human resonance."
+      },
+      {
+        "id": 40005,
+        "key": "/works/OL29238517W",
+        "title": "The Village Teacher and Other Stories",
+        "author": "Theodore Odrach",
+        "year": 0,
+        "rating": 0,
+        "genre": "Literature",
+        "genres": [
+          "Fiction"
+        ],
+        "country": "Ukraine",
+        "countryCode": "UA",
+        "countryId": "804",
+        "countryFlag": "🇺🇦",
+        "city": "",
+        "lat": 49.0,
+        "lng": 32.0,
+        "cover": "https://covers.openlibrary.org/b/id/12972039-M.jpg",
+        "cover_url": "https://covers.openlibrary.org/b/id/12972039-M.jpg",
+        "cover_id": 12972039,
+        "openlibrary_url": "https://openlibrary.org/works/OL29238517W",
+        "edition_count": 1,
+        "tagline": "",
+        "description": ""
       }
     ]
   },
