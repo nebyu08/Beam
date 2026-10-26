@@ -489,7 +489,7 @@ export default function EarthGlobe({
             </div>
 
             <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between text-[10px] text-zinc-300 font-medium">
-              <span>Click to open this shelf</span>
+              <span>Click to open the books</span>
               <span>Explore →</span>
             </div>
           </div>

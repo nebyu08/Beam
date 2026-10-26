@@ -1,202 +1,378 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { GeoBook, GeoCountry } from '@/lib/geo-types';
-import { ArrowLeft, Search, X } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 interface CountryViewProps {
   country: GeoCountry;
-  onBackToGlobe: () => void;
+  onBackToGlobe?: () => void;
   onSelectBook?: (book: GeoBook) => void;
 }
 
-function yearLabel(year: number) {
-  if (!year) return '';
-  if (year < 0) return `${Math.abs(year)} BCE`;
-  return String(year);
+type Point = { x: number; y: number };
+
+function clipPolygon(
+  polygon: Point[],
+  inside: (point: Point) => boolean,
+  intersect: (start: Point, end: Point) => Point
+) {
+  const next: Point[] = [];
+  for (let index = 0; index < polygon.length; index += 1) {
+    const current = polygon[index];
+    const previous = polygon[(index + polygon.length - 1) % polygon.length];
+    const currentInside = inside(current);
+    const previousInside = inside(previous);
+    if (currentInside) {
+      if (!previousInside) next.push(intersect(previous, current));
+      next.push(current);
+    } else if (previousInside) {
+      next.push(intersect(previous, current));
+    }
+  }
+  return next;
 }
 
-function Cover({ book }: { book: GeoBook }) {
-  const src = book.cover || book.cover_url;
-  const [failed, setFailed] = useState(false);
+function voronoi(sites: Point[], width: number, height: number) {
+  const bounds: Point[] = [
+    { x: -40, y: -40 },
+    { x: width + 40, y: -40 },
+    { x: width + 40, y: height + 40 },
+    { x: -40, y: height + 40 },
+  ];
 
-  if (!src || failed) {
-    return (
-      <div className="flex h-full w-full flex-col justify-between bg-[#141416] p-3 text-left">
-        <span className="text-[10px] uppercase tracking-[0.14em] text-zinc-400">
-          {book.genre}
-        </span>
-        <span className="text-sm font-semibold leading-snug text-white line-clamp-5">
-          {book.title}
-        </span>
-        <span className="text-[11px] text-zinc-300 line-clamp-2">{book.author}</span>
-      </div>
-    );
+  return sites.map((site, siteIndex) => {
+    let polygon = bounds;
+    for (let otherIndex = 0; otherIndex < sites.length; otherIndex += 1) {
+      if (otherIndex === siteIndex || polygon.length < 3) continue;
+      const other = sites[otherIndex];
+      const midX = (site.x + other.x) / 2;
+      const midY = (site.y + other.y) / 2;
+      const normalX = site.x - other.x;
+      const normalY = site.y - other.y;
+      polygon = clipPolygon(
+        polygon,
+        (point) => (point.x - midX) * normalX + (point.y - midY) * normalY >= -0.5,
+        (start, end) => {
+          const startSide = (start.x - midX) * normalX + (start.y - midY) * normalY;
+          const endSide = (end.x - midX) * normalX + (end.y - midY) * normalY;
+          const mix = startSide / (startSide - endSide || 1);
+          return {
+            x: start.x + (end.x - start.x) * mix,
+            y: start.y + (end.y - start.y) * mix,
+          };
+        }
+      );
+    }
+    return polygon;
+  });
+}
+
+function baseSites(count: number, width: number, height: number) {
+  const columns = Math.max(1, Math.round(Math.sqrt(count * (width / Math.max(height, 1)))));
+  const rows = Math.ceil(count / columns);
+  const sites: Point[] = [];
+  for (let index = 0; index < count; index += 1) {
+    const row = Math.floor(index / columns);
+    const column = index % columns;
+    const inRow = Math.min(columns, count - row * columns);
+    const cellWidth = width / inRow;
+    const cellHeight = height / rows;
+    const jitterX = ((((index * 97) % 100) / 100) - 0.5) * cellWidth * 0.62;
+    const jitterY = ((((index * 53) % 100) / 100) - 0.5) * cellHeight * 0.62;
+    sites.push({
+      x: Math.min(width - 48, Math.max(48, ((column + 0.5) / inRow) * width + jitterX)),
+      y: Math.min(height - 48, Math.max(48, ((row + 0.5) / rows) * height + jitterY)),
+    });
   }
+  return sites;
+}
 
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={src}
-      alt=""
-      loading="lazy"
-      onError={() => setFailed(true)}
-      onLoad={(event) => {
-        const image = event.currentTarget;
-        if (image.naturalWidth < 24 || image.naturalHeight < 24) setFailed(true);
-      }}
-      className="h-full w-full object-cover"
-    />
-  );
+function wrapText(
+  context: CanvasRenderingContext2D,
+  text: string,
+  maxWidth: number
+) {
+  const words = text.split(/\s+/);
+  const lines: string[] = [];
+  let line = '';
+  for (const word of words) {
+    const next = line ? `${line} ${word}` : word;
+    if (context.measureText(next).width > maxWidth && line) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = next;
+    }
+  }
+  if (line) lines.push(line);
+  return lines.slice(0, 5);
 }
 
 export default function CountryView({
   country,
-  onBackToGlobe,
   onSelectBook,
 }: CountryViewProps) {
-  const [query, setQuery] = useState('');
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const pointerRef = useRef({ x: -9999, y: -9999, inside: false });
+  const sitesRef = useRef<Point[]>([]);
+  const imagesRef = useRef<Map<number, HTMLImageElement | 'failed'>>(new Map());
+  const hoverIdRef = useRef<number | null>(null);
+  const labelRef = useRef<HTMLDivElement>(null);
+  const [hoverBook, setHoverBook] = useState<GeoBook | null>(null);
 
-  const visibleBooks = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return country.books;
-    return country.books.filter((book) => {
-      const hay = `${book.title} ${book.author} ${book.genre} ${(book.genres || []).join(' ')}`.toLowerCase();
-      return hay.includes(q);
+  useEffect(() => {
+    imagesRef.current = new Map();
+    for (const book of country.books) {
+      const src = book.cover || book.cover_url;
+      if (!src) {
+        imagesRef.current.set(book.id, 'failed');
+        continue;
+      }
+      const image = new Image();
+      image.onload = () => {
+        if (image.naturalWidth < 24) imagesRef.current.set(book.id, 'failed');
+      };
+      image.onerror = () => {
+        imagesRef.current.set(book.id, 'failed');
+      };
+      image.src = src;
+      imagesRef.current.set(book.id, image);
+    }
+  }, [country]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
+    const context = canvas.getContext('2d');
+    if (!context) return;
+
+    let frame = 0;
+    const drawn = { sites: [] as Point[] };
+
+    const render = () => {
+      const rect = container.getBoundingClientRect();
+      const width = Math.max(rect.width, 1);
+      const height = Math.max(rect.height, 1);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (canvas.width !== Math.floor(width * dpr) || canvas.height !== Math.floor(height * dpr)) {
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+      }
+      context.setTransform(dpr, 0, 0, dpr, 0, 0);
+      context.clearRect(0, 0, width, height);
+      context.fillStyle = '#050505';
+      context.fillRect(0, 0, width, height);
+
+      const books = country.books;
+      if (books.length === 0) {
+        frame = requestAnimationFrame(render);
+        return;
+      }
+
+      const bases = baseSites(books.length, width, height);
+      const pointer = pointerRef.current;
+      let nearest = 0;
+      let nearestDistance = Infinity;
+      bases.forEach((site, index) => {
+        const distance = Math.hypot(site.x - pointer.x, site.y - pointer.y);
+        if (distance < nearestDistance) {
+          nearest = index;
+          nearestDistance = distance;
+        }
+      });
+
+      const targets = bases.map((site, index) => {
+        if (!pointer.inside) return site;
+        const dx = site.x - pointer.x;
+        const dy = site.y - pointer.y;
+        const distance = Math.hypot(dx, dy) || 1;
+        if (index === nearest) {
+          return {
+            x: site.x + (pointer.x - site.x) * 0.42,
+            y: site.y + (pointer.y - site.y) * 0.42,
+          };
+        }
+        const push = Math.exp(-distance / 260) * 84;
+        return { x: site.x + (dx / distance) * push, y: site.y + (dy / distance) * push };
+      });
+
+      if (drawn.sites.length !== targets.length) {
+        drawn.sites = targets.map((site) => ({ ...site }));
+      }
+      drawn.sites.forEach((site, index) => {
+        site.x += (targets[index].x - site.x) * 0.16;
+        site.y += (targets[index].y - site.y) * 0.16;
+      });
+      sitesRef.current = drawn.sites;
+
+      const cells = voronoi(drawn.sites, width, height);
+      books.forEach((book, index) => {
+        const polygon = cells[index];
+        if (!polygon || polygon.length < 3) return;
+        let centerX = 0;
+        let centerY = 0;
+        let minX = Infinity;
+        let minY = Infinity;
+        let maxX = -Infinity;
+        let maxY = -Infinity;
+        for (const point of polygon) {
+          centerX += point.x;
+          centerY += point.y;
+          minX = Math.min(minX, point.x);
+          minY = Math.min(minY, point.y);
+          maxX = Math.max(maxX, point.x);
+          maxY = Math.max(maxY, point.y);
+        }
+        centerX /= polygon.length;
+        centerY /= polygon.length;
+        const inset = polygon.map((point) => ({
+          x: centerX + (point.x - centerX) * 0.992,
+          y: centerY + (point.y - centerY) * 0.992,
+        }));
+
+        context.save();
+        context.beginPath();
+        context.moveTo(inset[0].x, inset[0].y);
+        for (const point of inset.slice(1)) context.lineTo(point.x, point.y);
+        context.closePath();
+        context.clip();
+
+        const loaded = imagesRef.current.get(book.id);
+        const image = loaded instanceof HTMLImageElement && loaded.complete && loaded.naturalWidth > 24
+          ? loaded
+          : null;
+        const boxWidth = Math.max(maxX - minX, 1);
+        const boxHeight = Math.max(maxY - minY, 1);
+        if (image) {
+          const ratio = image.naturalWidth / image.naturalHeight;
+          const boxRatio = boxWidth / boxHeight;
+          let drawWidth = boxWidth;
+          let drawHeight = boxHeight;
+          let drawX = minX;
+          let drawY = minY;
+          if (ratio > boxRatio) {
+            drawHeight = boxHeight;
+            drawWidth = boxHeight * ratio;
+            drawX = minX - (drawWidth - boxWidth) / 2;
+          } else {
+            drawWidth = boxWidth;
+            drawHeight = boxWidth / ratio;
+            drawY = minY - (drawHeight - boxHeight) / 2;
+          }
+          context.drawImage(image, drawX, drawY, drawWidth, drawHeight);
+          if (pointer.inside && index === nearest) {
+            context.fillStyle = 'rgba(0,0,0,0.18)';
+            context.fillRect(minX, minY, boxWidth, boxHeight);
+          }
+        } else {
+          context.fillStyle = index === nearest && pointer.inside ? '#1c1c1f' : '#121214';
+          context.fillRect(minX, minY, boxWidth, boxHeight);
+          context.textAlign = 'center';
+          context.textBaseline = 'middle';
+          context.fillStyle = '#f4f4f5';
+          context.font = '600 26px sans-serif';
+          const lines = wrapText(context, book.title, boxWidth * 0.7);
+          const blockHeight = lines.length * 32;
+          lines.forEach((line, lineIndex) => {
+            context.fillText(line, centerX, centerY - blockHeight / 2 + lineIndex * 32);
+          });
+          context.fillStyle = '#d4d4d8';
+          context.font = '16px sans-serif';
+          context.fillText(book.author, centerX, centerY + blockHeight / 2 + 8);
+        }
+        context.restore();
+      });
+
+      const hovered = pointer.inside ? books[nearest] : null;
+      if ((hovered?.id ?? null) !== hoverIdRef.current) {
+        hoverIdRef.current = hovered?.id ?? null;
+        setHoverBook(hovered);
+      }
+      if (labelRef.current) {
+        const labelX = Math.min(pointer.x + 18, width - 280);
+        const labelY = Math.min(pointer.y + 18, height - 88);
+        labelRef.current.style.transform = `translate(${labelX}px, ${labelY}px)`;
+        labelRef.current.style.opacity = hovered ? '1' : '0';
+      }
+
+      frame = requestAnimationFrame(render);
+    };
+
+    frame = requestAnimationFrame(render);
+    return () => cancelAnimationFrame(frame);
+  }, [country]);
+
+  const selectAt = (clientX: number, clientY: number) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    let nearest = 0;
+    let nearestDistance = Infinity;
+    sitesRef.current.forEach((site, index) => {
+      const distance = Math.hypot(site.x - x, site.y - y);
+      if (distance < nearestDistance) {
+        nearest = index;
+        nearestDistance = distance;
+      }
     });
-  }, [country.books, query]);
-
-  const pickRandom = () => {
-    const pool = visibleBooks.length > 0 ? visibleBooks : country.books;
-    if (pool.length === 0) return;
-    const chosen = pool[Math.floor(Math.random() * pool.length)];
-    onSelectBook?.(chosen);
+    const book = country.books[nearest];
+    if (book) onSelectBook?.(book);
   };
 
   return (
-    <div className="absolute inset-0 z-20 flex flex-col">
-      <div className="relative h-[26vh] min-h-[108px] shrink-0">
-        <button
-          type="button"
-          onClick={onBackToGlobe}
-          className="absolute inset-0 cursor-pointer"
-          aria-label={`Back to the globe from ${country.name}`}
-        />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#09090b] to-transparent" />
+    <div ref={containerRef} className="absolute inset-0 z-20 bg-black">
+      <canvas
+        ref={canvasRef}
+        className="block h-full w-full cursor-pointer"
+        onPointerMove={(event) => {
+          const rect = canvasRef.current?.getBoundingClientRect();
+          if (!rect) return;
+          pointerRef.current = {
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top,
+            inside: true,
+          };
+        }}
+        onPointerLeave={() => {
+          pointerRef.current.inside = false;
+        }}
+        onClick={(event) => selectAt(event.clientX, event.clientY)}
+      />
+
+      <div className="pointer-events-none absolute right-4 top-4 z-30 max-w-[46vw] text-right sm:right-6 sm:top-5">
+        <p className="text-sm font-medium text-white sm:text-base">
+          <span className="mr-1.5">{country.flag}</span>
+          {country.name}
+        </p>
+        <p className="text-xs text-zinc-300">
+          {country.books.length} {country.books.length === 1 ? 'book' : 'books'}
+        </p>
       </div>
 
-      <section
-        aria-label={`${country.name} books`}
-        className="shelf-rise flex min-h-0 flex-1 flex-col border-t border-white/15 bg-[#09090b] shadow-[0_-28px_50px_-24px_rgba(0,0,0,0.9)]"
+      <div
+        ref={labelRef}
+        className="pointer-events-none absolute left-0 top-0 z-30 w-64 rounded-2xl bg-black/85 px-3.5 py-2.5 opacity-0 shadow-[0_16px_40px_-18px_rgba(0,0,0,0.9)]"
       >
-        <div className="flex flex-col gap-4 px-5 pb-4 pt-5 sm:px-8">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div className="min-w-0 max-w-3xl">
-              <h1 className="text-[1.7rem] font-semibold tracking-[-0.03em] text-white sm:text-4xl">
-                <span className="mr-2 align-middle">{country.flag}</span>
-                {country.name}
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-300 sm:text-[15px]">
-                {country.tagline}
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <p className="text-sm text-zinc-300">
-                {country.books.length} {country.books.length === 1 ? 'book' : 'books'}
-              </p>
-              <button
-                type="button"
-                onClick={pickRandom}
-                className="rounded-full border border-white/20 px-3 py-1.5 text-xs font-medium text-zinc-100 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              >
-                Surprise me
-              </button>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <label className="relative min-w-0 flex-1">
-              <span className="sr-only">Search books from {country.name}</span>
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Escape' && query) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setQuery('');
-                  }
-                }}
-                placeholder={`Search ${country.name}`}
-                className="w-full rounded-xl border border-white/15 bg-black py-2.5 pl-10 pr-10 text-sm text-white outline-none placeholder:text-zinc-500 focus-visible:border-white/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              />
-              {query && (
-                <button
-                  type="button"
-                  onClick={() => setQuery('')}
-                  className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-zinc-300 hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-                  aria-label="Clear search"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              )}
-            </label>
-          </div>
-        </div>
-
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-10 sm:px-8">
-          {visibleBooks.length === 0 ? (
-            <div className="flex flex-col items-start gap-3 py-16">
-              <p className="text-base text-zinc-200">No books match that search.</p>
-              <button
-                type="button"
-                onClick={() => setQuery('')}
-                className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              >
-                Clear search
-              </button>
-            </div>
-          ) : (
-            <ul className="mx-auto grid max-w-7xl grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-              {visibleBooks.map((book) => (
-                <li key={book.id}>
-                  <button
-                    type="button"
-                    onClick={() => onSelectBook?.(book)}
-                    className="group w-full text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
-                  >
-                    <div className="relative aspect-[2/3] overflow-hidden rounded-[14px] bg-zinc-900 shadow-[0_18px_28px_-16px_rgba(0,0,0,0.85)] transition-transform duration-300 ease-out group-hover:-translate-y-1.5">
-                      <Cover book={book} />
-                      <span className="pointer-events-none absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-black/50 to-transparent" />
-                    </div>
-                    <p className="mt-3 text-sm font-medium leading-snug text-white line-clamp-2">
-                      {book.title}
-                    </p>
-                    <p className="mt-1 text-xs leading-snug text-zinc-300 line-clamp-1">
-                      {book.author}
-                    </p>
-                    {yearLabel(book.year) && (
-                      <p className="mt-1 font-mono text-[11px] text-zinc-400">
-                        {yearLabel(book.year)}
-                      </p>
-                    )}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </section>
+        {hoverBook && (
+          <>
+            <p className="text-sm font-semibold leading-snug text-white">{hoverBook.title}</p>
+            <p className="mt-1 text-xs text-zinc-300">
+              {hoverBook.author}
+              {hoverBook.year > 0 ? ` · ${hoverBook.year}` : ''}
+            </p>
+          </>
+        )}
+      </div>
     </div>
   );
 }
 
-export function BackToGlobeButton({
-  onClick,
-}: {
-  onClick: () => void;
-}) {
+export function BackToGlobeButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       type="button"
