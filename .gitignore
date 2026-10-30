@@ -39,6 +39,9 @@ yarn-error.log*
 # netlify
 .netlify
 
+# scraped page cache
+scripts/cache/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

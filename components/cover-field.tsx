@@ -3,10 +3,11 @@
 import React, { useEffect, useRef } from 'react';
 import { GeoBook } from '@/lib/geo-types';
 
-const MAX_BOOKS = 16;
-const COLS = 4;
-const CELL_W = 480;
-const CELL_H = 720;
+const MAX_BOOKS = 100;
+const COLS = 10;
+const ROWS = 10;
+const CELL_W = 192;
+const CELL_H = 288;
 
 interface CoverFieldProps {
   books: GeoBook[];
@@ -66,8 +67,8 @@ function layoutPoints(count: number, aspect: number, seed: number): Point[] {
       const gx = (col + 0.5) / inRow;
       const gy = (row + 0.5) / rows;
       points.push({
-        nx: clamp(0.16 + gx * 0.68 + (rng() - 0.5) * (0.46 / cols), 0.14, 0.86),
-        ny: clamp(0.16 + gy * 0.62 + (rng() - 0.5) * (0.4 / rows), 0.14, 0.74),
+        nx: clamp(0.07 + gx * 0.86 + (rng() - 0.5) * (0.34 / cols), 0.05, 0.95),
+        ny: clamp(0.08 + gy * 0.84 + (rng() - 0.5) * (0.3 / rows), 0.06, 0.94),
         phase: rng() * Math.PI * 2,
       });
       index += 1;
@@ -90,8 +91,8 @@ function layoutPoints(count: number, aspect: number, seed: number): Point[] {
           fy += dy * push;
         }
       }
-      points[a].nx = clamp(points[a].nx + fx, 0.14, 0.86);
-      points[a].ny = clamp(points[a].ny + fy, 0.15, 0.76);
+      points[a].nx = clamp(points[a].nx + fx, 0.05, 0.95);
+      points[a].ny = clamp(points[a].ny + fy, 0.06, 0.94);
     }
   }
 
@@ -156,12 +157,12 @@ function paintJacket(
   ctx.fillStyle = wash;
   ctx.fillRect(x, y, CELL_W, CELL_H);
 
-  const pad = 72;
+  const pad = Math.round(CELL_W * 0.1);
   const maxWidth = CELL_W - pad * 2;
   const title = book.title || 'Untitled';
-  let size = 54;
+  let size = Math.round(CELL_W * 0.13);
   let lines: string[] = [];
-  while (size >= 30) {
+  while (size >= 16) {
     ctx.font = `600 ${size}px ${fontFamily}`;
     const widest = Math.max(...title.split(/\s+/).map((word) => ctx.measureText(word).width), 0);
     lines = wrapLines(ctx, title, maxWidth);
@@ -171,7 +172,7 @@ function paintJacket(
 
   ctx.fillStyle = '#f6f4ef';
   ctx.textBaseline = 'top';
-  let cursor = y + 132;
+  let cursor = y + Math.round(CELL_H * 0.16);
   const lineHeight = Math.round(size * 1.2);
   for (const line of lines) {
     ctx.fillText(line, x + pad, cursor);
@@ -181,15 +182,16 @@ function paintJacket(
   ctx.strokeStyle = `hsla(${hue} 30% 72% / 0.45)`;
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(x + pad, y + CELL_H - 168);
-  ctx.lineTo(x + pad + 72, y + CELL_H - 168);
+  const ruleY = y + CELL_H - Math.round(CELL_H * 0.22);
+  ctx.moveTo(x + pad, ruleY);
+  ctx.lineTo(x + pad + Math.round(CELL_W * 0.18), ruleY);
   ctx.stroke();
 
-  ctx.font = `500 26px ${fontFamily}`;
+  ctx.font = `500 ${Math.round(CELL_W * 0.07)}px ${fontFamily}`;
   ctx.fillStyle = '#efeae2';
   const authorLines = wrapLines(ctx, book.author || 'Unknown author', maxWidth).slice(0, 2);
   authorLines.forEach((line, index) => {
-    ctx.fillText(line, x + pad, y + CELL_H - 148 + index * 36);
+    ctx.fillText(line, x + pad, y + CELL_H - Math.round(CELL_H * 0.16) + index * Math.round(CELL_W * 0.09));
   });
 
   ctx.restore();
@@ -206,16 +208,18 @@ function drawImageCover(
   let dw: number;
   let dh: number;
   if (ratio > cellRatio) {
-    dh = CELL_H;
-    dw = CELL_H * ratio;
-  } else {
     dw = CELL_W;
     dh = CELL_W / ratio;
+  } else {
+    dh = CELL_H;
+    dw = CELL_H * ratio;
   }
   ctx.save();
   ctx.beginPath();
   ctx.rect(x, y, CELL_W, CELL_H);
   ctx.clip();
+  ctx.fillStyle = '#121214';
+  ctx.fillRect(x, y, CELL_W, CELL_H);
   ctx.drawImage(image, x + (CELL_W - dw) / 2, y + (CELL_H - dh) / 2, dw, dh);
   ctx.restore();
 }
@@ -237,13 +241,12 @@ out vec4 fragColor;
 
 uniform vec2 uResolution;
 uniform int uCount;
-uniform vec2 uSite[16];
-uniform float uWeight[16];
-uniform float uHalfW[16];
+uniform vec2 uSite[100];
+uniform float uWeight[100];
+uniform float uHalfW[100];
+uniform vec2 uGrid;
 uniform sampler2D uAtlas;
 uniform int uHover;
-uniform float uMelt;
-uniform float uReveal;
 
 vec3 sampleCover(int index, vec2 p) {
   float halfW = max(uHalfW[index], 1.0);
@@ -251,9 +254,9 @@ vec3 sampleCover(int index, vec2 p) {
   vec2 uv = (p - uSite[index]) / vec2(halfW * 2.0, halfH * 2.0) + 0.5;
   vec2 cell = clamp(uv, 0.0, 1.0);
   cell = cell * 0.992 + 0.004;
-  float col = float(index - (index / 4) * 4);
-  float row = float(index / 4);
-  vec2 atlasUv = (vec2(col, row) + cell) / 4.0;
+  float col = mod(float(index), uGrid.x);
+  float row = floor(float(index) / uGrid.x);
+  vec2 atlasUv = (vec2(col, row) + cell) / uGrid;
   return texture(uAtlas, atlasUv).rgb;
 }
 
@@ -267,7 +270,7 @@ void main() {
   float d2 = 1e20;
   int i1 = 0;
   int i2 = 0;
-  for (int i = 0; i < 16; i++) {
+  for (int i = 0; i < 100; i++) {
     if (i >= uCount) break;
     float dist = dot(vPx - uSite[i], vPx - uSite[i]) - uWeight[i];
     if (dist < d1) {
@@ -281,25 +284,12 @@ void main() {
     }
   }
 
-  vec3 c1 = sampleCover(i1, vPx);
-  float dim1 = (uHover < 0 || i1 == uHover) ? 1.0 : 0.84;
-  vec3 color = c1 * dim1;
-
-  if (uCount > 1 && d2 < 1e19) {
-    vec3 c2 = sampleCover(i2, vPx);
-    float dim2 = (uHover < 0 || i2 == uHover) ? 1.0 : 0.84;
-    float reach = max(length(vPx - uSite[i1]), 72.0);
-    float band = uMelt;
-    if (uHover >= 0 && (i1 == uHover || i2 == uHover)) band *= 0.58;
-    float span = reach * max(band, 1.0);
-    float blend = smoothstep(-1.0, 1.0, (d2 - d1) / span);
-    color = mix(c2 * dim2, c1 * dim1, blend);
-  }
+  float dim = (uHover < 0 || i1 == uHover) ? 1.0 : 0.84;
+  vec3 color = sampleCover(i1, vPx) * dim;
 
   vec2 q = vPx / uResolution - 0.5;
-  float vig = smoothstep(0.9, 0.35, length(q * vec2(1.02, 0.94)));
-  color *= mix(0.9, 1.0, vig);
-  color *= uReveal;
+  float vig = smoothstep(0.92, 0.4, length(q * vec2(1.0, 0.92)));
+  color *= mix(0.94, 1.0, vig);
   fragColor = vec4(color, 1.0);
 }`;
 
@@ -414,7 +404,7 @@ export default function CoverField({
 
     const atlas = document.createElement('canvas');
     atlas.width = COLS * CELL_W;
-    atlas.height = COLS * CELL_H;
+    atlas.height = ROWS * CELL_H;
     const ctx = atlas.getContext('2d');
     if (!ctx) {
       onUnavailableRef.current?.();
@@ -434,9 +424,8 @@ export default function CoverField({
       site: gl.getUniformLocation(program, 'uSite[0]'),
       weight: gl.getUniformLocation(program, 'uWeight[0]'),
       halfW: gl.getUniformLocation(program, 'uHalfW[0]'),
+      grid: gl.getUniformLocation(program, 'uGrid'),
       hover: gl.getUniformLocation(program, 'uHover'),
-      melt: gl.getUniformLocation(program, 'uMelt'),
-      reveal: gl.getUniformLocation(program, 'uReveal'),
       atlas: gl.getUniformLocation(program, 'uAtlas'),
     };
 
@@ -452,9 +441,7 @@ export default function CoverField({
     const halfData = new Float32Array(MAX_BOOKS);
     let frame = 0;
     let cancelled = false;
-    let uploaded = false;
-    const started = performance.now();
-    let last = started;
+    let last = performance.now();
 
     const fontFamily = `"Noto Serif", "Noto Serif Ethiopic", "Noto Serif CJK JP", ${
       getComputedStyle(document.body).fontFamily || 'serif'
@@ -477,21 +464,11 @@ export default function CoverField({
       gl.bindTexture(gl.TEXTURE_2D, texture);
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, atlas);
-      uploaded = true;
     };
 
-    const paintCell = (index: number, image?: CanvasImageSource & { width: number; height: number }) => {
-      const col = index % COLS;
-      const row = Math.floor(index / COLS);
-      const x = col * CELL_W;
-      const y = row * CELL_H;
-      if (image && image.width > 24 && image.height > 24) {
-        drawImageCover(ctx, image, x, y);
-      } else {
-        paintJacket(ctx, selection[index], x, y, fontFamily);
-      }
-      uploadAtlas();
-    };
+    ctx.fillStyle = '#121214';
+    ctx.fillRect(0, 0, atlas.width, atlas.height);
+    uploadAtlas();
 
     const resize = () => {
       const rect = root.getBoundingClientRect();
@@ -535,16 +512,14 @@ export default function CoverField({
       last = now;
       size = resize();
       const { width, height, dpr } = size;
-      const elapsed = now - started;
-      const reveal = reduced ? 1 : clamp(elapsed / 900, 0, 1);
-      const spread = reduced ? 1 : 1 - (1 - reveal) ** 3;
+      const spread = 1;
       const spring = 1 - Math.exp(-dt * (reduced ? 18 : 8));
       const active = activeRef.current;
       const pointer = pointerRef.current;
       const amp = reduced ? 0 : Math.min(width, height) * 0.011;
 
       for (let i = 0; i < selection.length; i += 1) {
-        const targetZoom = active === i ? 1.34 : 1;
+        const targetZoom = active === i ? 1.82 : 1;
         zoom[i] += (targetZoom - zoom[i]) * spring;
 
         const restX = points[i].nx * width;
@@ -586,7 +561,7 @@ export default function CoverField({
         const halfW =
           selection.length === 1
             ? Math.max(width / 2, height / 3) * 1.04
-            : nearest * 0.56 * zoom[i];
+            : nearest * 0.32 * zoom[i];
         const weight = nearest * nearest * 0.3 * zoom[i] * zoom[i];
         siteData[i * 2] = displayX[i];
         siteData[i * 2 + 1] = displayY[i];
@@ -598,25 +573,29 @@ export default function CoverField({
       liveRef.current.sites.set(siteData);
       liveRef.current.weights.set(weightData);
 
-      if (uploaded) {
-        gl.useProgram(program);
-        gl.bindVertexArray(vao);
-        gl.viewport(0, 0, width, height);
-        gl.uniform2f(uniforms.resolution, width, height);
-        gl.uniform1i(uniforms.count, selection.length);
-        gl.uniform2fv(uniforms.site, siteData);
-        gl.uniform1fv(uniforms.weight, weightData);
-        gl.uniform1fv(uniforms.halfW, halfData);
-        gl.uniform1i(uniforms.hover, active == null ? -1 : active);
-        gl.uniform1f(uniforms.melt, 34 * dpr);
-        gl.uniform1f(uniforms.reveal, 0.15 + 0.85 * spread);
-        gl.uniform1i(uniforms.atlas, 0);
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
-      }
+      gl.useProgram(program);
+      gl.bindVertexArray(vao);
+      gl.viewport(0, 0, width, height);
+      gl.uniform2f(uniforms.resolution, width, height);
+      gl.uniform1i(uniforms.count, selection.length);
+      gl.uniform2fv(uniforms.site, siteData);
+      gl.uniform1fv(uniforms.weight, weightData);
+      gl.uniform1fv(uniforms.halfW, halfData);
+      gl.uniform1i(uniforms.hover, active == null ? -1 : active);
+      gl.uniform2f(uniforms.grid, COLS, ROWS);
+      gl.uniform1i(uniforms.atlas, 0);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
 
       frame = requestAnimationFrame(draw);
+    };
+
+    const paintCell = (index: number, image: CanvasImageSource & { width: number; height: number }) => {
+      const col = index % COLS;
+      const row = Math.floor(index / COLS);
+      drawImageCover(ctx, image, col * CELL_W, row * CELL_H);
+      uploadAtlas();
     };
 
     let alive = true;

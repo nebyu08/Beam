@@ -53,23 +53,18 @@ export default function CountryView({ country, onSelectBook }: CountryViewProps)
       )}
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10">
-        <div className="bg-gradient-to-t from-black from-30% via-black via-50% to-transparent px-6 pb-[max(3.25rem,env(safe-area-inset-bottom))] pt-24 sm:px-10 sm:pb-14 sm:pt-28">
-          <div className="grid max-w-3xl">
+        <div className="bg-gradient-to-t from-black/80 via-black/35 to-transparent px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-16 sm:px-8 sm:pb-7">
+          <div className="grid max-w-2xl [text-shadow:0_1px_2px_rgba(0,0,0,0.85)]">
             <div
               className={`col-start-1 row-start-1 transition-opacity duration-200 motion-reduce:transition-none ${
                 activeBook ? 'opacity-0' : 'opacity-100'
               }`}
               aria-hidden={!!activeBook}
             >
-              <h1 className="text-balance text-3xl font-semibold leading-tight tracking-[-0.03em] sm:text-5xl">
+              <h1 className="text-balance text-xl font-semibold tracking-[-0.03em] sm:text-2xl">
                 <span className="mr-2">{country.flag}</span>
                 {country.name}
               </h1>
-              {country.tagline && (
-                <p className="mt-3 max-w-xl text-pretty text-base leading-relaxed text-white sm:text-lg">
-                  {country.tagline}
-                </p>
-              )}
             </div>
             <div
               className={`col-start-1 row-start-1 transition-opacity duration-200 motion-reduce:transition-none ${
@@ -79,10 +74,10 @@ export default function CountryView({ country, onSelectBook }: CountryViewProps)
             >
               {activeBook && (
                 <>
-                  <p className="text-balance text-3xl font-semibold leading-tight tracking-[-0.03em] sm:text-5xl">
+                  <p className="text-balance text-xl font-semibold leading-tight tracking-[-0.03em] sm:text-2xl">
                     {activeBook.title}
                   </p>
-                  <p className="mt-3 max-w-xl text-pretty text-lg leading-snug text-white">
+                  <p className="mt-1 text-sm leading-snug text-white sm:text-base">
                     {activeBook.author}
                     {year ? `, ${year}` : ''}
                   </p>
