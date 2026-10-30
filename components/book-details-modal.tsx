@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Book } from '@/lib/types';
-import { ExternalLink, X, BookOpen, Star, ArrowLeft, Globe } from 'lucide-react';
+import { ArrowLeft, BookOpen, ExternalLink, Globe, X } from 'lucide-react';
 
 interface BookDetailsModalProps {
   isOpen: boolean;
@@ -13,165 +13,173 @@ interface BookDetailsModalProps {
   clearOfBar?: boolean;
 }
 
+function yearLabel(year: number) {
+  if (!year) return '';
+  if (year < 0) return `${Math.abs(year)} BCE`;
+  return String(year);
+}
+
 export default function BookDetailsModal({
   isOpen,
   book,
   countryName,
   onClose,
   onBackToGlobe,
-  clearOfBar = false,
 }: BookDetailsModalProps) {
+  const [coverFailureId, setCoverFailureId] = useState<number | null>(null);
+  const [fetchedDetail, setFetchedDetail] = useState<{ id: number; text: string } | null>(null);
+
+  useEffect(() => {
+    const existing = book?.description?.trim();
+    if (!book || !isOpen || existing) return;
+
+    const controller = new AbortController();
+    const bookId = book.id;
+    const query = [book.title, book.author].filter(Boolean).join(' ');
+
+    const run = async () => {
+      try {
+        const searchUrl = `https://openlibrary.org/search.json?${new URLSearchParams({
+          q: query,
+          limit: '1',
+          fields: 'key,first_sentence',
+        })}`;
+        const search = await fetch(searchUrl, { signal: controller.signal });
+        const found = await search.json();
+        const doc = found?.docs?.[0];
+        const sentence = doc?.first_sentence;
+        const fromSearch = Array.isArray(sentence) ? sentence[0] : typeof sentence === 'string' ? sentence : '';
+        const key = doc?.key as string | undefined;
+        if (!key) {
+          setFetchedDetail({ id: bookId, text: typeof fromSearch === 'string' ? fromSearch : '' });
+          return;
+        }
+        const work = await fetch(`https://openlibrary.org${key}.json`, { signal: controller.signal });
+        const record = await work.json();
+        const raw = record?.description;
+        const text = typeof raw === 'string' ? raw : raw?.value;
+        const clean = typeof text === 'string' ? text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : '';
+        setFetchedDetail({ id: bookId, text: clean || (typeof fromSearch === 'string' ? fromSearch : '') });
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+        setFetchedDetail({ id: bookId, text: '' });
+      }
+    };
+
+    void run();
+    return () => controller.abort();
+  }, [book, isOpen]);
+
   if (!isOpen || !book) return null;
 
   const coverSrc = book.cover || book.cover_url;
-  const rating = book.rating || 0;
+  const coverFailed = coverFailureId === book.id;
+  const year = yearLabel(book.year);
+  const savedDetail = book.description?.trim() || '';
+  const loadedDetail = fetchedDetail?.id === book.id ? fetchedDetail.text : '';
+  const detail = savedDetail || loadedDetail;
+  const detailLoading = !savedDetail && fetchedDetail?.id !== book.id;
 
   return (
     <>
-      {/* Clickable Backdrop Overlay: Clicking anywhere outside instantly turns back to books */}
       <div
-        className="fixed inset-0 z-40 bg-black/50 backdrop-blur-[2px] transition-opacity duration-200 animate-in fade-in"
+        className="fixed inset-0 z-40 bg-black/45 transition-opacity duration-200"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Floating Modal Card */}
       <aside
         aria-label="Book details"
-        className={`fixed z-40 max-w-sm sm:max-w-md pointer-events-auto select-none ${
-          clearOfBar
-            ? 'top-20 left-4 right-4 sm:left-auto sm:right-5 sm:w-[410px]'
-            : 'top-4 left-4 w-[calc(100vw-2rem)] sm:w-[410px]'
-        }`}
-        onClick={(e) => e.stopPropagation()}
+        className="pointer-events-none fixed inset-0 z-40 flex justify-end p-3 sm:p-5"
       >
-        <div className="relative rounded-3xl border border-white/20 shadow-[0_25px_60px_rgba(0,0,0,0.95)] overflow-hidden min-h-[380px] flex flex-col justify-between text-zinc-100">
-          {/* Full Cover Image Background */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 bg-zinc-900">
-            {coverSrc ? (
+        <div className="pointer-events-auto flex h-full w-full max-w-[760px] flex-col overflow-hidden rounded-[28px] bg-[#0c0c0e] text-white shadow-[0_30px_80px_rgba(0,0,0,0.55)] sm:flex-row">
+          <div className="flex w-full shrink-0 items-center justify-center bg-black px-6 py-8 sm:w-[340px] sm:px-8">
+            {coverSrc && !coverFailed ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={coverSrc}
                 alt=""
-                className="w-full h-full object-cover scale-105 filter brightness-90"
+                onError={() => setCoverFailureId(book.id)}
+                className="aspect-[2/3] h-auto w-[min(100%,280px)] rounded-md object-contain shadow-[0_18px_50px_rgba(0,0,0,0.45)] sm:w-[min(100%,320px)]"
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-950" />
-            )}
-
-            {/* Moody filmic gradient scrim so foreground text is crystal-clear */}
-            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-zinc-950/40" />
-          </div>
-
-          {/* Top Header Bar: Turn Back Button + Badges + Close */}
-          <div className="relative z-10 flex items-center justify-between p-4 border-b border-white/10 bg-black/30 backdrop-blur-md">
-            <button
-              onClick={onClose}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/75 hover:bg-black text-xs font-medium text-zinc-200 hover:text-white border border-white/20 backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-lg"
-              title="Turn back to country books (Esc)"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to {countryName || 'Books'}</span>
-            </button>
-
-            <div className="flex items-center gap-2">
-              {/* Rating Score Badge */}
-              {rating > 0 && (
-                <div className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-black/60 backdrop-blur-md text-zinc-200 border border-white/20 shadow-md">
-                  <Star className="w-3 h-3 fill-zinc-300 text-zinc-300" />
-                  <span>{rating}%</span>
-                </div>
-              )}
-
-              {/* Close Button */}
-              <button
-                onClick={onClose}
-                title="Close panel (Esc)"
-                className="w-7 h-7 rounded-full bg-black/75 hover:bg-black text-white flex items-center justify-center border border-white/25 backdrop-blur-md transition-all hover:scale-110 active:scale-95 shadow-xl cursor-pointer"
-              >
-                <X className="w-3.5 h-3.5 text-white" />
-              </button>
-            </div>
-          </div>
-
-          {/* Bottom Content Area: Typography + Short Detail + Actions */}
-          <div className="relative z-10 p-5 pt-6 flex flex-col">
-            {/* Genre Badge & Year */}
-            <div className="flex items-center gap-2 mb-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-zinc-900/90 text-zinc-200 border border-zinc-700">
-                {book.genre}
-              </span>
-              {book.year > 0 && (
-                <span className="text-zinc-400 font-mono text-[11px]">
-                  {book.year}
-                </span>
-              )}
-            </div>
-
-            {/* Author */}
-            <p className="text-xs font-medium text-zinc-400 mb-1 drop-shadow-md">
-              {book.author}
-            </p>
-
-            {/* Book Title */}
-            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight line-clamp-2 drop-shadow-lg mb-2">
-              {book.title}
-            </h2>
-
-            {/* Description Snippet */}
-            <p className="text-xs text-zinc-300 leading-relaxed line-clamp-3 drop-shadow mb-3 font-light">
-              {book.description || `${book.title} by ${book.author}.`}
-            </p>
-
-            {/* Theme Badges */}
-            {book.genres && book.genres.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mb-4">
-                {book.genres.slice(0, 3).map((g) => (
-                  <span
-                    key={g}
-                    className="px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-[10px] text-zinc-300 font-medium"
-                  >
-                    {g}
-                  </span>
-                ))}
+              <div className="flex aspect-[2/3] w-[min(100%,280px)] items-end bg-[#1a1a1d] p-6 sm:w-[320px]">
+                <p className="text-2xl font-semibold leading-tight">{book.title}</p>
               </div>
             )}
+          </div>
 
-            {/* Action Buttons: Open Library + Back to Books + Return to Globe */}
-            <div className="flex items-center gap-2 pt-1">
-              {book.openlibrary_url ? (
+          <div className="flex min-h-0 flex-1 flex-col px-6 py-5 sm:px-8 sm:py-7">
+            <div className="flex items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-sm font-semibold text-black hover:bg-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                {countryName || 'Books'}
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="mt-6 min-h-0 flex-1 overflow-y-auto pr-1">
+              <h2 className="text-balance text-4xl font-semibold leading-[1.05] tracking-[-0.03em] sm:text-5xl">
+                {book.title}
+              </h2>
+              <p className="mt-4 text-lg leading-snug">{book.author}</p>
+              {(year || book.genre) && (
+                <p className="mt-1 text-base">
+                  {[year, book.genre].filter(Boolean).join(', ')}
+                </p>
+              )}
+              {(book.rating ?? 0) > 0 && <p className="mt-3 text-sm">{book.rating}% rating</p>}
+              <div className="mt-6 border-t border-white/15 pt-5">
+                <h3 className="text-sm font-semibold">About this book</h3>
+                <p className="mt-3 max-w-prose text-pretty text-base leading-relaxed">
+                  {detailLoading
+                    ? 'Looking up this book…'
+                    : detail ||
+                      `${book.title} is a ${book.genre || 'book'} by ${book.author}${
+                        year ? `, from ${year}` : ''
+                      }${countryName ? `, filed under ${countryName}` : ''}.`}
+                </p>
+              </div>
+              {book.genres && book.genres.length > 0 && (
+                <p className="mt-5 text-sm leading-relaxed">{book.genres.slice(0, 4).join(', ')}</p>
+              )}
+            </div>
+
+            <div className="mt-6 flex flex-wrap items-center gap-2">
+              {book.openlibrary_url && (
                 <a
                   href={book.openlibrary_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 font-bold text-xs transition-all shadow-lg active:scale-98"
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-black hover:bg-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 >
-                  <BookOpen className="w-3.5 h-3.5" />
-                  <span>Read Online</span>
-                  <ExternalLink className="w-3 h-3 text-zinc-600" />
+                  <BookOpen className="h-4 w-4" />
+                  Read online
+                  <ExternalLink className="h-3.5 w-3.5" />
                 </a>
-              ) : null}
-
-              {/* Turn Back Button */}
-              <button
-                onClick={onClose}
-                className="px-3.5 py-2 rounded-xl bg-black/70 hover:bg-black text-zinc-200 hover:text-white text-xs font-semibold border border-white/20 backdrop-blur-md transition-all active:scale-98 cursor-pointer"
-              >
-                Back
-              </button>
-
-              {/* Direct Return to Earth Globe */}
+              )}
               {onBackToGlobe && (
                 <button
+                  type="button"
                   onClick={() => {
                     onClose();
                     onBackToGlobe();
                   }}
-                  className="px-3 py-2 rounded-xl bg-black/70 hover:bg-black text-zinc-300 hover:text-white text-xs font-medium border border-white/20 backdrop-blur-md transition-all active:scale-98 flex items-center gap-1.5 cursor-pointer"
-                  title="Return directly to Earth Globe"
+                  className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-3 text-sm font-semibold text-white hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 >
-                  <Globe className="w-3 h-3" />
-                  <span>To globe</span>
+                  <Globe className="h-4 w-4" />
+                  Globe
                 </button>
               )}
             </div>
