@@ -125,7 +125,7 @@ export default function Home() {
   const shelfOpen = appMode === 'country' && !!activeCountry;
 
   return (
-    <main className="relative h-screen w-screen select-none overflow-hidden bg-[#f3f4f6] text-zinc-100">
+    <main className="relative w-screen h-screen overflow-hidden bg-black text-zinc-100 select-none">
       <EarthGlobe
         countries={countries}
         onSelectCountry={enterCountry}

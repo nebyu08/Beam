@@ -5,7 +5,6 @@ import * as d3 from 'd3-geo';
 import * as topojson from 'topojson-client';
 import { GeoCountry, GeoBook } from '@/lib/geo-types';
 import { ZoomIn, ZoomOut, RotateCcw, ChevronRight } from 'lucide-react';
-import { createLivingEarth } from '@/components/living-earth';
 
 interface EarthGlobeProps {
   countries: GeoCountry[];
@@ -23,9 +22,6 @@ export default function EarthGlobe({
   interactive = true,
 }: EarthGlobeProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const globeRef = useRef<HTMLCanvasElement | null>(null);
-  const hoveredCountryRef = useRef(hoveredCountry);
-  hoveredCountryRef.current = hoveredCountry;
 
   // Projection state
   const rotationRef = useRef<[number, number, number]>([-15, -20, 0]); // [yaw, pitch, roll]
@@ -90,13 +86,13 @@ export default function EarthGlobe({
 
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
-    const earth = globeRef.current ? createLivingEarth(globeRef.current) : null;
 
     if (lastInteractTimeRef.current === 0) {
       lastInteractTimeRef.current = Date.now();
     }
 
     let animationFrameId: number;
+    const graticule = d3.geoGraticule10();
 
     const render = () => {
       const width = canvas.clientWidth;
@@ -166,19 +162,48 @@ export default function EarthGlobe({
 
       const path = d3.geoPath(projection, ctx);
 
-      earth?.render(width, height, currentScale, rotationRef.current[0], rotationRef.current[1]);
+      // --- 1. Atmospheric Outer Halo (Monochrome) ---
+      const outerGlow = ctx.createRadialGradient(cx, cy, currentScale, cx, cy, currentScale * 1.15);
+      outerGlow.addColorStop(0, 'rgba(255, 255, 255, 0.16)');
+      outerGlow.addColorStop(0.35, 'rgba(255, 255, 255, 0.04)');
+      outerGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
 
-      ctx.save();
-      ctx.translate(cx, cy + currentScale * 0.97);
-      ctx.scale(1, 0.16);
-      const shadow = ctx.createRadialGradient(0, 0, currentScale * 0.15, 0, 0, currentScale * 0.92);
-      shadow.addColorStop(0, 'rgba(30, 40, 55, 0.28)');
-      shadow.addColorStop(1, 'rgba(30, 40, 55, 0)');
-      ctx.fillStyle = shadow;
       ctx.beginPath();
-      ctx.arc(0, 0, currentScale * 0.92, 0, Math.PI * 2);
+      ctx.arc(cx, cy, currentScale * 1.15, 0, Math.PI * 2);
+      ctx.fillStyle = outerGlow;
       ctx.fill();
-      ctx.restore();
+
+      // --- 2. Ocean Disc (Obsidian Black) ---
+      const oceanGrad = ctx.createRadialGradient(
+        cx - currentScale * 0.25,
+        cy - currentScale * 0.25,
+        currentScale * 0.1,
+        cx,
+        cy,
+        currentScale
+      );
+      oceanGrad.addColorStop(0, '#151515');
+      oceanGrad.addColorStop(0.55, '#090909');
+      oceanGrad.addColorStop(1, '#000000');
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, currentScale, 0, Math.PI * 2);
+      ctx.fillStyle = oceanGrad;
+      ctx.fill();
+
+      // Atmospheric rim highlight
+      ctx.beginPath();
+      ctx.arc(cx, cy, currentScale, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.32)';
+      ctx.lineWidth = 1.25;
+      ctx.stroke();
+
+      // --- 3. Graticules (Latitude & Longitude Lines) ---
+      ctx.beginPath();
+      path(graticule);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
 
       // --- 4. Render Landmass Polygons ---
       const [yaw, pitch] = rotationRef.current;
@@ -187,19 +212,37 @@ export default function EarthGlobe({
       for (const feature of worldFeatures) {
         const idStr = String(feature.id);
         const name = (feature.properties?.name || '').toLowerCase();
-        const hover = hoveredCountryRef.current;
+        const matchedGeoCountry = countryLookup.get(idStr) || countryLookup.get(name);
         const isHovered =
-          hover &&
-          (String(hover.id) === idStr || hover.name.toLowerCase() === name);
+          hoveredCountry &&
+          (String(hoveredCountry.id) === idStr ||
+            hoveredCountry.name.toLowerCase() === name);
 
         ctx.beginPath();
         path(feature);
-        ctx.strokeStyle = isHovered ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.34)';
-        ctx.lineWidth = isHovered ? 1.6 : 0.7;
-        ctx.stroke();
-        if (!isHovered) continue;
-        ctx.fillStyle = 'rgba(255, 248, 220, 0.22)';
-        ctx.fill();
+
+        if (isHovered) {
+          // Luminous white highlight on hover
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.38)';
+          ctx.fill();
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1.8;
+          ctx.stroke();
+        } else if (matchedGeoCountry) {
+          // Land with registered literary history
+          ctx.fillStyle = '#1c1c1c';
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        } else {
+          // Standard landmass
+          ctx.fillStyle = '#0c0c0c';
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
       }
 
       // --- 5. Literary Beacons (Pulsing Capital Pins in Pure White) ---
@@ -215,7 +258,7 @@ export default function EarthGlobe({
         if (!screenPoint) continue;
         const [bx, by] = screenPoint;
 
-        const isHovered = hoveredCountryRef.current?.id === country.id;
+        const isHovered = hoveredCountry?.id === country.id;
         const pulse = ((now * 0.0018 + Number(country.id) * 0.3) % 1);
         const pulseRadius = 3 + pulse * 12;
 
@@ -223,16 +266,16 @@ export default function EarthGlobe({
         ctx.beginPath();
         ctx.arc(bx, by, pulseRadius, 0, Math.PI * 2);
         ctx.strokeStyle = isHovered
-          ? `rgba(255, 236, 190, ${1 - pulse})`
-          : `rgba(255, 244, 220, ${(1 - pulse) * 0.7})`;
+          ? `rgba(255, 255, 255, ${1 - pulse})`
+          : `rgba(255, 255, 255, ${(1 - pulse) * 0.6})`;
         ctx.lineWidth = 1;
         ctx.stroke();
 
         // Core luminous pin
         ctx.beginPath();
         ctx.arc(bx, by, isHovered ? 4.5 : 2.8, 0, Math.PI * 2);
-        ctx.fillStyle = '#fff6df';
-        ctx.shadowColor = '#ffd98a';
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = '#ffffff';
         ctx.shadowBlur = isHovered ? 14 : 5;
         ctx.fill();
         ctx.shadowBlur = 0; // reset
@@ -256,9 +299,8 @@ export default function EarthGlobe({
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      earth?.destroy();
     };
-  }, [worldFeatures, countries, countryLookup]);
+  }, [worldFeatures, countries, hoveredCountry, countryLookup]);
 
   // Handle Drag / Rotation Interaction
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
@@ -385,8 +427,8 @@ export default function EarthGlobe({
   };
 
   return (
-    <div className="relative h-full w-full select-none overflow-hidden bg-[#f3f4f6]">
-      <canvas ref={globeRef} className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true" />
+    <div className="relative w-full h-full select-none overflow-hidden bg-black">
+      {/* 3D Black & White Earth Globe Canvas */}
       <canvas
         ref={canvasRef}
         onPointerDown={handlePointerDown}
