@@ -6,6 +6,16 @@ Most shelves sort literature by what sold, or by a genre menu. This one sorts it
 
 Live at [nothing.nebiyu.et](https://nothing.nebiyu.et).
 
+![A dark globe. Each light is a country with a shelf.](docs/globe.png)
+
+![Japan opens as one field of covers. The book under your hand grows.](docs/covers.png)
+
+![The Stranger, opened on the shelf for France.](docs/book.png)
+
+![The title, then the globe, then a country of books.](docs/demo.gif)
+
+[The same clip as a video.](docs/demo.mp4)
+
 ## The idea
 
 A list of countries asks you to already know where you want to go. A globe does not. You turn it, a place catches your eye, and you go in.
