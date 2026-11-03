@@ -22,6 +22,10 @@ export default function EarthGlobe({
   interactive = true,
 }: EarthGlobeProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const interactiveRef = useRef(interactive);
+  useEffect(() => {
+    interactiveRef.current = interactive;
+  }, [interactive]);
 
   // Projection state
   const rotationRef = useRef<[number, number, number]>([-15, -20, 0]); // [yaw, pitch, roll]
@@ -95,6 +99,10 @@ export default function EarthGlobe({
     const graticule = d3.geoGraticule10();
 
     const render = () => {
+      if (!interactiveRef.current) {
+        animationFrameId = requestAnimationFrame(render);
+        return;
+      }
       const width = canvas.clientWidth;
       const height = canvas.clientHeight;
       const dpr = window.devicePixelRatio || 1;

@@ -25,4 +25,4 @@ export interface GeoCountry {
   books: GeoBook[];
 }
 
-export type AppViewMode = 'globe' | 'country';
+export type AppViewMode = 'globe' | 'country' | 'wave';

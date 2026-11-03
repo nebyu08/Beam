@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { GeoBook, GeoCountry } from '@/lib/geo-types';
 import { ArrowLeft } from 'lucide-react';
-import CoverField from '@/components/cover-field';
+import WaveField from '@/components/wave-field';
 
 interface CountryViewProps {
   country: GeoCountry;
@@ -28,9 +28,11 @@ export default function CountryView({ country, onSelectBook }: CountryViewProps)
       {books.length === 0 ? (
         <p className="px-6 pt-28 text-sm text-white sm:px-10">No books for this country yet.</p>
       ) : fieldReady ? (
-        <CoverField
+        <WaveField
           books={books}
           seed={`${country.id}:${country.name}`}
+          variant="fit"
+          label={`Books from ${country.name}. Use the arrow keys to move between them, and Enter to open one.`}
           onSelect={onSelectBook}
           onActiveChange={setActiveBook}
           onUnavailable={() => setFieldReady(false)}

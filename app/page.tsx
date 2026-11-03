@@ -4,10 +4,13 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useBookStore } from '@/lib/book-store';
 import { useGeoStore } from '@/lib/geo-store';
 import { Book } from '@/lib/types';
+import { Waves } from 'lucide-react';
 import EarthGlobe from '@/components/earth-globe';
 import CountryView, { BackToGlobeButton } from '@/components/country-view';
+import WaveView from '@/components/wave-view';
 import BookDetailsModal from '@/components/book-details-modal';
 import LoadingScreen from '@/components/loading-screen';
+import { GeoBook } from '@/lib/geo-types';
 
 export default function Home() {
   const {
@@ -23,6 +26,7 @@ export default function Home() {
     hoveredCountry,
     appMode,
     enterCountry,
+    enterWave,
     exitToGlobe,
     setHoveredCountry,
     selectRandomCountry,
@@ -31,6 +35,7 @@ export default function Home() {
   const [activeModal, setActiveModal] = useState<'details' | null>(null);
   const [isIntroReady, setIsIntroReady] = useState(false);
   const [introDismissed, setIntroDismissed] = useState(false);
+  const [spotlight, setSpotlight] = useState<{ id: number; nonce: number } | null>(null);
 
   // Trigger intro readiness once topology and initial assets settle
   useEffect(() => {
@@ -83,12 +88,21 @@ export default function Home() {
             setSelectedBook(chosen);
             setActiveModal('details');
           }
+        } else if (appMode === 'wave') {
+          e.preventDefault();
+          const pool = countries.flatMap((country) => country.books);
+          if (pool.length > 0) {
+            const chosen = pool[Math.floor(Math.random() * pool.length)];
+            setSpotlight({ id: chosen.id, nonce: Date.now() });
+            setSelectedBook(chosen);
+            setActiveModal('details');
+          }
         }
       } else if (e.key === 'Escape' || e.key === 'Backspace') {
         if (activeModal) {
           e.preventDefault();
           handleCloseDock();
-        } else if (appMode === 'country') {
+        } else if (appMode === 'country' || appMode === 'wave') {
           e.preventDefault();
           handleCloseDock();
           exitToGlobe();
@@ -102,6 +116,7 @@ export default function Home() {
     activeModal,
     appMode,
     activeCountry,
+    countries,
     handleCloseDock,
     selectRandomCountry,
     setSelectedBook,
@@ -122,7 +137,15 @@ export default function Home() {
   }, [exitToGlobe, handleCloseDock]);
 
   const isDetailsDockOpen = activeModal === 'details' && !!selectedBook;
-  const shelfOpen = appMode === 'country' && !!activeCountry;
+  const countryOpen = appMode === 'country' && !!activeCountry;
+  const waveOpen = appMode === 'wave';
+  const overlayOpen = countryOpen || waveOpen;
+  const detailCountry =
+    appMode === 'country'
+      ? activeCountry?.name
+      : selectedBook && 'country' in selectedBook
+        ? (selectedBook as GeoBook).country
+        : undefined;
 
   return (
     <main className="relative w-screen h-screen overflow-hidden bg-black text-zinc-100 select-none">
@@ -131,10 +154,21 @@ export default function Home() {
         onSelectCountry={enterCountry}
         hoveredCountry={hoveredCountry}
         onHoverCountry={setHoveredCountry}
-        interactive={!shelfOpen}
+        interactive={!overlayOpen}
       />
 
-      {shelfOpen && activeCountry && (
+      {introDismissed && appMode === 'globe' && (
+        <button
+          type="button"
+          onClick={enterWave}
+          className="fixed left-4 top-4 z-40 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-black shadow-[0_12px_28px_-14px_rgba(0,0,0,0.9)] transition-colors hover:bg-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:scale-[0.98] sm:left-6 sm:top-5"
+        >
+          <Waves className="h-4 w-4" aria-hidden="true" />
+          All books
+        </button>
+      )}
+
+      {countryOpen && activeCountry && (
         <>
           <BackToGlobeButton onClick={handleBackToGlobe} />
           <CountryView
@@ -146,13 +180,25 @@ export default function Home() {
         </>
       )}
 
+      {waveOpen && (
+        <>
+          <BackToGlobeButton onClick={handleBackToGlobe} />
+          <WaveView
+            suspended={isDetailsDockOpen}
+            spotlightId={spotlight?.id ?? null}
+            spotlightNonce={spotlight?.nonce ?? 0}
+            onSelectBook={handleSelectBook}
+          />
+        </>
+      )}
+
       <BookDetailsModal
         isOpen={isDetailsDockOpen}
         book={selectedBook}
-        countryName={activeCountry?.name}
+        countryName={detailCountry}
         onClose={handleCloseDock}
         onBackToGlobe={handleBackToGlobe}
-        clearOfBar={shelfOpen}
+        clearOfBar={overlayOpen}
       />
 
       {/* Atmospheric Intro Loading Screen: "theres nothing to read" with animated dots */}

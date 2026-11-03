@@ -23,6 +23,7 @@ interface GeoStore {
   setSelectedBook: (book: GeoBook | null) => void;
   setIsDetailOpen: (open: boolean) => void;
   enterCountry: (country: GeoCountry) => void;
+  enterWave: () => void;
   exitToGlobe: () => void;
   selectRandomCountry: () => GeoCountry | null;
 }
@@ -54,6 +55,16 @@ export const useGeoStore = create<GeoStore>((set, get) => ({
       targetRotation: [-country.viewLng, -country.viewLat, 0],
       appMode: 'country',
       hoveredCountry: null,
+    });
+  },
+
+  enterWave: () => {
+    set({
+      appMode: 'wave',
+      activeCountry: null,
+      hoveredCountry: null,
+      selectedBook: null,
+      isDetailOpen: false,
     });
   },
 
