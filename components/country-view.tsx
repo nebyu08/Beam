@@ -18,7 +18,9 @@ interface CountryViewProps {
 }
 
 const STRIP_ANGLE = -20;
-const STRIP_SPEEDS = [16, 22, 18, 26, 20, 24];
+const STRIP_RAD = (STRIP_ANGLE * Math.PI) / 180;
+const DRIFT_X = -Math.cos(STRIP_RAD);
+const DRIFT_Y = -Math.sin(STRIP_RAD);
 
 function lineUp(books: GeoBook[], count: number, minPerLine: number) {
   const lines = Math.min(count, Math.max(books.length, 1));
@@ -32,11 +34,6 @@ function lineUp(books: GeoBook[], count: number, minPerLine: number) {
   }).filter((line) => line.length > 0);
 }
 
-function mod(value: number, size: number) {
-  if (size <= 0) return 0;
-  return ((value % size) + size) % size;
-}
-
 export default function CountryView({
   country,
   keysActive = true,
@@ -47,20 +44,22 @@ export default function CountryView({
   const [activeIndex, setActiveIndex] = useState(0);
   const [reduced, setReduced] = useState<boolean | null>(null);
   const [lineCount, setLineCount] = useState(6);
-  const [minPerLine, setMinPerLine] = useState(1);
   const [measured, setMeasured] = useState(false);
-  const bookLines = lineUp(books, lineCount, minPerLine);
+  const bookLines = lineUp(books, lineCount, 1);
   const bookLinesRef = useRef(bookLines);
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const activeIndexRef = useRef(0);
   const viewportRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const stripOffsetsRef = useRef<number[]>([]);
+  const fieldRef = useRef<HTMLDivElement>(null);
+  const boardRef = useRef<HTMLDivElement>(null);
+  const panRef = useRef({ x: 0, y: 0 });
+  const panClampRef = useRef<(x: number, y: number) => void>(() => {});
   const pausedRef = useRef(false);
   const keysActiveRef = useRef(keysActive);
   const placeBookRef = useRef<(index: number) => void>(() => {});
+  const interactedRef = useRef(0);
   const liveRef = useRef(false);
-  const loop = reduced === false && books.length > 1;
+  const drift = reduced === false && books.length > 1;
 
   useEffect(() => {
     keysActiveRef.current = keysActive;
@@ -83,14 +82,12 @@ export default function CountryView({
       const cardGap = Math.ceil(along - cardWidth + 20);
       const stripPad = Math.ceil((cardWidth * Math.sin(rad) - rowHeight * (1 - Math.cos(rad))) / 2 + 2);
       const stripGap = Math.max(12, Math.ceil(acrossSpan + 22 - rowHeight - stripPad * 2));
-      const across = Math.ceil((viewport.clientWidth * 2.4) / (cardWidth + cardGap)) + 2;
       viewport.style.setProperty('--card-h', `${rowHeight}px`);
       viewport.style.setProperty('--card-w', `${Math.round(cardWidth)}px`);
       viewport.style.setProperty('--card-gap', `${cardGap}px`);
       viewport.style.setProperty('--strip-gap', `${stripGap}px`);
       viewport.style.setProperty('--strip-pad', `${stripPad}px`);
       setLineCount((current) => (current === next ? current : next));
-      setMinPerLine((current) => (current === across ? current : across));
       setMeasured(true);
       liveRef.current = true;
     };
@@ -180,71 +177,86 @@ export default function CountryView({
   useLayoutEffect(() => {
     placeBookRef.current = (index: number) => {
       const item = itemRefs.current[index];
-      const track = trackRef.current;
-      if (!item) return;
-      const inner = item.closest('[data-strip-track]');
-      if (!loop || !track || !(inner instanceof HTMLElement)) {
-        item.scrollIntoView({ block: 'nearest' });
-        return;
+      const viewport = viewportRef.current;
+      if (!item || !viewport) return;
+      const view = viewport.getBoundingClientRect();
+      const rect = item.getBoundingClientRect();
+      const pad = 80;
+      let dx = 0;
+      let dy = 0;
+      if (rect.left < view.left + pad) dx = view.left + pad - rect.left;
+      else if (rect.right > view.right - pad) dx = view.right - pad - rect.right;
+      if (rect.top < view.top + pad) dy = view.top + pad - rect.top;
+      else if (rect.bottom > view.bottom - pad) dy = view.bottom - pad - rect.bottom;
+      if (dx !== 0 || dy !== 0) {
+        panClampRef.current(panRef.current.x + dx, panRef.current.y + dy);
       }
-      const strips = [...track.querySelectorAll('[data-strip-track]')];
-      const stripIndex = strips.indexOf(inner);
-      const half = inner.scrollWidth / 2;
-      if (stripIndex < 0 || half <= 0) return;
-      stripOffsetsRef.current[stripIndex] = mod(item.offsetLeft - 48, half);
-      inner.style.transform = `translate3d(${-stripOffsetsRef.current[stripIndex]}px, 0, 0)`;
+      interactedRef.current = performance.now();
       pausedRef.current = true;
     };
   });
 
   useLayoutEffect(() => {
-    if (!loop) return;
     const viewport = viewportRef.current;
-    const track = trackRef.current;
-    if (!viewport || !track) return;
+    const field = fieldRef.current;
+    if (!viewport || !field) return;
 
-    const tracks = () => [...track.querySelectorAll<HTMLElement>('[data-strip-track]')];
-    const paintStrips = (advance: number) => {
-      tracks().forEach((inner, index) => {
-        const half = inner.scrollWidth / 2;
-        if (half <= 0) return;
-        const speed = STRIP_SPEEDS[index % STRIP_SPEEDS.length];
-        stripOffsetsRef.current[index] = mod(
-          (stripOffsetsRef.current[index] || 0) + advance * speed,
-          half,
-        );
-        inner.style.transform = `translate3d(${-stripOffsetsRef.current[index]}px, 0, 0)`;
-      });
+    const paintPan = () => {
+      field.style.transform = `translate(-50%, -50%) translate3d(${panRef.current.x}px, ${panRef.current.y}px, 0)`;
     };
-    const nudgeStrips = (delta: number) => {
-      tracks().forEach((inner, index) => {
-        const half = inner.scrollWidth / 2;
-        if (half <= 0) return;
-        stripOffsetsRef.current[index] = mod((stripOffsetsRef.current[index] || 0) + delta, half);
-        inner.style.transform = `translate3d(${-stripOffsetsRef.current[index]}px, 0, 0)`;
-      });
+    const clampPan = (x: number, y: number) => {
+      const board = boardRef.current;
+      const width = board?.offsetWidth ?? 0;
+      const height = board?.offsetHeight ?? 0;
+      const cos = Math.cos(-STRIP_RAD);
+      const sin = Math.sin(-STRIP_RAD);
+      const edge = 96;
+      const maxX = Math.max(0, width / 2 - edge);
+      const maxY = Math.max(0, height / 2 - edge);
+      const localX = Math.min(maxX, Math.max(-maxX, -x * cos + y * sin));
+      const localY = Math.min(maxY, Math.max(-maxY, -x * sin - y * cos));
+      panRef.current = {
+        x: -(cos * localX + sin * localY),
+        y: -(-sin * localX + cos * localY),
+      };
+      paintPan();
     };
+    panClampRef.current = clampPan;
+    clampPan(panRef.current.x, panRef.current.y);
+    const board = boardRef.current;
+    const observer = new ResizeObserver(() => clampPan(panRef.current.x, panRef.current.y));
+    if (board) observer.observe(board);
 
     let frame = 0;
     let last = performance.now();
     const tick = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
-      if (!pausedRef.current && !document.hidden && keysActiveRef.current && liveRef.current) {
-        paintStrips(dt);
+      const idle = now - interactedRef.current > 1200;
+      if (
+        drift &&
+        idle &&
+        !pausedRef.current &&
+        !document.hidden &&
+        keysActiveRef.current &&
+        liveRef.current
+      ) {
+        clampPan(panRef.current.x + DRIFT_X * 22 * dt, panRef.current.y + DRIFT_Y * 22 * dt);
       }
       frame = requestAnimationFrame(tick);
     };
-    paintStrips(0);
     frame = requestAnimationFrame(tick);
 
-    const observer = new ResizeObserver(() => paintStrips(0));
-    observer.observe(track);
-
+    const wheelScale = (event: WheelEvent) => {
+      if (event.deltaMode === 1) return 16;
+      if (event.deltaMode === 2) return viewport.clientHeight;
+      return 1;
+    };
     const onWheel = (event: WheelEvent) => {
       event.preventDefault();
-      if (!liveRef.current) return;
-      nudgeStrips(event.deltaY + event.deltaX);
+      interactedRef.current = performance.now();
+      const scale = wheelScale(event);
+      clampPan(panRef.current.x - event.deltaX * scale, panRef.current.y - event.deltaY * scale);
     };
 
     let dragX = 0;
@@ -260,6 +272,8 @@ export default function CountryView({
       dragX = originX = event.clientX;
       dragY = originY = event.clientY;
       pausedRef.current = true;
+      interactedRef.current = performance.now();
+      viewport.setPointerCapture(event.pointerId);
     };
     const onMove = (event: PointerEvent) => {
       if (!dragging) return;
@@ -268,20 +282,21 @@ export default function CountryView({
       dragX = event.clientX;
       dragY = event.clientY;
       if (Math.hypot(event.clientX - originX, event.clientY - originY) > 6) dragged = true;
-      if (!liveRef.current) return;
-      nudgeStrips(-dx + dy * 0.35);
+      interactedRef.current = performance.now();
+      clampPan(panRef.current.x + dx, panRef.current.y + dy);
     };
-    const onUp = (event: PointerEvent) => {
+    const finishDrag = (event: PointerEvent) => {
       if (!dragging) return;
       dragging = false;
+      if (viewport.hasPointerCapture(event.pointerId)) viewport.releasePointerCapture(event.pointerId);
       const overBook = event.target instanceof Element && !!event.target.closest('[data-book-row]');
       const focused = document.activeElement instanceof Element
         && !!document.activeElement.closest('[data-book-row]');
       pausedRef.current = overBook || focused;
       if (!dragged) return;
-      const swallow = (event: MouseEvent) => {
-        event.preventDefault();
-        event.stopPropagation();
+      const swallow = (click: MouseEvent) => {
+        click.preventDefault();
+        click.stopPropagation();
         viewport.removeEventListener('click', swallow, true);
       };
       viewport.addEventListener('click', swallow, true);
@@ -308,25 +323,24 @@ export default function CountryView({
 
     viewport.addEventListener('wheel', onWheel, { passive: false });
     viewport.addEventListener('pointerdown', onDown);
+    viewport.addEventListener('pointermove', onMove);
+    viewport.addEventListener('pointerup', finishDrag);
+    viewport.addEventListener('pointercancel', finishDrag);
     viewport.addEventListener('pointerover', onOver);
     viewport.addEventListener('pointerout', onOut);
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
 
     return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
       viewport.removeEventListener('wheel', onWheel);
       viewport.removeEventListener('pointerdown', onDown);
+      viewport.removeEventListener('pointermove', onMove);
+      viewport.removeEventListener('pointerup', finishDrag);
+      viewport.removeEventListener('pointercancel', finishDrag);
       viewport.removeEventListener('pointerover', onOver);
       viewport.removeEventListener('pointerout', onOut);
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-      tracks().forEach((inner) => {
-        inner.style.transform = '';
-      });
     };
-  }, [loop]);
+  }, [drift]);
 
   useEffect(() => {
     if (keysActive) pausedRef.current = false;
@@ -339,9 +353,9 @@ export default function CountryView({
       ) : (
         <section
           aria-label={
-            loop
-              ? `Books from ${country.name}, in diagonal stripes. Books travel along each stripe. Scroll to move through them. Arrow keys move along a stripe and between stripes. Enter opens one.`
-              : `Books from ${country.name}. Arrow keys move across the shelf. Enter opens one.`
+            drift
+              ? `Books from ${country.name}, in diagonal stripes. Scroll or drag to move around the shelf. Arrow keys move along a stripe and between stripes. Enter opens one.`
+              : `Books from ${country.name}. Scroll or drag to move around the shelf. Arrow keys move across the shelf. Enter opens one.`
           }
           className="absolute inset-0"
         >
@@ -365,18 +379,23 @@ export default function CountryView({
 
             <div
               ref={viewportRef}
-              className="absolute inset-0 overflow-hidden"
+              className="absolute inset-0 cursor-grab touch-none overflow-hidden active:cursor-grabbing"
             >
               <div
-                ref={trackRef}
                 className={`absolute inset-0 overflow-hidden transition-opacity duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                   measured ? 'opacity-100' : 'pointer-events-none opacity-0'
                 }`}
               >
                 <div
-                  className="absolute left-1/2 top-1/2 flex w-[240%] flex-col"
+                  ref={fieldRef}
+                  className="absolute left-1/2 top-1/2"
+                  style={{ transform: 'translate(-50%, -50%)' }}
+                >
+                <div
+                  ref={boardRef}
+                  className="flex w-max flex-col"
                   style={{
-                    transform: `translate(-50%, -50%) rotate(${STRIP_ANGLE}deg)`,
+                    transform: `rotate(${STRIP_ANGLE}deg)`,
                     gap: 'var(--strip-gap, 1rem)',
                   }}
                 >
@@ -388,29 +407,22 @@ export default function CountryView({
                       <div
                         key={lineIndex}
                         data-strip
-                        className="overflow-hidden"
                         style={{ paddingBlock: 'var(--strip-pad, 1rem)' }}
                       >
                         <ol data-strip-track className="flex w-max" style={{ gap: 'var(--card-gap, 1rem)' }}>
-                          {(loop ? [0, 1] : [0]).map((copy) =>
-                            line.map((book, bookIndex) => {
-                              const primary = copy === 0;
-                              const index = primary ? lineIndexCursor + bookIndex : -1;
+                          {line.map((book, bookIndex) => {
+                              const index = lineIndexCursor + bookIndex;
                               const coverSrc = book.cover || book.cover_url;
                               const coverFailed = !coverSrc || failedCovers[book.id];
                               return (
-                              <li key={`${copy}-${book.id}-${bookIndex}`} className="shrink-0">
+                              <li key={`${book.id}-${bookIndex}`} className="shrink-0">
                                 <button
-                                  ref={
-                                    primary
-                                      ? (node) => {
-                                          itemRefs.current[index] = node;
-                                        }
-                                      : undefined
-                                  }
+                                  ref={(node) => {
+                                    itemRefs.current[index] = node;
+                                  }}
                                   type="button"
                                   data-book-row="true"
-                                  tabIndex={!primary ? -1 : index === activeIndex ? 0 : -1}
+                                  tabIndex={index === activeIndex ? 0 : -1}
                                   style={{ transform: `rotate(${-STRIP_ANGLE}deg)` }}
                                   onFocus={() => {
                                     activeIndexRef.current = index;
@@ -447,7 +459,7 @@ export default function CountryView({
                                       <img
                                         src={coverSrc}
                                         alt=""
-                                        loading={primary && index < 12 ? 'eager' : 'lazy'}
+                                        loading={index < 12 ? 'eager' : 'lazy'}
                                         decoding="async"
                                         onError={() =>
                                           setFailedCovers((current) =>
@@ -463,12 +475,12 @@ export default function CountryView({
                                 </button>
                               </li>
                               );
-                            }),
-                          )}
+                            })}
                         </ol>
                       </div>
                     );
                   })}
+                </div>
                 </div>
               </div>
             </div>
