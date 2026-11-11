@@ -85,6 +85,15 @@ body {
   }
 }
 
+.book-face {
+  background: #efe6d6;
+  color: #1c1814;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.28),
+    0 12px 28px rgba(0, 0, 0, 0.45);
+}
+
 .intro-card {
   position: absolute;
   left: 0;
@@ -92,7 +101,5 @@ body {
   width: var(--card-w, 7.5rem);
   height: calc(var(--card-w, 7.5rem) * 1.5 + 2.1rem);
   overflow: hidden;
-  background: #141416;
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5);
   transform-origin: left top;
 }

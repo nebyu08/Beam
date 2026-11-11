@@ -121,7 +121,7 @@ function ShelfIntro({ lines, onDone }: { lines: GeoBook[][]; onDone: () => void 
               ref={(node) => {
                 cardRefs.current[card.order] = node;
               }}
-              className="intro-card"
+              className="intro-card book-face"
             >
               {cover ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -434,7 +434,7 @@ export default function CountryView({
   }, [keysActive]);
 
   return (
-    <div className="absolute inset-0 z-20 bg-black text-white">
+    <div className="absolute inset-0 z-20 bg-[#141821] text-white">
       {books.length === 0 ? (
         <p className="px-6 pt-28 text-base text-white sm:px-10">No books for this country yet.</p>
       ) : (
@@ -533,9 +533,9 @@ export default function CountryView({
                                   }}
                                   className="group flex h-full w-[var(--card-w,7.5rem)] flex-col text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
                                 >
-                                  <span className="cover-glow relative min-h-0 flex-1 overflow-hidden bg-black">
+                                  <span className="book-face cover-glow relative min-h-0 flex-1 overflow-hidden">
                                     {coverFailed ? (
-                                      <span className="flex h-full items-end bg-[#141416] p-2">
+                                      <span className="flex h-full items-end p-2">
                                         <span className="text-xs font-semibold leading-tight">{book.title}</span>
                                       </span>
                                     ) : (
