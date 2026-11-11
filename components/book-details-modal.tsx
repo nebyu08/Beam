@@ -83,7 +83,7 @@ export default function BookDetailsModal({
   return (
     <>
       <div
-        className="fixed inset-0 z-40 bg-black/45 transition-opacity duration-200"
+        className="fixed inset-0 z-40 bg-black/80 transition-opacity duration-200"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -92,7 +92,7 @@ export default function BookDetailsModal({
         aria-label="Book details"
         className="pointer-events-none fixed inset-0 z-40 flex justify-end p-3 sm:p-5"
       >
-        <div className="pointer-events-auto flex h-full w-full max-w-[760px] flex-col overflow-hidden rounded-[28px] bg-[#0c0c0e] text-white shadow-[0_30px_80px_rgba(0,0,0,0.55)] sm:flex-row">
+        <div className="pointer-events-auto flex h-full w-full max-w-[760px] flex-col overflow-hidden rounded-[28px] border border-white/10 bg-black text-white shadow-[0_30px_80px_rgba(0,0,0,0.65)] sm:flex-row">
           <div className="flex w-full shrink-0 items-center justify-center bg-black px-6 py-8 sm:w-[340px] sm:px-8">
             {coverSrc && !coverFailed ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -103,7 +103,7 @@ export default function BookDetailsModal({
                 className="aspect-[2/3] h-auto w-[min(100%,280px)] rounded-md object-contain shadow-[0_18px_50px_rgba(0,0,0,0.45)] sm:w-[min(100%,320px)]"
               />
             ) : (
-              <div className="flex aspect-[2/3] w-[min(100%,280px)] items-end bg-[#1a1a1d] p-6 sm:w-[320px]">
+              <div className="flex aspect-[2/3] w-[min(100%,280px)] items-end bg-[#141416] p-6 sm:w-[320px]">
                 <p className="text-2xl font-semibold leading-tight">{book.title}</p>
               </div>
             )}

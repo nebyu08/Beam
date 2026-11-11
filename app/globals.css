@@ -51,3 +51,22 @@ body {
 .shelf-rise {
   animation: shelf-rise 460ms cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+@keyframes cover-open {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.cover-open {
+  animation: cover-open 680ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cover-open {
+    animation: none;
+  }
+}

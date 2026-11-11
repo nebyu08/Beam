@@ -174,6 +174,7 @@ export default function Home() {
           <CountryView
             key={activeCountry.id}
             country={activeCountry}
+            keysActive={!isDetailsDockOpen}
             onBackToGlobe={handleBackToGlobe}
             onSelectBook={handleSelectBook}
           />
