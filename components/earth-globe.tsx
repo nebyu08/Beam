@@ -34,6 +34,11 @@ export default function EarthGlobe({
   const isDraggingRef = useRef(false);
   const lastMousePosRef = useRef<[number, number]>([0, 0]);
   const dragDistanceRef = useRef(0);
+  const dragStartRef = useRef<[number, number]>([0, 0]);
+  const dragArmedRef = useRef(false);
+  const pointerTypeRef = useRef('mouse');
+  const pointersRef = useRef(new Map<number, { x: number; y: number }>());
+  const pinchRef = useRef<{ distance: number; scale: number } | null>(null);
   const lastInteractTimeRef = useRef(0);
   const scaleRef = useRef<number>(300);
   const targetScaleRef = useRef<number>(300);
@@ -42,6 +47,15 @@ export default function EarthGlobe({
   const [worldFeatures, setWorldFeatures] = useState<any[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [mouseScreenPos, setMouseScreenPos] = useState<{ x: number; y: number } | null>(null);
+  const [coarsePointer, setCoarsePointer] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia('(pointer: coarse)');
+    const apply = () => setCoarsePointer(media.matches);
+    apply();
+    media.addEventListener('change', apply);
+    return () => media.removeEventListener('change', apply);
+  }, []);
 
   // Map country ID / name to GeoCountry for fast O(1) lookup
   const countryLookup = useMemo(() => {
@@ -145,7 +159,7 @@ export default function EarthGlobe({
           rotationRef.current = [ty, tp, tr];
           targetRotationRef.current = null;
         }
-      } else if (!isDraggingRef.current) {
+      } else if (!isDraggingRef.current && pointersRef.current.size === 0) {
         // Apply inertia velocity
         const [vx, vy] = velocityRef.current;
         if (Math.abs(vx) > 0.005 || Math.abs(vy) > 0.005) {
@@ -281,7 +295,8 @@ export default function EarthGlobe({
 
         // Core luminous pin
         ctx.beginPath();
-        ctx.arc(bx, by, isHovered ? 4.5 : 2.8, 0, Math.PI * 2);
+        const pin = width < 700 ? (isHovered ? 7 : 4.6) : isHovered ? 4.5 : 2.8;
+        ctx.arc(bx, by, pin, 0, Math.PI * 2);
         ctx.fillStyle = '#ffffff';
         ctx.shadowColor = '#ffffff';
         ctx.shadowBlur = isHovered ? 14 : 5;
@@ -310,16 +325,85 @@ export default function EarthGlobe({
     };
   }, [worldFeatures, countries, hoveredCountry, countryLookup]);
 
+  const countryAt = useCallback(
+    (clientX: number, clientY: number) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return null;
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = clientX - rect.left;
+      const mouseY = clientY - rect.top;
+      const projection = d3
+        .geoOrthographic()
+        .scale(scaleRef.current)
+        .translate([canvas.clientWidth / 2, canvas.clientHeight / 2])
+        .rotate(rotationRef.current)
+        .clipAngle(90);
+      const inverted = projection.invert ? projection.invert([mouseX, mouseY]) : null;
+      if (inverted && !isNaN(inverted[0]) && !isNaN(inverted[1])) {
+        for (const feature of worldFeatures) {
+          if (d3.geoContains(feature, inverted)) {
+            const idStr = String(feature.id);
+            const name = (feature.properties?.name || '').toLowerCase();
+            const found = countryLookup.get(idStr) || countryLookup.get(name) || null;
+            if (found) return found;
+          }
+        }
+      }
+      let nearest: GeoCountry | null = null;
+      let nearestDist = canvas.clientWidth < 700 ? 42 : 18;
+      for (const country of countries) {
+        const projected = projection([country.lng, country.lat]);
+        if (!projected || Number.isNaN(projected[0]) || Number.isNaN(projected[1])) continue;
+        const dist = Math.hypot(projected[0] - mouseX, projected[1] - mouseY);
+        if (dist < nearestDist) {
+          nearestDist = dist;
+          nearest = country;
+        }
+      }
+      return nearest;
+    },
+    [worldFeatures, countryLookup, countries],
+  );
+
+  const openCountry = useCallback(
+    (country: GeoCountry) => {
+      targetRotationRef.current = [-country.viewLng, -country.viewLat, 0];
+      targetScaleRef.current = scaleRef.current * 1.35;
+      window.setTimeout(() => {
+        onSelectCountry(country);
+      }, 420);
+    },
+    [onSelectCountry],
+  );
+
   // Handle Drag / Rotation Interaction
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     if (!interactive) return;
-    isDraggingRef.current = true;
+    pointerTypeRef.current = e.pointerType;
+    pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    lastInteractTimeRef.current = Date.now();
+    targetRotationRef.current = null;
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+
+    if (pointersRef.current.size >= 2) {
+      const pts = [...pointersRef.current.values()];
+      pinchRef.current = {
+        distance: Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y),
+        scale: scaleRef.current,
+      };
+      isDraggingRef.current = false;
+      dragArmedRef.current = false;
+      velocityRef.current = [0, 0];
+      return;
+    }
+
+    const touch = e.pointerType === 'touch';
+    isDraggingRef.current = !touch;
+    dragArmedRef.current = !touch;
+    dragStartRef.current = [e.clientX, e.clientY];
     lastMousePosRef.current = [e.clientX, e.clientY];
     dragDistanceRef.current = 0;
     velocityRef.current = [0, 0];
-    targetRotationRef.current = null; // stop any ongoing auto-slerp
-    lastInteractTimeRef.current = Date.now();
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
   }, [interactive]);
 
   const handlePointerMove = useCallback(
@@ -327,84 +411,115 @@ export default function EarthGlobe({
       const canvas = canvasRef.current;
       if (!canvas || !interactive) return;
 
-      const rect = canvas.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
+      if (pointersRef.current.has(e.pointerId)) {
+        pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      }
       setMouseScreenPos({ x: e.clientX, y: e.clientY });
 
-      if (isDraggingRef.current) {
+      if (pointersRef.current.size >= 2 && pinchRef.current) {
+        const pts = [...pointersRef.current.values()];
+        const distance = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+        const baseScale = Math.min(window.innerWidth, window.innerHeight) * 0.42;
+        const raw =
+          pinchRef.current.scale * (distance / Math.max(8, pinchRef.current.distance));
+        const next = Math.max(baseScale * 0.7, Math.min(baseScale * 2.8, raw));
+        scaleRef.current = next;
+        targetScaleRef.current = next;
+        lastInteractTimeRef.current = Date.now();
+        velocityRef.current = [0, 0];
+        return;
+      }
+
+      const touch = e.pointerType === 'touch' || pointerTypeRef.current === 'touch';
+      if (touch && !dragArmedRef.current && pointersRef.current.size <= 1) {
+        const [sx, sy] = dragStartRef.current;
+        const travel = Math.hypot(e.clientX - sx, e.clientY - sy);
+        if (travel >= 14) {
+          dragArmedRef.current = true;
+          isDraggingRef.current = true;
+          lastMousePosRef.current = [e.clientX, e.clientY];
+          dragDistanceRef.current = travel;
+          velocityRef.current = [0, 0];
+        }
+      }
+
+      if (isDraggingRef.current && dragArmedRef.current) {
         lastInteractTimeRef.current = Date.now();
         const [lastX, lastY] = lastMousePosRef.current;
         const dx = e.clientX - lastX;
         const dy = e.clientY - lastY;
         dragDistanceRef.current += Math.hypot(dx, dy);
-
-        // Adjust rotation speed relative to scale
-        const sensitivity = 0.25 * (300 / scaleRef.current);
+        const gain = touch ? 0.55 : 0.25;
+        const sensitivity = gain * (300 / scaleRef.current);
         const nextYaw = rotationRef.current[0] + dx * sensitivity;
-        const nextPitch = Math.max(-65, Math.min(65, rotationRef.current[1] - dy * sensitivity));
-
+        const nextPitch = Math.max(
+          -65,
+          Math.min(65, rotationRef.current[1] - dy * sensitivity),
+        );
         rotationRef.current = [nextYaw, nextPitch, 0];
         velocityRef.current = [dx * sensitivity, dy * sensitivity];
         lastMousePosRef.current = [e.clientX, e.clientY];
-      } else {
-        // Country Hover Detection
-        const cx = canvas.clientWidth / 2;
-        const cy = canvas.clientHeight / 2;
-        const projection = d3
-          .geoOrthographic()
-          .scale(scaleRef.current)
-          .translate([cx, cy])
-          .rotate(rotationRef.current)
-          .clipAngle(90);
+        return;
+      }
 
-        const inverted = projection.invert ? projection.invert([mouseX, mouseY]) : null;
-
-        if (inverted && !isNaN(inverted[0]) && !isNaN(inverted[1])) {
-          let found: GeoCountry | null = null;
-          for (const feature of worldFeatures) {
-            if (d3.geoContains(feature, inverted)) {
-              const idStr = String(feature.id);
-              const name = (feature.properties?.name || '').toLowerCase();
-              found = countryLookup.get(idStr) || countryLookup.get(name) || null;
-              break;
-            }
-          }
-
-          if (found !== hoveredCountry) {
-            onHoverCountry(found);
-          }
-        } else {
-          if (hoveredCountry !== null) {
-            onHoverCountry(null);
-          }
-        }
+      const found = countryAt(e.clientX, e.clientY);
+      if (found?.id !== hoveredCountry?.id) {
+        onHoverCountry(found);
       }
     },
-    [worldFeatures, countryLookup, hoveredCountry, onHoverCountry, interactive]
+    [countryAt, hoveredCountry, onHoverCountry, interactive],
+  );
+
+  const finishPointer = useCallback(
+    (e: React.PointerEvent, allowSelect: boolean) => {
+      if (!interactive) return;
+      pointersRef.current.delete(e.pointerId);
+      try {
+        (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+      } catch {
+        // capture was already released
+      }
+
+      if (pointersRef.current.size >= 1) {
+        pinchRef.current = null;
+        isDraggingRef.current = false;
+        dragArmedRef.current = false;
+        dragDistanceRef.current = 0;
+        velocityRef.current = [0, 0];
+        const [left] = pointersRef.current.values();
+        if (left) {
+          dragStartRef.current = [left.x, left.y];
+          lastMousePosRef.current = [left.x, left.y];
+        }
+        return;
+      }
+
+      pinchRef.current = null;
+      const touch = e.pointerType === 'touch' || pointerTypeRef.current === 'touch';
+      const select =
+        allowSelect && (touch ? !dragArmedRef.current : dragDistanceRef.current < 6);
+      isDraggingRef.current = false;
+      dragArmedRef.current = false;
+
+      if (!select) return;
+      const country = countryAt(e.clientX, e.clientY);
+      if (country) openCountry(country);
+    },
+    [countryAt, interactive, openCountry],
   );
 
   const handlePointerUp = useCallback(
     (e: React.PointerEvent) => {
-      if (!interactive) return;
-      isDraggingRef.current = false;
-      try {
-        (e.target as HTMLElement).releasePointerCapture(e.pointerId);
-      } catch (err) {
-        // ignore
-      }
-
-      // If user barely moved the mouse, treat as a direct selection click
-      if (dragDistanceRef.current < 6 && hoveredCountry) {
-        // Trigger smooth centering slerp and then dive in
-        targetRotationRef.current = [-hoveredCountry.viewLng, -hoveredCountry.viewLat, 0];
-        targetScaleRef.current = scaleRef.current * 1.35;
-        setTimeout(() => {
-          onSelectCountry(hoveredCountry);
-        }, 550);
-      }
+      finishPointer(e, true);
     },
-    [hoveredCountry, onSelectCountry, interactive]
+    [finishPointer],
+  );
+
+  const handlePointerCancel = useCallback(
+    (e: React.PointerEvent) => {
+      finishPointer(e, false);
+    },
+    [finishPointer],
   );
 
   // Wheel zoom handler
@@ -442,6 +557,7 @@ export default function EarthGlobe({
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerCancel}
         onWheel={handleWheel}
         className={`w-full h-full block touch-none ${
           hoveredCountry ? 'cursor-pointer' : 'cursor-grab active:cursor-grabbing'
@@ -449,7 +565,7 @@ export default function EarthGlobe({
       />
 
       {/* Minimal Floating HUD Tooltip when Hovering a Literary Nation (Monochrome) */}
-      {interactive && hoveredCountry && mouseScreenPos && (
+      {interactive && hoveredCountry && mouseScreenPos && !coarsePointer && (
         <div
           className="fixed pointer-events-none z-30 transition-all duration-150 ease-out"
           style={{
@@ -506,27 +622,33 @@ export default function EarthGlobe({
 
       {/* Minimal Subtle Zoom Controls */}
       {interactive && (
-      <div className="absolute bottom-6 right-6 flex flex-col gap-2 z-10 pointer-events-auto">
+      <div className="absolute bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-4 z-10 flex flex-col gap-2 pointer-events-auto sm:right-6">
         <button
+          type="button"
           onClick={() => handleZoom('in')}
-          className="w-8 h-8 rounded-full bg-black/60 hover:bg-zinc-900 backdrop-blur-md border border-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition-all shadow-lg active:scale-95"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-zinc-800 bg-black/60 text-zinc-300 shadow-lg backdrop-blur-md transition-all hover:bg-zinc-900 hover:text-white active:scale-95 sm:h-8 sm:w-8"
+          aria-label="Zoom in"
           title="Zoom In"
         >
-          <ZoomIn className="w-3.5 h-3.5" />
+          <ZoomIn className="h-5 w-5 sm:h-3.5 sm:w-3.5" />
         </button>
         <button
+          type="button"
           onClick={() => handleZoom('out')}
-          className="w-8 h-8 rounded-full bg-black/60 hover:bg-zinc-900 backdrop-blur-md border border-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition-all shadow-lg active:scale-95"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-zinc-800 bg-black/60 text-zinc-300 shadow-lg backdrop-blur-md transition-all hover:bg-zinc-900 hover:text-white active:scale-95 sm:h-8 sm:w-8"
+          aria-label="Zoom out"
           title="Zoom Out"
         >
-          <ZoomOut className="w-3.5 h-3.5" />
+          <ZoomOut className="h-5 w-5 sm:h-3.5 sm:w-3.5" />
         </button>
         <button
+          type="button"
           onClick={handleResetGlobe}
-          className="w-8 h-8 rounded-full bg-black/60 hover:bg-zinc-900 backdrop-blur-md border border-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition-all shadow-lg active:scale-95"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-zinc-800 bg-black/60 text-zinc-300 shadow-lg backdrop-blur-md transition-all hover:bg-zinc-900 hover:text-white active:scale-95 sm:h-8 sm:w-8"
+          aria-label="Reset view"
           title="Reset View"
         >
-          <RotateCcw className="w-3.5 h-3.5" />
+          <RotateCcw className="h-5 w-5 sm:h-3.5 sm:w-3.5" />
         </button>
       </div>
       )}
