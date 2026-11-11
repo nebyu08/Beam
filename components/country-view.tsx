@@ -13,6 +13,18 @@ interface CountryViewProps {
 
 const DRIFT_PX_PER_SECOND = 22;
 
+function lineUp(books: GeoBook[], count: number, minPerLine: number) {
+  const lines = Math.min(count, Math.max(books.length, 1));
+  const size = Math.ceil(books.length / lines);
+  return Array.from({ length: lines }, (_, index) => {
+    const line = books.slice(index * size, (index + 1) * size);
+    if (line.length === 0 || line.length >= minPerLine) return line;
+    const filled: GeoBook[] = [];
+    while (filled.length < minPerLine) filled.push(...line);
+    return filled.slice(0, minPerLine);
+  }).filter((line) => line.length > 0);
+}
+
 function mod(value: number, size: number) {
   if (size <= 0) return 0;
   return ((value % size) + size) % size;
@@ -69,6 +81,10 @@ export default function CountryView({
   const [activeIndex, setActiveIndex] = useState(0);
   const [reduced, setReduced] = useState<boolean | null>(null);
   const [phase, setPhase] = useState<ShelfPhase>('pending');
+  const [lineCount, setLineCount] = useState(4);
+  const [minPerLine, setMinPerLine] = useState(1);
+  const bookLines = lineUp(books, lineCount, minPerLine);
+  const bookLinesRef = useRef(bookLines);
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const activeIndexRef = useRef(0);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -84,6 +100,28 @@ export default function CountryView({
   useEffect(() => {
     keysActiveRef.current = keysActive;
   }, [keysActive]);
+
+  useLayoutEffect(() => {
+    bookLinesRef.current = bookLines;
+  });
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const apply = () => {
+      const next = viewport.clientHeight >= 700 ? 5 : 4;
+      const rowHeight = (viewport.clientHeight - (next - 1) * 12 - 16) / next;
+      const cardWidth = Math.max(76, (rowHeight - 36) * (2 / 3));
+      const across = Math.ceil(viewport.clientWidth / (cardWidth + 12)) + 2;
+      viewport.style.setProperty('--card-w', `${Math.round(cardWidth)}px`);
+      setLineCount((current) => (current === next ? current : next));
+      setMinPerLine((current) => (current === across ? current : across));
+    };
+    apply();
+    const observer = new ResizeObserver(apply);
+    observer.observe(viewport);
+    return () => observer.disconnect();
+  }, [books.length]);
 
   useLayoutEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -124,16 +162,20 @@ export default function CountryView({
   useEffect(() => {
     if (!keysActive || books.length === 0) return;
 
-    const columnCount = () => {
-      const nodes = itemRefs.current.filter((node): node is HTMLButtonElement => node !== null);
-      if (nodes.length < 2) return 1;
-      const top = nodes[0].getBoundingClientRect().top;
-      let count = 1;
-      for (let index = 1; index < nodes.length; index += 1) {
-        if (Math.abs(nodes[index].getBoundingClientRect().top - top) > 12) break;
-        count += 1;
+    const stepLine = (index: number, direction: -1 | 1) => {
+      const lengths = bookLinesRef.current.map((line) => line.length);
+      if (lengths.length === 0) return index;
+      let cursor = index;
+      let row = 0;
+      for (; row < lengths.length; row += 1) {
+        if (cursor < lengths[row]) break;
+        cursor -= lengths[row];
       }
-      return count;
+      const nextRow = Math.min(lengths.length - 1, Math.max(0, row + direction));
+      const col = Math.min(cursor, lengths[nextRow] - 1);
+      let next = 0;
+      for (let line = 0; line < nextRow; line += 1) next += lengths[line];
+      return next + col;
     };
 
     const onKey = (event: KeyboardEvent) => {
@@ -155,19 +197,19 @@ export default function CountryView({
       if (typing) return;
 
       const current = activeIndexRef.current;
-      const columns = columnCount();
+      const total = bookLinesRef.current.reduce((sum, line) => sum + line.length, 0);
       const next =
         key === 'ArrowRight'
-          ? Math.min(books.length - 1, current + 1)
+          ? Math.min(total - 1, current + 1)
           : key === 'ArrowLeft'
             ? Math.max(0, current - 1)
             : key === 'ArrowDown'
-              ? Math.min(books.length - 1, current + columns)
+              ? stepLine(current, 1)
               : key === 'ArrowUp'
-                ? Math.max(0, current - columns)
+                ? stepLine(current, -1)
                 : key === 'Home'
                   ? 0
-                  : books.length - 1;
+                  : total - 1;
       if (next === current) return;
 
       event.preventDefault();
@@ -337,7 +379,7 @@ export default function CountryView({
         <section
           aria-label={
             loop
-              ? `Books from ${country.name}. Books drift from the upper right toward the lower left. Scroll to move through them. Arrow keys move across them. Enter opens one.`
+              ? `Books from ${country.name}, in horizontal lines. The lines drift from the upper right toward the lower left. Scroll to move through them. Arrow keys move along a line and between lines. Enter opens one.`
               : `Books from ${country.name}. Arrow keys move across the shelf. Enter opens one.`
           }
           className="absolute inset-x-0 bottom-0 top-20 flex flex-col px-5 pt-3 sm:top-24 sm:px-8"
@@ -373,82 +415,88 @@ export default function CountryView({
               ) : null}
               <div
                 ref={trackRef}
-                className={`${loop ? 'relative grid w-[200%] grid-cols-2' : ''} transition-opacity duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                className={`${loop ? 'relative grid h-[200%] w-max grid-cols-2 grid-rows-2' : 'h-full'} transition-opacity duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                   phase === 'live' ? 'opacity-100' : 'pointer-events-none opacity-0'
                 }`}
               >
-                {(loop ? [0, 1, 2, 3] : [0]).map((copy) => (
-                  <ol
-                    key={copy}
-                    aria-hidden={copy === 0 ? undefined : true}
-                    className="grid grid-cols-[repeat(auto-fill,minmax(9.5rem,1fr))] gap-x-4 gap-y-5 pr-4 pb-5"
-                  >
-                    {books.map((book, index) => {
-                      const coverSrc = book.cover || book.cover_url;
-                      const coverFailed = !coverSrc || failedCovers[book.id];
-                      const primary = copy === 0;
-
-                      return (
-                        <li key={book.id} className="min-w-0">
-                          <button
-                            ref={
-                              primary
-                                ? (node) => {
-                                    itemRefs.current[index] = node;
+                {(loop ? [0, 1, 2, 3] : [0]).map((copy) => {
+                  let visualIndex = 0;
+                  const primary = copy === 0;
+                  return (
+                    <div
+                      key={copy}
+                      aria-hidden={primary ? undefined : true}
+                      className="book-lines flex h-full min-h-0 flex-col gap-3 pr-4 pb-4"
+                    >
+                      {bookLines.map((line, lineIndex) => (
+                        <ol key={lineIndex} className="book-line flex min-h-0 flex-1 gap-3">
+                          {line.map((book) => {
+                            const index = visualIndex;
+                            visualIndex += 1;
+                            const coverSrc = book.cover || book.cover_url;
+                            const coverFailed = !coverSrc || failedCovers[book.id];
+                            return (
+                              <li key={`${book.id}-${index}`} className="h-full shrink-0">
+                                <button
+                                  ref={
+                                    primary
+                                      ? (node) => {
+                                          itemRefs.current[index] = node;
+                                        }
+                                      : undefined
                                   }
-                                : undefined
-                            }
-                            type="button"
-                            data-book-row="true"
-                            tabIndex={!primary ? -1 : index === activeIndex ? 0 : -1}
-                            onFocus={() => {
-                              activeIndexRef.current = index;
-                              setActiveIndex(index);
-                              pausedRef.current = true;
-                            }}
-                            onBlur={(event) => {
-                              const next = event.relatedTarget;
-                              if (!(next instanceof Element) || !next.closest('[data-book-row]')) {
-                                pausedRef.current = false;
-                              }
-                            }}
-                            onKeyDown={(event) => {
-                              if (event.key === ' ') event.preventDefault();
-                            }}
-                            onClick={() => onSelectBook?.(book)}
-                            className="group block w-full scroll-mt-4 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
-                          >
-                            <span className="cover-glow relative block overflow-hidden bg-black">
-                              {coverFailed ? (
-                                <span className="flex aspect-[2/3] w-full items-end bg-[#141416] p-3">
-                                  <span className="text-sm font-semibold leading-tight">{book.title}</span>
-                                </span>
-                              ) : (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img
-                                  src={coverSrc}
-                                  alt=""
-                                  loading={primary && index < 8 ? 'eager' : 'lazy'}
-                                  decoding="async"
-                                  onError={() =>
-                                    setFailedCovers((current) =>
-                                      current[book.id] ? current : { ...current, [book.id]: true }
-                                    )
-                                  }
-                                  className="aspect-[2/3] h-auto w-full object-contain"
-                                />
-                              )}
-                            </span>
-                            <span className="mt-2 block min-h-[2.5em] text-balance text-sm font-semibold leading-snug line-clamp-2">
-                              {book.title}
-                            </span>
-                            <span className="mt-1 block truncate text-sm text-white/80">{book.author}</span>
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ol>
-                ))}
+                                  type="button"
+                                  data-book-row="true"
+                                  tabIndex={!primary ? -1 : index === activeIndex ? 0 : -1}
+                                  onFocus={() => {
+                                    activeIndexRef.current = index;
+                                    setActiveIndex(index);
+                                    pausedRef.current = true;
+                                  }}
+                                  onBlur={(event) => {
+                                    const next = event.relatedTarget;
+                                    if (!(next instanceof Element) || !next.closest('[data-book-row]')) {
+                                      pausedRef.current = false;
+                                    }
+                                  }}
+                                  onKeyDown={(event) => {
+                                    if (event.key === ' ') event.preventDefault();
+                                  }}
+                                  onClick={() => onSelectBook?.(book)}
+                                  className="group flex h-full w-[var(--card-w,7.5rem)] flex-col text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                                >
+                                  <span className="cover-glow relative min-h-0 flex-1 overflow-hidden bg-black">
+                                    {coverFailed ? (
+                                      <span className="flex h-full items-end bg-[#141416] p-2">
+                                        <span className="text-xs font-semibold leading-tight">{book.title}</span>
+                                      </span>
+                                    ) : (
+                                      // eslint-disable-next-line @next/next/no-img-element
+                                      <img
+                                        src={coverSrc}
+                                        alt=""
+                                        loading={primary && index < 12 ? 'eager' : 'lazy'}
+                                        decoding="async"
+                                        onError={() =>
+                                          setFailedCovers((current) =>
+                                            current[book.id] ? current : { ...current, [book.id]: true }
+                                          )
+                                        }
+                                        className="h-full w-full object-contain"
+                                      />
+                                    )}
+                                  </span>
+                                  <span className="mt-1 block truncate text-xs font-semibold">{book.title}</span>
+                                  <span className="block truncate text-[11px] leading-4 text-white/80">{book.author}</span>
+                                </button>
+                              </li>
+                            );
+                          })}
+                        </ol>
+                      ))}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
