@@ -94,12 +94,4 @@ body {
     0 12px 28px rgba(0, 0, 0, 0.45);
 }
 
-.intro-card {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: var(--card-w, 7.5rem);
-  height: calc(var(--card-w, 7.5rem) * 1.5 + 2.1rem);
-  overflow: hidden;
-  transform-origin: left top;
-}
+

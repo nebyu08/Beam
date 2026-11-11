@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { GeoBook } from '@/lib/geo-types';
 import { PopOrigin } from '@/components/book-details-modal';
 import { ArrowLeft } from 'lucide-react';
@@ -37,120 +37,6 @@ function mod(value: number, size: number) {
   return ((value % size) + size) % size;
 }
 
-type ShelfPhase = 'pending' | 'intro' | 'live';
-
-function ShelfIntro({ lines, onDone }: { lines: GeoBook[][]; onDone: () => void }) {
-  const rootRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-  useLayoutEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
-    const view = root.getBoundingClientRect();
-    const gap = 12;
-    const pad = 8;
-    const text = 34;
-    const rowH = (view.height - (lines.length - 1) * gap - 16) / Math.max(lines.length, 1);
-    const cardW = Math.max(76, (rowH - text) * (2 / 3));
-    const coverH = Math.max(48, rowH - text);
-    const colGap = 22;
-    const total = lines.length * cardW + (lines.length - 1) * colGap;
-    const originX = Math.max(pad, (view.width - total) / 2);
-    const centerX = view.width / 2 - cardW / 2;
-    const centerY = view.height * 0.46 - coverH / 2;
-    let flat = 0;
-    const cards: { el: HTMLDivElement; line: number; index: number; count: number }[] = [];
-    lines.forEach((line, lineIndex) => {
-      line.forEach((_, index) => {
-        const el = cardRefs.current[flat];
-        flat += 1;
-        if (el) cards.push({ el, line: lineIndex, index, count: line.length });
-      });
-    });
-
-    const deck = (order: number) => {
-      const depth = Math.min(order, 18);
-      return `translate3d(${centerX - depth * 6}px, ${centerY + depth * 0.3}px, 0) scale(1.7)`;
-    };
-    const column = (line: number, index: number, count: number) => {
-      const step = Math.max(8, coverH * 0.14);
-      const fromEnd = Math.min(count - 1 - index, 10);
-      const top = view.height * 0.58 - coverH - Math.min(count - 1, 10) * step;
-      return `translate3d(${originX + line * (cardW + colGap)}px, ${top + fromEnd * step}px, 0) scale(1.12)`;
-    };
-    const row = (line: number, index: number) => {
-      const rad = (STRIP_ANGLE * Math.PI) / 180;
-      const localX = pad + index * (cardW + gap) - view.width / 2;
-      const localY = 8 + line * (rowH + gap) - view.height / 2;
-      const x = view.width / 2 + localX * Math.cos(rad) - localY * Math.sin(rad);
-      const y = view.height / 2 + localX * Math.sin(rad) + localY * Math.cos(rad);
-      return `translate3d(${x}px, ${y}px, 0) scale(1)`;
-    };
-
-    cards.forEach((card, order) => {
-      card.el.style.width = `${cardW}px`;
-      card.el.style.height = `${rowH}px`;
-      card.el.style.zIndex = String(400 - order);
-    });
-
-    const animations = cards.map((card, order) =>
-      card.el.animate(
-        [
-          { transform: deck(order), offset: 0 },
-          { transform: deck(order), offset: 0.14 },
-          { transform: column(card.line, card.index, card.count), offset: 0.4 },
-          { transform: column(card.line, card.index, card.count), offset: 0.58 },
-          { transform: row(card.line, card.index), offset: 1 },
-        ],
-        {
-          duration: 2200,
-          delay: card.index * 14,
-          easing: 'cubic-bezier(0.7, 0, 0.24, 1)',
-          fill: 'both',
-        },
-      ),
-    );
-    const wait = 2200 + Math.max(0, ...lines.map((line) => (line.length - 1) * 14));
-    const timer = window.setTimeout(onDone, wait);
-    return () => {
-      window.clearTimeout(timer);
-      animations.forEach((animation) => animation.cancel());
-    };
-    // The line list is fixed for the life of this intro.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onDone]);
-
-  const cards = lines
-    .flatMap((line, lineIndex) => line.map((book, index) => ({ book, lineIndex, index })))
-    .map((card, order) => ({ ...card, order }));
-  return (
-    <div ref={rootRef} className="pointer-events-none absolute inset-0 z-30 overflow-hidden" aria-hidden="true">
-      {cards.map((card) => {
-          const cover = card.book.cover || card.book.cover_url;
-          return (
-            <div
-              key={`${card.lineIndex}-${card.index}-${card.book.id}`}
-              ref={(node) => {
-                cardRefs.current[card.order] = node;
-              }}
-              className="intro-card book-face"
-            >
-              {cover ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={cover} alt="" className="h-[calc(100%-2.1rem)] w-full object-contain" />
-              ) : (
-                <span className="flex h-[calc(100%-2.1rem)] items-end p-2 text-xs font-semibold leading-tight">
-                  {card.book.title}
-                </span>
-              )}
-              <span className="mt-1 block truncate px-0.5 text-xs font-semibold">{card.book.title}</span>
-            </div>
-          );
-      })}
-    </div>
-  );
-}
-
 export default function CountryView({
   country,
   keysActive = true,
@@ -160,16 +46,10 @@ export default function CountryView({
   const [failedCovers, setFailedCovers] = useState<Record<number, true>>({});
   const [activeIndex, setActiveIndex] = useState(0);
   const [reduced, setReduced] = useState<boolean | null>(null);
-  const [phase, setPhase] = useState<ShelfPhase>('pending');
   const [lineCount, setLineCount] = useState(6);
   const [minPerLine, setMinPerLine] = useState(1);
   const [measured, setMeasured] = useState(false);
-  const finishIntro = useCallback(() => {
-    liveRef.current = true;
-    setPhase('live');
-  }, []);
   const bookLines = lineUp(books, lineCount, minPerLine);
-  const introLines = lineUp(books, lineCount, 1).map((line) => line.slice(0, 8));
   const bookLinesRef = useRef(bookLines);
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const activeIndexRef = useRef(0);
@@ -197,12 +77,22 @@ export default function CountryView({
       const next = viewport.clientHeight >= 720 ? 6 : 5;
       const cardWidth = viewport.clientWidth >= 1100 ? 156 : 124;
       const rowHeight = Math.round(cardWidth * 1.5 + 40);
-      const across = Math.ceil((viewport.clientWidth * 2.4) / (cardWidth + 16)) + 2;
+      const rad = (Math.abs(STRIP_ANGLE) * Math.PI) / 180;
+      const along = cardWidth * Math.cos(rad) + rowHeight * Math.sin(rad);
+      const acrossSpan = cardWidth * Math.sin(rad) + rowHeight * Math.cos(rad);
+      const cardGap = Math.ceil(along - cardWidth + 20);
+      const stripPad = Math.ceil((cardWidth * Math.sin(rad) - rowHeight * (1 - Math.cos(rad))) / 2 + 2);
+      const stripGap = Math.max(12, Math.ceil(acrossSpan + 22 - rowHeight - stripPad * 2));
+      const across = Math.ceil((viewport.clientWidth * 2.4) / (cardWidth + cardGap)) + 2;
       viewport.style.setProperty('--card-h', `${rowHeight}px`);
       viewport.style.setProperty('--card-w', `${Math.round(cardWidth)}px`);
+      viewport.style.setProperty('--card-gap', `${cardGap}px`);
+      viewport.style.setProperty('--strip-gap', `${stripGap}px`);
+      viewport.style.setProperty('--strip-pad', `${stripPad}px`);
       setLineCount((current) => (current === next ? current : next));
       setMinPerLine((current) => (current === across ? current : across));
       setMeasured(true);
+      liveRef.current = true;
     };
     apply();
     const observer = new ResizeObserver(apply);
@@ -210,24 +100,13 @@ export default function CountryView({
     return () => observer.disconnect();
   }, [books.length]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const begin = () => {
-      setReduced(media.matches);
-      if (!measured) return;
-      if (media.matches || books.length < 2) {
-        liveRef.current = true;
-        setPhase('live');
-        return;
-      }
-      liveRef.current = false;
-      setPhase('intro');
-    };
-
-    begin();
-    media.addEventListener('change', begin);
-    return () => media.removeEventListener('change', begin);
-  }, [books.length, measured]);
+    const apply = () => setReduced(media.matches);
+    apply();
+    media.addEventListener('change', apply);
+    return () => media.removeEventListener('change', apply);
+  }, []);
 
   useEffect(() => {
     activeIndexRef.current = activeIndex;
@@ -488,24 +367,31 @@ export default function CountryView({
               ref={viewportRef}
               className="absolute inset-0 overflow-hidden"
             >
-              {phase === 'intro' ? <ShelfIntro lines={introLines} onDone={finishIntro} /> : null}
               <div
                 ref={trackRef}
-                className={`absolute inset-0 overflow-hidden transition-opacity duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                  phase === 'live' ? 'opacity-100' : 'pointer-events-none opacity-0'
+                className={`absolute inset-0 overflow-hidden transition-opacity duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                  measured ? 'opacity-100' : 'pointer-events-none opacity-0'
                 }`}
               >
                 <div
-                  className="absolute left-1/2 top-1/2 flex w-[240%] flex-col gap-5"
-                  style={{ transform: `translate(-50%, -50%) rotate(${STRIP_ANGLE}deg)` }}
+                  className="absolute left-1/2 top-1/2 flex w-[240%] flex-col"
+                  style={{
+                    transform: `translate(-50%, -50%) rotate(${STRIP_ANGLE}deg)`,
+                    gap: 'var(--strip-gap, 1rem)',
+                  }}
                 >
                   {bookLines.map((line, lineIndex) => {
                     const lineIndexCursor = bookLines
                       .slice(0, lineIndex)
                       .reduce((sum, item) => sum + item.length, 0);
                     return (
-                      <div key={lineIndex} data-strip className="overflow-hidden py-1">
-                        <ol data-strip-track className="flex w-max gap-3">
+                      <div
+                        key={lineIndex}
+                        data-strip
+                        className="overflow-hidden"
+                        style={{ paddingBlock: 'var(--strip-pad, 1rem)' }}
+                      >
+                        <ol data-strip-track className="flex w-max" style={{ gap: 'var(--card-gap, 1rem)' }}>
                           {(loop ? [0, 1] : [0]).map((copy) =>
                             line.map((book, bookIndex) => {
                               const primary = copy === 0;
