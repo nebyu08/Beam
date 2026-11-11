@@ -1,13 +1,16 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Book } from '@/lib/types';
-import { ArrowLeft, BookOpen, ExternalLink, Globe, X } from 'lucide-react';
+import { BookOpen, ExternalLink, Globe, X } from 'lucide-react';
+
+export type PopOrigin = { left: number; top: number; width: number; height: number };
 
 interface BookDetailsModalProps {
   isOpen: boolean;
   book: Book | null;
   countryName?: string;
+  origin?: PopOrigin | null;
   onClose: () => void;
   onBackToGlobe?: () => void;
   clearOfBar?: boolean;
@@ -23,11 +26,31 @@ export default function BookDetailsModal({
   isOpen,
   book,
   countryName,
+  origin,
   onClose,
   onBackToGlobe,
 }: BookDetailsModalProps) {
+  const cardRef = useRef<HTMLDivElement>(null);
   const [coverFailureId, setCoverFailureId] = useState<number | null>(null);
   const [fetchedDetail, setFetchedDetail] = useState<{ id: number; text: string } | null>(null);
+
+  useLayoutEffect(() => {
+    const card = cardRef.current;
+    if (!card || !isOpen || !book || !origin) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const end = card.getBoundingClientRect();
+    const dx = origin.left + origin.width / 2 - (end.left + end.width / 2);
+    const dy = origin.top + origin.height / 2 - (end.top + end.height / 2);
+    const sx = Math.min(1, Math.max(0.18, origin.width / end.width));
+    const sy = Math.min(1, Math.max(0.18, origin.height / end.height));
+    card.animate(
+      [
+        { transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})` },
+        { transform: 'translate(0px, 0px) scale(1, 1)' },
+      ],
+      { duration: 460, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' },
+    );
+  }, [isOpen, book, origin]);
 
   useEffect(() => {
     const existing = book?.description?.trim();
@@ -90,73 +113,62 @@ export default function BookDetailsModal({
 
       <aside
         aria-label="Book details"
-        className="pointer-events-none fixed inset-0 z-40 flex items-center justify-center p-4 sm:p-8"
+        className="pointer-events-none fixed inset-0 z-40 flex items-center justify-center p-4"
       >
-        <div className="book-pop pointer-events-auto flex max-h-[min(820px,calc(100vh-2rem))] w-full max-w-[880px] flex-col overflow-hidden rounded-[28px] border border-white/10 bg-black text-white shadow-[0_30px_80px_rgba(0,0,0,0.65)] sm:flex-row">
-          <div className="flex w-full shrink-0 items-center justify-center bg-black px-6 py-8 sm:w-[340px] sm:px-8">
+        <div
+          ref={cardRef}
+          className="pointer-events-auto flex max-h-[min(680px,calc(100vh-2rem))] w-full max-w-[420px] origin-center flex-col overflow-hidden rounded-[24px] border border-white/15 bg-black text-white shadow-[0_40px_90px_rgba(0,0,0,0.72)]"
+        >
+          <div className="relative flex justify-center bg-black px-5 pt-5">
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close"
+              className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/70 text-white hover:bg-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              <X className="h-4 w-4" />
+            </button>
             {coverSrc && !coverFailed ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={coverSrc}
                 alt=""
                 onError={() => setCoverFailureId(book.id)}
-                className="aspect-[2/3] h-auto w-[min(100%,280px)] rounded-md object-contain shadow-[0_18px_50px_rgba(0,0,0,0.45)] sm:w-[min(100%,320px)]"
+                className="max-h-[46vh] w-auto rounded-md object-contain"
               />
             ) : (
-              <div className="flex aspect-[2/3] w-[min(100%,280px)] items-end bg-[#141416] p-6 sm:w-[320px]">
-                <p className="text-2xl font-semibold leading-tight">{book.title}</p>
+              <div className="flex aspect-[2/3] w-[220px] items-end bg-[#141416] p-5">
+                <p className="text-xl font-semibold leading-tight">{book.title}</p>
               </div>
             )}
           </div>
 
-          <div className="flex min-h-0 flex-1 flex-col px-6 py-5 sm:px-8 sm:py-7">
-            <div className="flex items-center justify-between gap-3">
-              <button
-                type="button"
-                onClick={onClose}
-                className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-sm font-semibold text-black hover:bg-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                {countryName || 'Books'}
-              </button>
-              <button
-                type="button"
-                onClick={onClose}
-                aria-label="Close"
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="mt-6 min-h-0 flex-1 overflow-y-auto pr-1">
-              <h2 className="text-balance text-4xl font-semibold leading-[1.05] tracking-[-0.03em] sm:text-5xl">
+          <div className="flex min-h-0 flex-1 flex-col px-5 pb-5 pt-4">
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              <h2 className="text-balance text-3xl font-semibold leading-[1.05] tracking-[-0.03em]">
                 {book.title}
               </h2>
-              <p className="mt-4 text-lg leading-snug">{book.author}</p>
+              <p className="mt-2 text-base leading-snug">{book.author}</p>
               {(year || book.genre) && (
-                <p className="mt-1 text-base">
+                <p className="mt-1 text-sm text-white/80">
                   {[year, book.genre].filter(Boolean).join(', ')}
                 </p>
               )}
-              {(book.rating ?? 0) > 0 && <p className="mt-3 text-sm">{book.rating}% rating</p>}
-              <div className="mt-6 border-t border-white/15 pt-5">
-                <h3 className="text-sm font-semibold">About this book</h3>
-                <p className="mt-3 max-w-prose text-pretty text-base leading-relaxed">
-                  {detailLoading
-                    ? 'Looking up this book…'
-                    : detail ||
-                      `${book.title} is a ${book.genre || 'book'} by ${book.author}${
-                        year ? `, from ${year}` : ''
-                      }${countryName ? `, filed under ${countryName}` : ''}.`}
-                </p>
-              </div>
+              {(book.rating ?? 0) > 0 && <p className="mt-2 text-sm text-white/80">{book.rating}% rating</p>}
+              <p className="mt-4 text-pretty text-sm leading-relaxed text-white/80">
+                {detailLoading
+                  ? 'Looking up this book…'
+                  : detail ||
+                    `${book.title} is a ${book.genre || 'book'} by ${book.author}${
+                      year ? `, from ${year}` : ''
+                    }${countryName ? `, filed under ${countryName}` : ''}.`}
+              </p>
               {book.genres && book.genres.length > 0 && (
-                <p className="mt-5 text-sm leading-relaxed">{book.genres.slice(0, 4).join(', ')}</p>
+                <p className="mt-3 text-sm leading-relaxed text-white/80">{book.genres.slice(0, 4).join(', ')}</p>
               )}
             </div>
 
-            <div className="mt-6 flex flex-wrap items-center gap-2">
+            <div className="mt-4 flex flex-wrap items-center gap-2">
               {book.openlibrary_url && (
                 <a
                   href={book.openlibrary_url}

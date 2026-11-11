@@ -2,13 +2,14 @@
 
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { GeoBook, GeoCountry } from '@/lib/geo-types';
+import { PopOrigin } from '@/components/book-details-modal';
 import { ArrowLeft } from 'lucide-react';
 
 interface CountryViewProps {
   country: GeoCountry;
   keysActive?: boolean;
   onBackToGlobe?: () => void;
-  onSelectBook?: (book: GeoBook) => void;
+  onSelectBook?: (book: GeoBook, origin: PopOrigin) => void;
 }
 
 const DRIFT_PX_PER_SECOND = 22;
@@ -521,7 +522,15 @@ export default function CountryView({
                                   onKeyDown={(event) => {
                                     if (event.key === ' ') event.preventDefault();
                                   }}
-                                  onClick={() => onSelectBook?.(book)}
+                                  onClick={(event) => {
+                                    const rect = event.currentTarget.getBoundingClientRect();
+                                    onSelectBook?.(book, {
+                                      left: rect.left,
+                                      top: rect.top,
+                                      width: rect.width,
+                                      height: rect.height,
+                                    });
+                                  }}
                                   className="group flex h-full w-[var(--card-w,7.5rem)] flex-col text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
                                 >
                                   <span className="cover-glow relative min-h-0 flex-1 overflow-hidden bg-black">

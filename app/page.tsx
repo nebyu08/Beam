@@ -8,7 +8,7 @@ import { Waves } from 'lucide-react';
 import EarthGlobe from '@/components/earth-globe';
 import CountryView, { BackToGlobeButton } from '@/components/country-view';
 import WaveView from '@/components/wave-view';
-import BookDetailsModal from '@/components/book-details-modal';
+import BookDetailsModal, { PopOrigin } from '@/components/book-details-modal';
 import LoadingScreen from '@/components/loading-screen';
 import { GeoBook } from '@/lib/geo-types';
 
@@ -33,6 +33,7 @@ export default function Home() {
   } = useGeoStore();
 
   const [activeModal, setActiveModal] = useState<'details' | null>(null);
+  const [popOrigin, setPopOrigin] = useState<PopOrigin | null>(null);
   const [isIntroReady, setIsIntroReady] = useState(false);
   const [introDismissed, setIntroDismissed] = useState(false);
   const [spotlight, setSpotlight] = useState<{ id: number; nonce: number } | null>(null);
@@ -66,6 +67,7 @@ export default function Home() {
   const handleCloseDock = useCallback(() => {
     setActiveModal(null);
     setSelectedBook(null);
+    setPopOrigin(null);
   }, [setSelectedBook]);
 
   // Global Keyboard Navigation
@@ -124,8 +126,9 @@ export default function Home() {
   ]);
 
   const handleSelectBook = useCallback(
-    (book: Book) => {
+    (book: Book, origin?: PopOrigin) => {
       setSelectedBook(book);
+      setPopOrigin(origin ?? null);
       setActiveModal('details');
     },
     [setSelectedBook]
@@ -197,6 +200,7 @@ export default function Home() {
         isOpen={isDetailsDockOpen}
         book={selectedBook}
         countryName={detailCountry}
+        origin={popOrigin}
         onClose={handleCloseDock}
         onBackToGlobe={handleBackToGlobe}
         clearOfBar={overlayOpen}
