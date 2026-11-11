@@ -70,3 +70,7 @@ body {
     animation: none;
   }
 }
+
+.shelf-loop {
+  mask-image: linear-gradient(to bottom, transparent, #000 36px, #000 calc(100% - 64px), transparent);
+}
