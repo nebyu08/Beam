@@ -1,12 +1,17 @@
 'use client';
 
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { GeoBook, GeoCountry } from '@/lib/geo-types';
+import { GeoBook } from '@/lib/geo-types';
 import { PopOrigin } from '@/components/book-details-modal';
 import { ArrowLeft } from 'lucide-react';
 
 interface CountryViewProps {
-  country: GeoCountry;
+  country: {
+    name: string;
+    flag?: string;
+    tagline?: string;
+    books: GeoBook[];
+  };
   keysActive?: boolean;
   onBackToGlobe?: () => void;
   onSelectBook?: (book: GeoBook, origin: PopOrigin) => void;
@@ -164,7 +169,7 @@ export default function CountryView({
     setPhase('live');
   }, []);
   const bookLines = lineUp(books, lineCount, minPerLine);
-  const introLines = lineUp(books, lineCount, 1);
+  const introLines = lineUp(books, lineCount, 1).map((line) => line.slice(0, 8));
   const bookLinesRef = useRef(bookLines);
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const activeIndexRef = useRef(0);
@@ -465,7 +470,7 @@ export default function CountryView({
             <header className="pointer-events-none absolute inset-x-0 top-0 z-10 bg-gradient-to-b from-[#1c1410] via-[#1c1410]/75 to-transparent px-5 pb-16 pt-20 sm:px-8 sm:pt-24">
               <div className="flex items-baseline justify-between gap-4">
                 <h1 className="text-balance text-2xl font-semibold tracking-[-0.03em] sm:text-3xl">
-                  <span className="mr-2">{country.flag}</span>
+                  {country.flag ? <span className="mr-2">{country.flag}</span> : null}
                   {country.name}
                 </h1>
                 <p className="shrink-0 text-sm text-white/80">

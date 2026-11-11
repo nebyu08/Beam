@@ -36,7 +36,7 @@ export default function Home() {
   const [popOrigin, setPopOrigin] = useState<PopOrigin | null>(null);
   const [isIntroReady, setIsIntroReady] = useState(false);
   const [introDismissed, setIntroDismissed] = useState(false);
-  const [spotlight, setSpotlight] = useState<{ id: number; nonce: number } | null>(null);
+
 
   // Trigger intro readiness once topology and initial assets settle
   useEffect(() => {
@@ -95,7 +95,6 @@ export default function Home() {
           const pool = countries.flatMap((country) => country.books);
           if (pool.length > 0) {
             const chosen = pool[Math.floor(Math.random() * pool.length)];
-            setSpotlight({ id: chosen.id, nonce: Date.now() });
             setSelectedBook(chosen);
             setActiveModal('details');
           }
@@ -187,12 +186,7 @@ export default function Home() {
       {waveOpen && (
         <>
           <BackToGlobeButton onClick={handleBackToGlobe} />
-          <WaveView
-            suspended={isDetailsDockOpen}
-            spotlightId={spotlight?.id ?? null}
-            spotlightNonce={spotlight?.nonce ?? 0}
-            onSelectBook={handleSelectBook}
-          />
+          <WaveView keysActive={!isDetailsDockOpen} onSelectBook={handleSelectBook} />
         </>
       )}
 
