@@ -210,16 +210,56 @@ export default function CountryView({
       const height = board?.offsetHeight ?? 0;
       const cos = Math.cos(-STRIP_RAD);
       const sin = Math.sin(-STRIP_RAD);
-      const edge = 96;
-      const maxX = Math.max(0, width / 2 - edge);
-      const maxY = Math.max(0, height / 2 - edge);
-      const localX = Math.min(maxX, Math.max(-maxX, -x * cos + y * sin));
-      const localY = Math.min(maxY, Math.max(-maxY, -x * sin - y * cos));
-      panRef.current = {
-        x: -(cos * localX + sin * localY),
-        y: -(-sin * localX + cos * localY),
+      const viewW = viewport.clientWidth;
+      const viewH = viewport.clientHeight;
+      const halfW = width / 2;
+      const halfH = height / 2;
+      const corners = [
+        [-viewW / 2, -viewH / 2],
+        [viewW / 2, -viewH / 2],
+        [viewW / 2, viewH / 2],
+        [-viewW / 2, viewH / 2],
+      ] as const;
+      const covers = (px: number, py: number) =>
+        corners.every(([cx, cy]) => {
+          const dx = cx - px;
+          const dy = cy - py;
+          const localX = cos * dx - sin * dy;
+          const localY = sin * dx + cos * dy;
+          return localX >= -halfW && localX <= halfW && localY >= -halfH && localY <= halfH;
+        });
+      const finish = (px: number, py: number) => {
+        panRef.current = { x: px, y: py };
+        paintPan();
       };
-      paintPan();
+      if (width === 0 || height === 0) {
+        finish(0, 0);
+        return;
+      }
+      if (!covers(0, 0)) {
+        const aabbW = width * cos + height * sin;
+        const aabbH = width * sin + height * cos;
+        const maxX = Math.max(0, (aabbW - viewW) / 2);
+        const maxY = Math.max(0, (aabbH - viewH) / 2);
+        finish(Math.min(maxX, Math.max(-maxX, x)), Math.min(maxY, Math.max(-maxY, y)));
+        return;
+      }
+      if (covers(x, y)) {
+        finish(x, y);
+        return;
+      }
+      const originX = covers(panRef.current.x, panRef.current.y) ? panRef.current.x : 0;
+      const originY = covers(panRef.current.x, panRef.current.y) ? panRef.current.y : 0;
+      let near = 0;
+      let far = 1;
+      for (let step = 0; step < 14; step += 1) {
+        const mid = (near + far) / 2;
+        const px = originX + (x - originX) * mid;
+        const py = originY + (y - originY) * mid;
+        if (covers(px, py)) near = mid;
+        else far = mid;
+      }
+      finish(originX + (x - originX) * near, originY + (y - originY) * near);
     };
     panClampRef.current = clampPan;
     clampPan(panRef.current.x, panRef.current.y);
