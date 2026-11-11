@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { GeoBook, GeoCountry } from '@/lib/geo-types';
 import { ArrowLeft } from 'lucide-react';
 
@@ -30,43 +30,110 @@ function mod(value: number, size: number) {
   return ((value % size) + size) % size;
 }
 
-type ShelfPhase = 'pending' | 'deck' | 'shuffle' | 'live';
+type ShelfPhase = 'pending' | 'intro' | 'live';
 
-function BookDeck({ books, shuffling }: { books: GeoBook[]; shuffling: boolean }) {
-  const pile = books.slice(0, 8);
+function ShelfIntro({ lines, onDone }: { lines: GeoBook[][]; onDone: () => void }) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const view = root.getBoundingClientRect();
+    const gap = 12;
+    const pad = 8;
+    const text = 34;
+    const rowH = (view.height - (lines.length - 1) * gap - 16) / Math.max(lines.length, 1);
+    const cardW = Math.max(76, (rowH - text) * (2 / 3));
+    const coverH = Math.max(48, rowH - text);
+    const colGap = 22;
+    const total = lines.length * cardW + (lines.length - 1) * colGap;
+    const originX = Math.max(pad, (view.width - total) / 2);
+    const centerX = view.width / 2 - cardW / 2;
+    const centerY = view.height * 0.46 - coverH / 2;
+    let flat = 0;
+    const cards: { el: HTMLDivElement; line: number; index: number; count: number }[] = [];
+    lines.forEach((line, lineIndex) => {
+      line.forEach((_, index) => {
+        const el = cardRefs.current[flat];
+        flat += 1;
+        if (el) cards.push({ el, line: lineIndex, index, count: line.length });
+      });
+    });
+
+    const deck = (order: number) => {
+      const depth = Math.min(order, 18);
+      return `translate3d(${centerX - depth * 6}px, ${centerY + depth * 0.3}px, 0) scale(1.7)`;
+    };
+    const column = (line: number, index: number, count: number) => {
+      const step = Math.max(8, coverH * 0.14);
+      const fromEnd = Math.min(count - 1 - index, 10);
+      const top = view.height * 0.58 - coverH - Math.min(count - 1, 10) * step;
+      return `translate3d(${originX + line * (cardW + colGap)}px, ${top + fromEnd * step}px, 0) scale(1.12)`;
+    };
+    const row = (line: number, index: number) =>
+      `translate3d(${pad + index * (cardW + gap)}px, ${8 + line * (rowH + gap)}px, 0) scale(1)`;
+
+    cards.forEach((card, order) => {
+      card.el.style.width = `${cardW}px`;
+      card.el.style.height = `${rowH}px`;
+      card.el.style.zIndex = String(400 - order);
+    });
+
+    const animations = cards.map((card, order) =>
+      card.el.animate(
+        [
+          { transform: deck(order), offset: 0 },
+          { transform: deck(order), offset: 0.14 },
+          { transform: column(card.line, card.index, card.count), offset: 0.4 },
+          { transform: column(card.line, card.index, card.count), offset: 0.58 },
+          { transform: row(card.line, card.index), offset: 1 },
+        ],
+        {
+          duration: 2200,
+          delay: card.index * 14,
+          easing: 'cubic-bezier(0.7, 0, 0.24, 1)',
+          fill: 'both',
+        },
+      ),
+    );
+    const wait = 2200 + Math.max(0, ...lines.map((line) => (line.length - 1) * 14));
+    const timer = window.setTimeout(onDone, wait);
+    return () => {
+      window.clearTimeout(timer);
+      animations.forEach((animation) => animation.cancel());
+    };
+    // The line list is fixed for the life of this intro.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onDone]);
+
+  const cards = lines
+    .flatMap((line, lineIndex) => line.map((book, index) => ({ book, lineIndex, index })))
+    .map((card, order) => ({ ...card, order }));
   return (
-    <div className="pointer-events-none absolute inset-0 z-30" aria-hidden="true">
-      <div className="absolute right-[16%] top-[16%] h-80 w-48 sm:right-[24%]">
-        {pile.map((book, index) => {
-          const side = index % 2 === 0 ? -1 : 1;
-          const cover = book.cover || book.cover_url;
+    <div ref={rootRef} className="pointer-events-none absolute inset-0 z-30 overflow-hidden" aria-hidden="true">
+      {cards.map((card) => {
+          const cover = card.book.cover || card.book.cover_url;
           return (
             <div
-              key={book.id}
-              className={`deck-card overflow-hidden bg-[#141416] ${shuffling ? 'is-shuffling' : ''}`}
-              style={{
-                zIndex: index,
-                ['--dx' as string]: `${index * 1.5}px`,
-                ['--dy' as string]: `${index * -1.6}px`,
-                ['--rot' as string]: `${(index - 3.5) * 1.5}deg`,
-                ['--lift-x' as string]: `${side * 96}px`,
-                ['--lift-rot' as string]: `${side * 18}deg`,
-                ['--out-x' as string]: `${-160 + side * 28}px`,
-                ['--out-rot' as string]: `${side * -7}deg`,
-                ['--delay' as string]: `${index * 32}ms`,
+              key={`${card.lineIndex}-${card.index}-${card.book.id}`}
+              ref={(node) => {
+                cardRefs.current[card.order] = node;
               }}
+              className="intro-card"
             >
               {cover ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={cover} alt="" className="h-full w-full object-contain" />
+                <img src={cover} alt="" className="h-[calc(100%-2.1rem)] w-full object-contain" />
               ) : (
-                <span className="flex h-full items-end p-3 text-sm font-semibold leading-tight">{book.title}</span>
+                <span className="flex h-[calc(100%-2.1rem)] items-end p-2 text-xs font-semibold leading-tight">
+                  {card.book.title}
+                </span>
               )}
+              <span className="mt-1 block truncate px-0.5 text-xs font-semibold">{card.book.title}</span>
             </div>
           );
-        })}
-      </div>
+      })}
     </div>
   );
 }
@@ -83,7 +150,13 @@ export default function CountryView({
   const [phase, setPhase] = useState<ShelfPhase>('pending');
   const [lineCount, setLineCount] = useState(4);
   const [minPerLine, setMinPerLine] = useState(1);
+  const [measured, setMeasured] = useState(false);
+  const finishIntro = useCallback(() => {
+    liveRef.current = true;
+    setPhase('live');
+  }, []);
   const bookLines = lineUp(books, lineCount, minPerLine);
+  const introLines = lineUp(books, lineCount, 1);
   const bookLinesRef = useRef(bookLines);
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const activeIndexRef = useRef(0);
@@ -116,6 +189,7 @@ export default function CountryView({
       viewport.style.setProperty('--card-w', `${Math.round(cardWidth)}px`);
       setLineCount((current) => (current === next ? current : next));
       setMinPerLine((current) => (current === across ? current : across));
+      setMeasured(true);
     };
     apply();
     const observer = new ResizeObserver(apply);
@@ -125,35 +199,22 @@ export default function CountryView({
 
   useLayoutEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let shuffleTimer = 0;
-    let liveTimer = 0;
-
     const begin = () => {
-      window.clearTimeout(shuffleTimer);
-      window.clearTimeout(liveTimer);
       setReduced(media.matches);
+      if (!measured) return;
       if (media.matches || books.length < 2) {
         liveRef.current = true;
         setPhase('live');
         return;
       }
       liveRef.current = false;
-      setPhase('deck');
-      shuffleTimer = window.setTimeout(() => setPhase('shuffle'), 720);
-      liveTimer = window.setTimeout(() => {
-        liveRef.current = true;
-        setPhase('live');
-      }, 720 + 1100);
+      setPhase('intro');
     };
 
     begin();
     media.addEventListener('change', begin);
-    return () => {
-      media.removeEventListener('change', begin);
-      window.clearTimeout(shuffleTimer);
-      window.clearTimeout(liveTimer);
-    };
-  }, [books.length]);
+    return () => media.removeEventListener('change', begin);
+  }, [books.length, measured]);
 
   useEffect(() => {
     activeIndexRef.current = activeIndex;
@@ -410,9 +471,7 @@ export default function CountryView({
                   : 'min-h-0 flex-1 overflow-y-auto overscroll-contain pb-[max(4rem,env(safe-area-inset-bottom))]'
               }
             >
-              {phase === 'deck' || phase === 'shuffle' ? (
-                <BookDeck books={books} shuffling={phase === 'shuffle'} />
-              ) : null}
+              {phase === 'intro' ? <ShelfIntro lines={introLines} onDone={finishIntro} /> : null}
               <div
                 ref={trackRef}
                 className={`${loop ? 'relative grid h-[200%] w-max grid-cols-2 grid-rows-2' : 'h-full'} transition-opacity duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
