@@ -190,10 +190,10 @@ export default function CountryView({
     if (!viewport) return;
     const apply = () => {
       const next = viewport.clientHeight >= 720 ? 6 : 5;
-      const rowHeight = (viewport.clientHeight - (next - 1) * 12 - 16) / next;
-      const cardWidth = Math.max(72, (rowHeight - 32) * (2 / 3));
-      viewport.style.setProperty('--card-h', `${Math.round(rowHeight)}px`);
-      const across = Math.ceil(viewport.clientWidth / (cardWidth + 12)) + 2;
+      const cardWidth = viewport.clientWidth >= 1100 ? 156 : 124;
+      const rowHeight = Math.round(cardWidth * 1.5 + 40);
+      const across = Math.ceil((viewport.clientWidth * 2.4) / (cardWidth + 16)) + 2;
+      viewport.style.setProperty('--card-h', `${rowHeight}px`);
       viewport.style.setProperty('--card-w', `${Math.round(cardWidth)}px`);
       setLineCount((current) => (current === next ? current : next));
       setMinPerLine((current) => (current === across ? current : across));
@@ -449,7 +449,7 @@ export default function CountryView({
   }, [keysActive]);
 
   return (
-    <div className="absolute inset-0 z-20 bg-[#141821] text-white">
+    <div className="absolute inset-0 z-20 bg-[#1c1410] text-white">
       {books.length === 0 ? (
         <p className="px-6 pt-28 text-base text-white sm:px-10">No books for this country yet.</p>
       ) : (
@@ -459,10 +459,10 @@ export default function CountryView({
               ? `Books from ${country.name}, in diagonal stripes. Books travel along each stripe. Scroll to move through them. Arrow keys move along a stripe and between stripes. Enter opens one.`
               : `Books from ${country.name}. Arrow keys move across the shelf. Enter opens one.`
           }
-          className="absolute inset-x-0 bottom-0 top-20 flex flex-col px-5 pt-3 sm:top-24 sm:px-8"
+          className="absolute inset-0"
         >
-          <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col">
-            <header className="shrink-0 pb-4">
+          <div className="absolute inset-0">
+            <header className="pointer-events-none absolute inset-x-0 top-0 z-10 bg-gradient-to-b from-[#1c1410] via-[#1c1410]/75 to-transparent px-5 pb-16 pt-20 sm:px-8 sm:pt-24">
               <div className="flex items-baseline justify-between gap-4">
                 <h1 className="text-balance text-2xl font-semibold tracking-[-0.03em] sm:text-3xl">
                   <span className="mr-2">{country.flag}</span>
@@ -481,11 +481,7 @@ export default function CountryView({
 
             <div
               ref={viewportRef}
-              className={
-                loop
-                  ? 'shelf-loop relative min-h-0 flex-1 overflow-hidden'
-                  : 'min-h-0 flex-1 overflow-y-auto overscroll-contain pb-[max(4rem,env(safe-area-inset-bottom))]'
-              }
+              className="absolute inset-0 overflow-hidden"
             >
               {phase === 'intro' ? <ShelfIntro lines={introLines} onDone={finishIntro} /> : null}
               <div
@@ -495,7 +491,7 @@ export default function CountryView({
                 }`}
               >
                 <div
-                  className="absolute left-1/2 top-1/2 flex w-[175%] flex-col gap-3"
+                  className="absolute left-1/2 top-1/2 flex w-[240%] flex-col gap-5"
                   style={{ transform: `translate(-50%, -50%) rotate(${STRIP_ANGLE}deg)` }}
                 >
                   {bookLines.map((line, lineIndex) => {
