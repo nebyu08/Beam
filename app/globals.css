@@ -52,25 +52,35 @@ body {
   animation: shelf-rise 460ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes cover-open {
-  from {
-    clip-path: inset(0 0 100% 0);
-  }
-  to {
-    clip-path: inset(0 0 0 0);
-  }
+.shelf-loop {
+  --shelf-fade: 24px;
+  mask-image:
+    linear-gradient(to right, transparent, #000 var(--shelf-fade), #000 calc(100% - var(--shelf-fade)), transparent),
+    linear-gradient(to bottom, transparent, #000 var(--shelf-fade), #000 calc(100% - var(--shelf-fade)), transparent);
+  mask-composite: intersect;
 }
 
-.cover-open {
-  animation: cover-open 680ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+.cover-glow {
+  box-shadow: 0 0 0 1px transparent;
+  transition: box-shadow 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.group:focus-visible .cover-glow {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.95),
+    0 0 18px 1px rgba(255, 255, 255, 0.5);
+}
+
+@media (hover: hover) {
+  .group:hover .cover-glow {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.95),
+      0 0 18px 1px rgba(255, 255, 255, 0.5);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cover-open {
-    animation: none;
+  .cover-glow {
+    transition: none;
   }
-}
-
-.shelf-loop {
-  mask-image: linear-gradient(to bottom, transparent, #000 36px, #000 calc(100% - 64px), transparent);
 }

@@ -11,13 +11,7 @@ interface CountryViewProps {
   onSelectBook?: (book: GeoBook) => void;
 }
 
-const DRIFT_PX_PER_SECOND = 28;
-
-function yearLabel(year: number) {
-  if (!year) return '';
-  if (year < 0) return `${Math.abs(year)} BCE`;
-  return String(year);
-}
+const DRIFT_PX_PER_SECOND = 22;
 
 function mod(value: number, size: number) {
   if (size <= 0) return 0;
@@ -37,7 +31,8 @@ export default function CountryView({
   const activeIndexRef = useRef(0);
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const offsetRef = useRef(0);
+  const offsetXRef = useRef(0);
+  const offsetYRef = useRef(0);
   const pausedRef = useRef(false);
   const keysActiveRef = useRef(keysActive);
   const placeBookRef = useRef<(index: number) => void>(() => {});
@@ -130,12 +125,13 @@ export default function CountryView({
         return;
       }
       const viewport = viewportRef.current;
-      const half = track.scrollHeight / 2;
-      if (!viewport || half <= 0) return;
-      offsetRef.current = mod(viewport.clientHeight * 0.22 - item.offsetTop + half, half);
+      const halfW = track.scrollWidth / 2;
+      const halfH = track.scrollHeight / 2;
+      if (!viewport || halfW <= 0 || halfH <= 0) return;
+      offsetXRef.current = mod(item.offsetLeft - 12, halfW);
+      offsetYRef.current = mod(viewport.clientHeight * 0.18 - item.offsetTop + halfH, halfH);
       pausedRef.current = true;
-      offsetRef.current = mod(offsetRef.current, half);
-      track.style.transform = `translate3d(0, ${-half + offsetRef.current}px, 0)`;
+      track.style.transform = `translate3d(${-offsetXRef.current}px, ${-halfH + offsetYRef.current}px, 0)`;
     };
   });
 
@@ -146,10 +142,12 @@ export default function CountryView({
     if (!viewport || !track) return;
 
     const applyOffset = () => {
-      const half = track.scrollHeight / 2;
-      if (half <= 0) return;
-      offsetRef.current = mod(offsetRef.current, half);
-      track.style.transform = `translate3d(0, ${-half + offsetRef.current}px, 0)`;
+      const halfW = track.scrollWidth / 2;
+      const halfH = track.scrollHeight / 2;
+      if (halfW <= 0 || halfH <= 0) return;
+      offsetXRef.current = mod(offsetXRef.current, halfW);
+      offsetYRef.current = mod(offsetYRef.current, halfH);
+      track.style.transform = `translate3d(${-offsetXRef.current}px, ${-halfH + offsetYRef.current}px, 0)`;
     };
 
     let frame = 0;
@@ -158,7 +156,8 @@ export default function CountryView({
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
       if (!pausedRef.current && !document.hidden && keysActiveRef.current) {
-        offsetRef.current += DRIFT_PX_PER_SECOND * dt;
+        offsetXRef.current += DRIFT_PX_PER_SECOND * dt;
+        offsetYRef.current += DRIFT_PX_PER_SECOND * dt;
         applyOffset();
       }
       frame = requestAnimationFrame(tick);
@@ -171,11 +170,15 @@ export default function CountryView({
 
     const onWheel = (event: WheelEvent) => {
       event.preventDefault();
-      offsetRef.current += event.deltaY;
+      const delta = event.deltaY + event.deltaX;
+      offsetXRef.current += delta;
+      offsetYRef.current += delta;
       applyOffset();
     };
 
+    let dragX = 0;
     let dragY = 0;
+    let originX = 0;
     let originY = 0;
     let dragging = false;
     let dragged = false;
@@ -183,16 +186,19 @@ export default function CountryView({
       if (event.button !== 0) return;
       dragging = true;
       dragged = false;
-      dragY = event.clientY;
-      originY = event.clientY;
+      dragX = originX = event.clientX;
+      dragY = originY = event.clientY;
       pausedRef.current = true;
     };
     const onMove = (event: PointerEvent) => {
       if (!dragging) return;
+      const dx = event.clientX - dragX;
       const dy = event.clientY - dragY;
+      dragX = event.clientX;
       dragY = event.clientY;
-      if (Math.abs(event.clientY - originY) > 6) dragged = true;
-      offsetRef.current += dy;
+      if (Math.hypot(event.clientX - originX, event.clientY - originY) > 6) dragged = true;
+      offsetXRef.current -= dx;
+      offsetYRef.current += dy;
       applyOffset();
     };
     const onUp = (event: PointerEvent) => {
@@ -262,25 +268,27 @@ export default function CountryView({
         <section
           aria-label={
             loop
-              ? `Books from ${country.name}. The shelf drifts downward and books return from the top. Arrow keys move across them. Enter opens one.`
+              ? `Books from ${country.name}. Books drift from the upper right toward the lower left. Scroll to move through them. Arrow keys move across them. Enter opens one.`
               : `Books from ${country.name}. Arrow keys move across the shelf. Enter opens one.`
           }
           className="absolute inset-x-0 bottom-0 top-20 flex flex-col px-5 pt-3 sm:top-24 sm:px-8"
         >
           <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col">
-            <header className="shrink-0 pb-6">
-              <h1 className="text-balance text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">
-                <span className="mr-2">{country.flag}</span>
-                {country.name}
-              </h1>
+            <header className="shrink-0 pb-4">
+              <div className="flex items-baseline justify-between gap-4">
+                <h1 className="text-balance text-2xl font-semibold tracking-[-0.03em] sm:text-3xl">
+                  <span className="mr-2">{country.flag}</span>
+                  {country.name}
+                </h1>
+                <p className="shrink-0 text-sm text-white/80">
+                  {books.length === 1 ? '1 book' : `${books.length} books`}
+                </p>
+              </div>
               {country.tagline ? (
-                <p className="mt-3 max-w-prose text-pretty text-base leading-relaxed text-white/80">
+                <p className="mt-2 max-w-prose text-pretty text-sm leading-relaxed text-white/80">
                   {country.tagline}
                 </p>
               ) : null}
-              <p className="mt-3 text-sm text-white/80">
-                {books.length === 1 ? '1 book' : `${books.length} books`}
-              </p>
             </header>
 
             <div
@@ -291,88 +299,79 @@ export default function CountryView({
                   : 'min-h-0 flex-1 overflow-y-auto overscroll-contain pb-[max(4rem,env(safe-area-inset-bottom))]'
               }
             >
-              <div ref={trackRef}>
-                {[...(loop ? [true] : []), false].map((copy) => (
-            <ol
-              key={copy ? 'loop' : 'shelf'}
-              aria-hidden={copy ? true : undefined}
-              className="grid grid-cols-[repeat(auto-fill,minmax(9.5rem,1fr))] gap-x-4 gap-y-6 pb-6"
-            >
-              {books.map((book, index) => {
-                const coverSrc = book.cover || book.cover_url;
-                const coverFailed = !coverSrc || failedCovers[book.id];
-                const year = yearLabel(book.year);
-                const meta = [year, book.genre].filter(Boolean).join(' · ');
+              <div ref={trackRef} className={loop ? 'relative grid w-[200%] grid-cols-2' : undefined}>
+                {(loop ? [0, 1, 2, 3] : [0]).map((copy) => (
+                  <ol
+                    key={copy}
+                    aria-hidden={copy === 0 ? undefined : true}
+                    className="grid grid-cols-[repeat(auto-fill,minmax(9.5rem,1fr))] gap-x-4 gap-y-5 pr-4 pb-5"
+                  >
+                    {books.map((book, index) => {
+                      const coverSrc = book.cover || book.cover_url;
+                      const coverFailed = !coverSrc || failedCovers[book.id];
+                      const primary = copy === 0;
 
-                return (
-                  <li key={book.id} className="min-w-0">
-                    <button
-                      ref={
-                        copy
-                          ? undefined
-                          : (node) => {
-                              itemRefs.current[index] = node;
+                      return (
+                        <li key={book.id} className="min-w-0">
+                          <button
+                            ref={
+                              primary
+                                ? (node) => {
+                                    itemRefs.current[index] = node;
+                                  }
+                                : undefined
                             }
-                      }
-                      type="button"
-                      data-book-row="true"
-                      tabIndex={copy ? -1 : index === activeIndex ? 0 : -1}
-                      onFocus={() => {
-                        activeIndexRef.current = index;
-                        setActiveIndex(index);
-                        pausedRef.current = true;
-                      }}
-                      onBlur={(event) => {
-                        const next = event.relatedTarget;
-                        if (!(next instanceof Element) || !next.closest('[data-book-row]')) {
-                          pausedRef.current = false;
-                        }
-                      }}
-                      onKeyDown={(event) => {
-                        if (event.key === ' ') event.preventDefault();
-                      }}
-                      onClick={() => onSelectBook?.(book)}
-                      className="group relative block w-full scroll-mt-4 text-left transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:z-10 hover:-translate-y-2 focus-visible:z-10 focus-visible:-translate-y-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:focus-visible:translate-y-0"
-                    >
-                      <span
-                        className={`relative block overflow-hidden bg-black ring-1 ring-white/0 transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:ring-white group-focus-visible:ring-white ${!copy && index < 12 ? 'cover-open' : ''}`}
-                        style={!copy && index < 12 ? { animationDelay: `${index * 42}ms` } : undefined}
-                      >
-                        {coverFailed ? (
-                          <span className="flex aspect-[2/3] w-full items-end bg-[#141416] p-3">
-                            <span className="text-sm font-semibold leading-tight">{book.title}</span>
-                          </span>
-                        ) : (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={coverSrc}
-                            alt=""
-                            loading={index < 8 ? 'eager' : 'lazy'}
-                            decoding="async"
-                            onError={() =>
-                              setFailedCovers((current) =>
-                                current[book.id] ? current : { ...current, [book.id]: true }
-                              )
-                            }
-                            className="aspect-[2/3] h-auto w-full object-contain transition duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110 group-focus-visible:scale-110 group-active:scale-[0.98] motion-reduce:transition-none motion-reduce:group-hover:scale-100 motion-reduce:group-focus-visible:scale-100"
-                          />
-                        )}
-                        {meta ? (
-                          <span className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-black via-black/85 to-transparent px-3 pb-3 pt-12 text-sm text-white opacity-0 transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 motion-reduce:translate-y-0 motion-reduce:transition-opacity">
-                            {meta}
-                          </span>
-                        ) : null}
-                      </span>
-                      <span className="mt-2 block min-h-[2.5em] text-balance text-sm font-semibold leading-snug line-clamp-2">
-                        {book.title}
-                      </span>
-                      <span className="mt-1 block truncate text-sm text-white/80 transition-colors duration-300 group-hover:text-white group-focus-visible:text-white">{book.author}</span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ol>
-                  ))}
+                            type="button"
+                            data-book-row="true"
+                            tabIndex={!primary ? -1 : index === activeIndex ? 0 : -1}
+                            onFocus={() => {
+                              activeIndexRef.current = index;
+                              setActiveIndex(index);
+                              pausedRef.current = true;
+                            }}
+                            onBlur={(event) => {
+                              const next = event.relatedTarget;
+                              if (!(next instanceof Element) || !next.closest('[data-book-row]')) {
+                                pausedRef.current = false;
+                              }
+                            }}
+                            onKeyDown={(event) => {
+                              if (event.key === ' ') event.preventDefault();
+                            }}
+                            onClick={() => onSelectBook?.(book)}
+                            className="group block w-full scroll-mt-4 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                          >
+                            <span className="cover-glow relative block overflow-hidden bg-black">
+                              {coverFailed ? (
+                                <span className="flex aspect-[2/3] w-full items-end bg-[#141416] p-3">
+                                  <span className="text-sm font-semibold leading-tight">{book.title}</span>
+                                </span>
+                              ) : (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                  src={coverSrc}
+                                  alt=""
+                                  loading={primary && index < 8 ? 'eager' : 'lazy'}
+                                  decoding="async"
+                                  onError={() =>
+                                    setFailedCovers((current) =>
+                                      current[book.id] ? current : { ...current, [book.id]: true }
+                                    )
+                                  }
+                                  className="aspect-[2/3] h-auto w-full object-contain"
+                                />
+                              )}
+                            </span>
+                            <span className="mt-2 block min-h-[2.5em] text-balance text-sm font-semibold leading-snug line-clamp-2">
+                              {book.title}
+                            </span>
+                            <span className="mt-1 block truncate text-sm text-white/80">{book.author}</span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ol>
+                ))}
               </div>
             </div>
           </div>
