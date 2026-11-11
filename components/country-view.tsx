@@ -195,11 +195,13 @@ export default function CountryView({
       offsetRef.current += dy;
       applyOffset();
     };
-    const onUp = () => {
+    const onUp = (event: PointerEvent) => {
       if (!dragging) return;
       dragging = false;
-      pausedRef.current = document.activeElement instanceof Element
+      const overBook = event.target instanceof Element && !!event.target.closest('[data-book-row]');
+      const focused = document.activeElement instanceof Element
         && !!document.activeElement.closest('[data-book-row]');
+      pausedRef.current = overBook || focused;
       if (!dragged) return;
       const swallow = (event: MouseEvent) => {
         event.preventDefault();
@@ -209,8 +211,29 @@ export default function CountryView({
       viewport.addEventListener('click', swallow, true);
     };
 
+    const bookUnderPointer = (event: Event) => {
+      const target = event.target;
+      return target instanceof Element && !!target.closest('[data-book-row]');
+    };
+    const onOver = (event: PointerEvent) => {
+      if (dragging) return;
+      const focused = document.activeElement instanceof Element
+        && !!document.activeElement.closest('[data-book-row]');
+      pausedRef.current = bookUnderPointer(event) || focused;
+    };
+    const onOut = (event: PointerEvent) => {
+      if (dragging) return;
+      const next = event.relatedTarget;
+      const stillOnBook = next instanceof Element && !!next.closest('[data-book-row]');
+      const focused = document.activeElement instanceof Element
+        && !!document.activeElement.closest('[data-book-row]');
+      if (!stillOnBook && !focused) pausedRef.current = false;
+    };
+
     viewport.addEventListener('wheel', onWheel, { passive: false });
     viewport.addEventListener('pointerdown', onDown);
+    viewport.addEventListener('pointerover', onOver);
+    viewport.addEventListener('pointerout', onOut);
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
 
@@ -219,6 +242,8 @@ export default function CountryView({
       observer.disconnect();
       viewport.removeEventListener('wheel', onWheel);
       viewport.removeEventListener('pointerdown', onDown);
+      viewport.removeEventListener('pointerover', onOver);
+      viewport.removeEventListener('pointerout', onOut);
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
       track.style.transform = '';
@@ -307,10 +332,10 @@ export default function CountryView({
                         if (event.key === ' ') event.preventDefault();
                       }}
                       onClick={() => onSelectBook?.(book)}
-                      className="group block w-full scroll-mt-4 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                      className="group relative block w-full scroll-mt-4 text-left transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:z-10 hover:-translate-y-2 focus-visible:z-10 focus-visible:-translate-y-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:focus-visible:translate-y-0"
                     >
                       <span
-                        className={`relative block overflow-hidden bg-black ${!copy && index < 12 ? 'cover-open' : ''}`}
+                        className={`relative block overflow-hidden bg-black ring-1 ring-white/0 transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:ring-white group-focus-visible:ring-white ${!copy && index < 12 ? 'cover-open' : ''}`}
                         style={!copy && index < 12 ? { animationDelay: `${index * 42}ms` } : undefined}
                       >
                         {coverFailed ? (
@@ -329,11 +354,11 @@ export default function CountryView({
                                 current[book.id] ? current : { ...current, [book.id]: true }
                               )
                             }
-                            className="aspect-[2/3] h-auto w-full object-contain transition duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.045] group-focus-visible:scale-[1.045] group-active:scale-[0.985] motion-reduce:transition-none motion-reduce:group-hover:scale-100 motion-reduce:group-focus-visible:scale-100"
+                            className="aspect-[2/3] h-auto w-full object-contain transition duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110 group-focus-visible:scale-110 group-active:scale-[0.98] motion-reduce:transition-none motion-reduce:group-hover:scale-100 motion-reduce:group-focus-visible:scale-100"
                           />
                         )}
                         {meta ? (
-                          <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/85 to-transparent px-3 pb-3 pt-12 text-sm text-white opacity-0 transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-opacity">
+                          <span className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-black via-black/85 to-transparent px-3 pb-3 pt-12 text-sm text-white opacity-0 transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 motion-reduce:translate-y-0 motion-reduce:transition-opacity">
                             {meta}
                           </span>
                         ) : null}
@@ -341,7 +366,7 @@ export default function CountryView({
                       <span className="mt-2 block min-h-[2.5em] text-balance text-sm font-semibold leading-snug line-clamp-2">
                         {book.title}
                       </span>
-                      <span className="mt-1 block truncate text-sm text-white/80">{book.author}</span>
+                      <span className="mt-1 block truncate text-sm text-white/80 transition-colors duration-300 group-hover:text-white group-focus-visible:text-white">{book.author}</span>
                     </button>
                   </li>
                 );
