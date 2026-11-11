@@ -271,7 +271,7 @@ export default function CountryView({
             <ol
               key={copy ? 'loop' : 'shelf'}
               aria-hidden={copy ? true : undefined}
-              className="grid grid-cols-2 gap-x-4 gap-y-8 pb-8 sm:grid-cols-3 sm:gap-x-5 lg:grid-cols-4 lg:gap-y-10 lg:pb-10"
+              className="grid grid-cols-[repeat(auto-fill,minmax(9.5rem,1fr))] gap-x-4 gap-y-6 pb-6"
             >
               {books.map((book, index) => {
                 const coverSrc = book.cover || book.cover_url;
@@ -280,7 +280,7 @@ export default function CountryView({
                 const meta = [year, book.genre].filter(Boolean).join(' · ');
 
                 return (
-                  <li key={book.id}>
+                  <li key={book.id} className="min-w-0">
                     <button
                       ref={
                         copy
@@ -338,7 +338,7 @@ export default function CountryView({
                           </span>
                         ) : null}
                       </span>
-                      <span className="mt-3 block min-h-[2.6em] text-balance text-sm font-semibold leading-snug line-clamp-2 sm:text-base">
+                      <span className="mt-2 block min-h-[2.5em] text-balance text-sm font-semibold leading-snug line-clamp-2">
                         {book.title}
                       </span>
                       <span className="mt-1 block truncate text-sm text-white/80">{book.author}</span>
