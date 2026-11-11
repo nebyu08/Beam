@@ -22,6 +22,6 @@ jobs:
         run: corepack enable && corepack prepare pnpm@11.3.0 --activate
 
       - name: Deploy production
-        run: pnpm dlx netlify-cli deploy --build --prod --site a76aad12-570c-4281-8831-09c422d2f894
+        run: pnpm --package=netlify-cli dlx netlify deploy --build --prod --site a76aad12-570c-4281-8831-09c422d2f894
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
