@@ -18,6 +18,47 @@ function mod(value: number, size: number) {
   return ((value % size) + size) % size;
 }
 
+type ShelfPhase = 'pending' | 'deck' | 'shuffle' | 'live';
+
+function BookDeck({ books, shuffling }: { books: GeoBook[]; shuffling: boolean }) {
+  const pile = books.slice(0, 8);
+
+  return (
+    <div className="pointer-events-none absolute inset-0 z-30" aria-hidden="true">
+      <div className="absolute right-[16%] top-[16%] h-80 w-48 sm:right-[24%]">
+        {pile.map((book, index) => {
+          const side = index % 2 === 0 ? -1 : 1;
+          const cover = book.cover || book.cover_url;
+          return (
+            <div
+              key={book.id}
+              className={`deck-card overflow-hidden bg-[#141416] ${shuffling ? 'is-shuffling' : ''}`}
+              style={{
+                zIndex: index,
+                ['--dx' as string]: `${index * 1.5}px`,
+                ['--dy' as string]: `${index * -1.6}px`,
+                ['--rot' as string]: `${(index - 3.5) * 1.5}deg`,
+                ['--lift-x' as string]: `${side * 96}px`,
+                ['--lift-rot' as string]: `${side * 18}deg`,
+                ['--out-x' as string]: `${-160 + side * 28}px`,
+                ['--out-rot' as string]: `${side * -7}deg`,
+                ['--delay' as string]: `${index * 32}ms`,
+              }}
+            >
+              {cover ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={cover} alt="" className="h-full w-full object-contain" />
+              ) : (
+                <span className="flex h-full items-end p-3 text-sm font-semibold leading-tight">{book.title}</span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function CountryView({
   country,
   keysActive = true,
@@ -27,6 +68,7 @@ export default function CountryView({
   const [failedCovers, setFailedCovers] = useState<Record<number, true>>({});
   const [activeIndex, setActiveIndex] = useState(0);
   const [reduced, setReduced] = useState<boolean | null>(null);
+  const [phase, setPhase] = useState<ShelfPhase>('pending');
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const activeIndexRef = useRef(0);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -36,19 +78,44 @@ export default function CountryView({
   const pausedRef = useRef(false);
   const keysActiveRef = useRef(keysActive);
   const placeBookRef = useRef<(index: number) => void>(() => {});
+  const liveRef = useRef(false);
   const loop = reduced === false && books.length > 1;
 
   useEffect(() => {
     keysActiveRef.current = keysActive;
   }, [keysActive]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const apply = () => setReduced(media.matches);
-    apply();
-    media.addEventListener('change', apply);
-    return () => media.removeEventListener('change', apply);
-  }, []);
+    let shuffleTimer = 0;
+    let liveTimer = 0;
+
+    const begin = () => {
+      window.clearTimeout(shuffleTimer);
+      window.clearTimeout(liveTimer);
+      setReduced(media.matches);
+      if (media.matches || books.length < 2) {
+        liveRef.current = true;
+        setPhase('live');
+        return;
+      }
+      liveRef.current = false;
+      setPhase('deck');
+      shuffleTimer = window.setTimeout(() => setPhase('shuffle'), 720);
+      liveTimer = window.setTimeout(() => {
+        liveRef.current = true;
+        setPhase('live');
+      }, 720 + 1100);
+    };
+
+    begin();
+    media.addEventListener('change', begin);
+    return () => {
+      media.removeEventListener('change', begin);
+      window.clearTimeout(shuffleTimer);
+      window.clearTimeout(liveTimer);
+    };
+  }, [books.length]);
 
   useEffect(() => {
     activeIndexRef.current = activeIndex;
@@ -155,7 +222,7 @@ export default function CountryView({
     const tick = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
-      if (!pausedRef.current && !document.hidden && keysActiveRef.current) {
+      if (!pausedRef.current && !document.hidden && keysActiveRef.current && liveRef.current) {
         offsetXRef.current += DRIFT_PX_PER_SECOND * dt;
         offsetYRef.current += DRIFT_PX_PER_SECOND * dt;
         applyOffset();
@@ -170,6 +237,7 @@ export default function CountryView({
 
     const onWheel = (event: WheelEvent) => {
       event.preventDefault();
+      if (!liveRef.current) return;
       const delta = event.deltaY + event.deltaX;
       offsetXRef.current += delta;
       offsetYRef.current += delta;
@@ -197,6 +265,7 @@ export default function CountryView({
       dragX = event.clientX;
       dragY = event.clientY;
       if (Math.hypot(event.clientX - originX, event.clientY - originY) > 6) dragged = true;
+      if (!liveRef.current) return;
       offsetXRef.current -= dx;
       offsetYRef.current += dy;
       applyOffset();
@@ -299,7 +368,15 @@ export default function CountryView({
                   : 'min-h-0 flex-1 overflow-y-auto overscroll-contain pb-[max(4rem,env(safe-area-inset-bottom))]'
               }
             >
-              <div ref={trackRef} className={loop ? 'relative grid w-[200%] grid-cols-2' : undefined}>
+              {phase === 'deck' || phase === 'shuffle' ? (
+                <BookDeck books={books} shuffling={phase === 'shuffle'} />
+              ) : null}
+              <div
+                ref={trackRef}
+                className={`${loop ? 'relative grid w-[200%] grid-cols-2' : ''} transition-opacity duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                  phase === 'live' ? 'opacity-100' : 'pointer-events-none opacity-0'
+                }`}
+              >
                 {(loop ? [0, 1, 2, 3] : [0]).map((copy) => (
                   <ol
                     key={copy}
