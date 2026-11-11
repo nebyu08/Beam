@@ -106,7 +106,7 @@ export default function BookDetailsModal({
   return (
     <>
       <div
-        className="fixed inset-0 z-40 bg-black/80 transition-opacity duration-200"
+        className="fixed inset-0 z-40 bg-black/30 transition-opacity duration-200"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -117,9 +117,9 @@ export default function BookDetailsModal({
       >
         <div
           ref={cardRef}
-          className="pointer-events-auto flex max-h-[min(680px,calc(100vh-2rem))] w-full max-w-[420px] origin-center flex-col overflow-hidden rounded-[24px] border border-white/15 bg-black text-white shadow-[0_40px_90px_rgba(0,0,0,0.72)]"
+          className="pointer-events-auto flex max-h-[min(680px,calc(100vh-2rem))] w-full max-w-[420px] origin-center flex-col overflow-hidden rounded-[24px] border border-white/30 bg-white/10 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.45),0_30px_70px_rgba(0,0,0,0.45)] backdrop-blur-2xl backdrop-saturate-150"
         >
-          <div className="relative flex justify-center bg-black px-5 pt-5">
+          <div className="relative flex justify-center px-5 pt-5">
             <button
               type="button"
               onClick={onClose}
