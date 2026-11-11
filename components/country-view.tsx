@@ -12,7 +12,8 @@ interface CountryViewProps {
   onSelectBook?: (book: GeoBook, origin: PopOrigin) => void;
 }
 
-const DRIFT_PX_PER_SECOND = 22;
+const STRIP_ANGLE = -20;
+const STRIP_SPEEDS = [16, 22, 18, 26, 20, 24];
 
 function lineUp(books: GeoBook[], count: number, minPerLine: number) {
   const lines = Math.min(count, Math.max(books.length, 1));
@@ -72,8 +73,14 @@ function ShelfIntro({ lines, onDone }: { lines: GeoBook[][]; onDone: () => void 
       const top = view.height * 0.58 - coverH - Math.min(count - 1, 10) * step;
       return `translate3d(${originX + line * (cardW + colGap)}px, ${top + fromEnd * step}px, 0) scale(1.12)`;
     };
-    const row = (line: number, index: number) =>
-      `translate3d(${pad + index * (cardW + gap)}px, ${8 + line * (rowH + gap)}px, 0) scale(1)`;
+    const row = (line: number, index: number) => {
+      const rad = (STRIP_ANGLE * Math.PI) / 180;
+      const localX = pad + index * (cardW + gap) - view.width / 2;
+      const localY = 8 + line * (rowH + gap) - view.height / 2;
+      const x = view.width / 2 + localX * Math.cos(rad) - localY * Math.sin(rad);
+      const y = view.height / 2 + localX * Math.sin(rad) + localY * Math.cos(rad);
+      return `translate3d(${x}px, ${y}px, 0) scale(1)`;
+    };
 
     cards.forEach((card, order) => {
       card.el.style.width = `${cardW}px`;
@@ -149,7 +156,7 @@ export default function CountryView({
   const [activeIndex, setActiveIndex] = useState(0);
   const [reduced, setReduced] = useState<boolean | null>(null);
   const [phase, setPhase] = useState<ShelfPhase>('pending');
-  const [lineCount, setLineCount] = useState(4);
+  const [lineCount, setLineCount] = useState(6);
   const [minPerLine, setMinPerLine] = useState(1);
   const [measured, setMeasured] = useState(false);
   const finishIntro = useCallback(() => {
@@ -163,8 +170,7 @@ export default function CountryView({
   const activeIndexRef = useRef(0);
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const offsetXRef = useRef(0);
-  const offsetYRef = useRef(0);
+  const stripOffsetsRef = useRef<number[]>([]);
   const pausedRef = useRef(false);
   const keysActiveRef = useRef(keysActive);
   const placeBookRef = useRef<(index: number) => void>(() => {});
@@ -183,9 +189,10 @@ export default function CountryView({
     const viewport = viewportRef.current;
     if (!viewport) return;
     const apply = () => {
-      const next = viewport.clientHeight >= 700 ? 5 : 4;
+      const next = viewport.clientHeight >= 720 ? 6 : 5;
       const rowHeight = (viewport.clientHeight - (next - 1) * 12 - 16) / next;
-      const cardWidth = Math.max(76, (rowHeight - 36) * (2 / 3));
+      const cardWidth = Math.max(72, (rowHeight - 32) * (2 / 3));
+      viewport.style.setProperty('--card-h', `${Math.round(rowHeight)}px`);
       const across = Math.ceil(viewport.clientWidth / (cardWidth + 12)) + 2;
       viewport.style.setProperty('--card-w', `${Math.round(cardWidth)}px`);
       setLineCount((current) => (current === next ? current : next));
@@ -291,18 +298,18 @@ export default function CountryView({
       const item = itemRefs.current[index];
       const track = trackRef.current;
       if (!item) return;
-      if (!loop || !track) {
+      const inner = item.closest('[data-strip-track]');
+      if (!loop || !track || !(inner instanceof HTMLElement)) {
         item.scrollIntoView({ block: 'nearest' });
         return;
       }
-      const viewport = viewportRef.current;
-      const halfW = track.scrollWidth / 2;
-      const halfH = track.scrollHeight / 2;
-      if (!viewport || halfW <= 0 || halfH <= 0) return;
-      offsetXRef.current = mod(item.offsetLeft - 12, halfW);
-      offsetYRef.current = mod(viewport.clientHeight * 0.18 - item.offsetTop + halfH, halfH);
+      const strips = [...track.querySelectorAll('[data-strip-track]')];
+      const stripIndex = strips.indexOf(inner);
+      const half = inner.scrollWidth / 2;
+      if (stripIndex < 0 || half <= 0) return;
+      stripOffsetsRef.current[stripIndex] = mod(item.offsetLeft - 48, half);
+      inner.style.transform = `translate3d(${-stripOffsetsRef.current[stripIndex]}px, 0, 0)`;
       pausedRef.current = true;
-      track.style.transform = `translate3d(${-offsetXRef.current}px, ${-halfH + offsetYRef.current}px, 0)`;
     };
   });
 
@@ -312,13 +319,26 @@ export default function CountryView({
     const track = trackRef.current;
     if (!viewport || !track) return;
 
-    const applyOffset = () => {
-      const halfW = track.scrollWidth / 2;
-      const halfH = track.scrollHeight / 2;
-      if (halfW <= 0 || halfH <= 0) return;
-      offsetXRef.current = mod(offsetXRef.current, halfW);
-      offsetYRef.current = mod(offsetYRef.current, halfH);
-      track.style.transform = `translate3d(${-offsetXRef.current}px, ${-halfH + offsetYRef.current}px, 0)`;
+    const tracks = () => [...track.querySelectorAll<HTMLElement>('[data-strip-track]')];
+    const paintStrips = (advance: number) => {
+      tracks().forEach((inner, index) => {
+        const half = inner.scrollWidth / 2;
+        if (half <= 0) return;
+        const speed = STRIP_SPEEDS[index % STRIP_SPEEDS.length];
+        stripOffsetsRef.current[index] = mod(
+          (stripOffsetsRef.current[index] || 0) + advance * speed,
+          half,
+        );
+        inner.style.transform = `translate3d(${-stripOffsetsRef.current[index]}px, 0, 0)`;
+      });
+    };
+    const nudgeStrips = (delta: number) => {
+      tracks().forEach((inner, index) => {
+        const half = inner.scrollWidth / 2;
+        if (half <= 0) return;
+        stripOffsetsRef.current[index] = mod((stripOffsetsRef.current[index] || 0) + delta, half);
+        inner.style.transform = `translate3d(${-stripOffsetsRef.current[index]}px, 0, 0)`;
+      });
     };
 
     let frame = 0;
@@ -327,25 +347,20 @@ export default function CountryView({
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
       if (!pausedRef.current && !document.hidden && keysActiveRef.current && liveRef.current) {
-        offsetXRef.current += DRIFT_PX_PER_SECOND * dt;
-        offsetYRef.current += DRIFT_PX_PER_SECOND * dt;
-        applyOffset();
+        paintStrips(dt);
       }
       frame = requestAnimationFrame(tick);
     };
-    applyOffset();
+    paintStrips(0);
     frame = requestAnimationFrame(tick);
 
-    const observer = new ResizeObserver(() => applyOffset());
+    const observer = new ResizeObserver(() => paintStrips(0));
     observer.observe(track);
 
     const onWheel = (event: WheelEvent) => {
       event.preventDefault();
       if (!liveRef.current) return;
-      const delta = event.deltaY + event.deltaX;
-      offsetXRef.current += delta;
-      offsetYRef.current += delta;
-      applyOffset();
+      nudgeStrips(event.deltaY + event.deltaX);
     };
 
     let dragX = 0;
@@ -370,9 +385,7 @@ export default function CountryView({
       dragY = event.clientY;
       if (Math.hypot(event.clientX - originX, event.clientY - originY) > 6) dragged = true;
       if (!liveRef.current) return;
-      offsetXRef.current -= dx;
-      offsetYRef.current += dy;
-      applyOffset();
+      nudgeStrips(-dx + dy * 0.35);
     };
     const onUp = (event: PointerEvent) => {
       if (!dragging) return;
@@ -425,7 +438,9 @@ export default function CountryView({
       viewport.removeEventListener('pointerout', onOut);
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
-      track.style.transform = '';
+      tracks().forEach((inner) => {
+        inner.style.transform = '';
+      });
     };
   }, [loop]);
 
@@ -441,7 +456,7 @@ export default function CountryView({
         <section
           aria-label={
             loop
-              ? `Books from ${country.name}, in horizontal lines. The lines drift from the upper right toward the lower left. Scroll to move through them. Arrow keys move along a line and between lines. Enter opens one.`
+              ? `Books from ${country.name}, in diagonal stripes. Books travel along each stripe. Scroll to move through them. Arrow keys move along a stripe and between stripes. Enter opens one.`
               : `Books from ${country.name}. Arrow keys move across the shelf. Enter opens one.`
           }
           className="absolute inset-x-0 bottom-0 top-20 flex flex-col px-5 pt-3 sm:top-24 sm:px-8"
@@ -475,28 +490,29 @@ export default function CountryView({
               {phase === 'intro' ? <ShelfIntro lines={introLines} onDone={finishIntro} /> : null}
               <div
                 ref={trackRef}
-                className={`${loop ? 'relative grid h-[200%] w-max grid-cols-2 grid-rows-2' : 'h-full'} transition-opacity duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                className={`absolute inset-0 overflow-hidden transition-opacity duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                   phase === 'live' ? 'opacity-100' : 'pointer-events-none opacity-0'
                 }`}
               >
-                {(loop ? [0, 1, 2, 3] : [0]).map((copy) => {
-                  let visualIndex = 0;
-                  const primary = copy === 0;
-                  return (
-                    <div
-                      key={copy}
-                      aria-hidden={primary ? undefined : true}
-                      className="book-lines flex h-full min-h-0 flex-col gap-3 pr-4 pb-4"
-                    >
-                      {bookLines.map((line, lineIndex) => (
-                        <ol key={lineIndex} className="book-line flex min-h-0 flex-1 gap-3">
-                          {line.map((book) => {
-                            const index = visualIndex;
-                            visualIndex += 1;
-                            const coverSrc = book.cover || book.cover_url;
-                            const coverFailed = !coverSrc || failedCovers[book.id];
-                            return (
-                              <li key={`${book.id}-${index}`} className="h-full shrink-0">
+                <div
+                  className="absolute left-1/2 top-1/2 flex w-[175%] flex-col gap-3"
+                  style={{ transform: `translate(-50%, -50%) rotate(${STRIP_ANGLE}deg)` }}
+                >
+                  {bookLines.map((line, lineIndex) => {
+                    const lineIndexCursor = bookLines
+                      .slice(0, lineIndex)
+                      .reduce((sum, item) => sum + item.length, 0);
+                    return (
+                      <div key={lineIndex} data-strip className="overflow-hidden py-1">
+                        <ol data-strip-track className="flex w-max gap-3">
+                          {(loop ? [0, 1] : [0]).map((copy) =>
+                            line.map((book, bookIndex) => {
+                              const primary = copy === 0;
+                              const index = primary ? lineIndexCursor + bookIndex : -1;
+                              const coverSrc = book.cover || book.cover_url;
+                              const coverFailed = !coverSrc || failedCovers[book.id];
+                              return (
+                              <li key={`${copy}-${book.id}-${bookIndex}`} className="shrink-0">
                                 <button
                                   ref={
                                     primary
@@ -508,6 +524,7 @@ export default function CountryView({
                                   type="button"
                                   data-book-row="true"
                                   tabIndex={!primary ? -1 : index === activeIndex ? 0 : -1}
+                                  style={{ transform: `rotate(${-STRIP_ANGLE}deg)` }}
                                   onFocus={() => {
                                     activeIndexRef.current = index;
                                     setActiveIndex(index);
@@ -531,7 +548,7 @@ export default function CountryView({
                                       height: rect.height,
                                     });
                                   }}
-                                  className="group flex h-full w-[var(--card-w,7.5rem)] flex-col text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                                  className="group flex h-[var(--card-h,9rem)] w-[var(--card-w,7.5rem)] origin-center flex-col text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
                                 >
                                   <span className="book-face cover-glow relative min-h-0 flex-1 overflow-hidden">
                                     {coverFailed ? (
@@ -558,13 +575,14 @@ export default function CountryView({
                                   <span className="block truncate text-[11px] leading-4 text-white/80">{book.author}</span>
                                 </button>
                               </li>
-                            );
-                          })}
+                              );
+                            }),
+                          )}
                         </ol>
-                      ))}
-                    </div>
-                  );
-                })}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
