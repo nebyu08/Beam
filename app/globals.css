@@ -94,4 +94,219 @@ body {
     0 12px 28px rgba(0, 0, 0, 0.45);
 }
 
+/* --- Web Animations & 3D Book Presentation --- */
+
+@keyframes book-shelf-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(28px) scale(0.92);
+    filter: brightness(0.65);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes sheen-sweep {
+  0% {
+    transform: translateX(-160%) skewX(-25deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.8;
+  }
+  80% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(260%) skewX(-25deg);
+    opacity: 0;
+  }
+}
+
+.book-sheen-sweep {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.book-sheen-sweep::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 70%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 20%,
+    rgba(255, 255, 255, 0.45) 50%,
+    rgba(255, 255, 255, 0.05) 80%,
+    transparent 100%
+  );
+  transform: translateX(-160%) skewX(-25deg);
+}
+
+.group:hover .book-sheen-sweep::after,
+.group:focus-visible .book-sheen-sweep::after {
+  animation: sheen-sweep 750ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes ambient-glow-pulse {
+  0%, 100% {
+    opacity: 0.55;
+    transform: scale(1) translate(0, 0);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.1) translate(20px, -15px);
+  }
+}
+
+@keyframes ambient-glow-pulse-secondary {
+  0%, 100% {
+    opacity: 0.45;
+    transform: scale(1) translate(0, 0);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.15) translate(-25px, 20px);
+  }
+}
+
+.ambient-glow-pulse {
+  animation: ambient-glow-pulse 10s ease-in-out infinite;
+}
+
+.ambient-glow-pulse-secondary {
+  animation: ambient-glow-pulse-secondary 13s ease-in-out infinite;
+}
+
+@keyframes dust-mote-anim {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.65;
+  }
+  80% {
+    opacity: 0.65;
+  }
+  100% {
+    transform: translateY(-160px) translateX(40px);
+    opacity: 0;
+  }
+}
+
+.dust-mote {
+  position: absolute;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.7) 0%, rgba(251, 191, 36, 0) 70%);
+  pointer-events: none;
+}
+
+.dust-mote-1 {
+  width: 6px;
+  height: 6px;
+  left: 20%;
+  bottom: 15%;
+  animation: dust-mote-anim 12s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.dust-mote-2 {
+  width: 4px;
+  height: 4px;
+  left: 45%;
+  bottom: 25%;
+  animation: dust-mote-anim 16s cubic-bezier(0.4, 0, 0.2, 1) infinite 3s;
+}
+
+.dust-mote-3 {
+  width: 8px;
+  height: 8px;
+  left: 70%;
+  bottom: 20%;
+  animation: dust-mote-anim 14s cubic-bezier(0.4, 0, 0.2, 1) infinite 6s;
+}
+
+.dust-mote-4 {
+  width: 5px;
+  height: 5px;
+  left: 85%;
+  bottom: 35%;
+  animation: dust-mote-anim 18s cubic-bezier(0.4, 0, 0.2, 1) infinite 1.5s;
+}
+
+.dust-mote-5 {
+  width: 7px;
+  height: 7px;
+  left: 30%;
+  bottom: 40%;
+  animation: dust-mote-anim 15s cubic-bezier(0.4, 0, 0.2, 1) infinite 8s;
+}
+
+@keyframes modal-book-breathe {
+  0%, 100% {
+    transform: translateY(0px) rotateY(-7deg) rotateX(4deg);
+  }
+  50% {
+    transform: translateY(-10px) rotateY(-3deg) rotateX(1deg);
+  }
+}
+
+.modal-book-breathe {
+  animation: modal-book-breathe 5.5s ease-in-out infinite;
+}
+
+@keyframes ribbon-flutter {
+  0%, 100% {
+    transform: rotate(0deg) skewX(0deg);
+  }
+  50% {
+    transform: rotate(4deg) skewX(3deg);
+  }
+}
+
+.ribbon-flutter {
+  transform-origin: top center;
+  animation: ribbon-flutter 3.5s ease-in-out infinite;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 12s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-glow-pulse,
+  .ambient-glow-pulse-secondary,
+  .dust-mote-1,
+  .dust-mote-2,
+  .dust-mote-3,
+  .dust-mote-4,
+  .dust-mote-5,
+  .modal-book-breathe,
+  .ribbon-flutter,
+  .animate-spin-slow,
+  .group:hover .book-sheen-sweep::after,
+  .group:focus-visible .book-sheen-sweep::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 

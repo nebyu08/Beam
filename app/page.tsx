@@ -6,7 +6,7 @@ import { useGeoStore } from '@/lib/geo-store';
 import { Book } from '@/lib/types';
 import { Waves } from 'lucide-react';
 import EarthGlobe from '@/components/earth-globe';
-import CountryView, { BackToGlobeButton } from '@/components/country-view';
+import CountryView from '@/components/country-view';
 import WaveView from '@/components/wave-view';
 import BookDetailsModal, { PopOrigin } from '@/components/book-details-modal';
 import LoadingScreen from '@/components/loading-screen';
@@ -57,7 +57,7 @@ export default function Home() {
             setBooks(data);
           }
         }
-      } catch (e) {
+      } catch {
         // use default preloaded books
       }
     }
@@ -138,6 +138,30 @@ export default function Home() {
     exitToGlobe();
   }, [exitToGlobe, handleCloseDock]);
 
+  const handleNextBook = useCallback(() => {
+    if (!selectedBook) return;
+    const pool =
+      appMode === 'country' && activeCountry
+        ? activeCountry.books
+        : countries.flatMap((c) => c.books);
+    if (pool.length === 0) return;
+    const idx = pool.findIndex((b) => b.id === selectedBook.id);
+    const next = pool[(idx + 1) % pool.length];
+    setSelectedBook(next);
+  }, [selectedBook, appMode, activeCountry, countries, setSelectedBook]);
+
+  const handlePrevBook = useCallback(() => {
+    if (!selectedBook) return;
+    const pool =
+      appMode === 'country' && activeCountry
+        ? activeCountry.books
+        : countries.flatMap((c) => c.books);
+    if (pool.length === 0) return;
+    const idx = pool.findIndex((b) => b.id === selectedBook.id);
+    const prev = pool[(idx - 1 + pool.length) % pool.length];
+    setSelectedBook(prev);
+  }, [selectedBook, appMode, activeCountry, countries, setSelectedBook]);
+
   const isDetailsDockOpen = activeModal === 'details' && !!selectedBook;
   const countryOpen = appMode === 'country' && !!activeCountry;
   const waveOpen = appMode === 'wave';
@@ -163,31 +187,28 @@ export default function Home() {
         <button
           type="button"
           onClick={enterWave}
-          className="fixed left-4 top-4 z-40 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-black shadow-[0_12px_28px_-14px_rgba(0,0,0,0.9)] transition-colors hover:bg-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:scale-[0.98] sm:left-6 sm:top-5"
+          className="group fixed left-4 top-4 z-40 inline-flex items-center gap-2 rounded-full bg-white/95 px-4 py-2.5 text-sm font-semibold text-black shadow-[0_12px_28px_-10px_rgba(0,0,0,0.8)] backdrop-blur-md transition-all hover:bg-white hover:scale-105 hover:shadow-[0_16px_32px_-8px_rgba(255,255,255,0.25)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:scale-95 sm:left-6 sm:top-5"
         >
-          <Waves className="h-4 w-4" aria-hidden="true" />
-          All books
+          <Waves className="h-4 w-4 transition-transform group-hover:scale-110" aria-hidden="true" />
+          <span>All books</span>
+          <span className="rounded-full bg-zinc-200/90 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-zinc-700">
+            Shelf
+          </span>
         </button>
       )}
 
       {countryOpen && activeCountry && (
-        <>
-          <BackToGlobeButton onClick={handleBackToGlobe} />
-          <CountryView
-            key={activeCountry.id}
-            country={activeCountry}
-            keysActive={!isDetailsDockOpen}
-            onBackToGlobe={handleBackToGlobe}
-            onSelectBook={handleSelectBook}
-          />
-        </>
+        <CountryView
+          key={activeCountry.id}
+          country={activeCountry}
+          keysActive={!isDetailsDockOpen}
+          onBackToGlobe={handleBackToGlobe}
+          onSelectBook={handleSelectBook}
+        />
       )}
 
       {waveOpen && (
-        <>
-          <BackToGlobeButton onClick={handleBackToGlobe} />
-          <WaveView keysActive={!isDetailsDockOpen} onSelectBook={handleSelectBook} />
-        </>
+        <WaveView keysActive={!isDetailsDockOpen} onSelectBook={handleSelectBook} onBackToGlobe={handleBackToGlobe} />
       )}
 
       <BookDetailsModal
@@ -197,6 +218,8 @@ export default function Home() {
         origin={popOrigin}
         onClose={handleCloseDock}
         onBackToGlobe={handleBackToGlobe}
+        onNextBook={handleNextBook}
+        onPrevBook={handlePrevBook}
         clearOfBar={overlayOpen}
       />
 

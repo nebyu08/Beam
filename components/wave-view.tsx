@@ -9,19 +9,28 @@ import CountryView from '@/components/country-view';
 interface WaveViewProps {
   keysActive?: boolean;
   onSelectBook?: (book: GeoBook, origin: PopOrigin) => void;
+  onBackToGlobe?: () => void;
 }
 
-export default function WaveView({ keysActive = true, onSelectBook }: WaveViewProps) {
+export default function WaveView({ keysActive = true, onSelectBook, onBackToGlobe }: WaveViewProps) {
   const countries = useGeoStore((state) => state.countries);
   const books = useMemo(() => countries.flatMap((country) => country.books), [countries]);
   const shelf = useMemo(
     () => ({
-      name: 'All books',
-      tagline: 'Every book, from every country.',
+      name: 'Global Library',
+      flag: '🌐',
+      tagline: 'Every canonical work from across the world.',
       books,
     }),
     [books],
   );
 
-  return <CountryView country={shelf} keysActive={keysActive} onSelectBook={onSelectBook} />;
+  return (
+    <CountryView
+      country={shelf}
+      keysActive={keysActive}
+      onSelectBook={onSelectBook}
+      onBackToGlobe={onBackToGlobe}
+    />
+  );
 }
