@@ -291,6 +291,36 @@ body {
   animation: spin-slow 12s linear infinite;
 }
 
+/* Zero-G Floating Universe Keyframes for Fun Mode */
+@keyframes zero-g-drift {
+  0%, 100% {
+    transform: translateY(-10px) rotateX(-4deg) rotateY(4deg);
+  }
+  50% {
+    transform: translateY(14px) rotateX(5deg) rotateY(-5deg);
+  }
+}
+
+.zero-g-float {
+  animation: zero-g-drift 5.5s ease-in-out infinite alternate;
+}
+
+@keyframes gravity-pulse {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.18) rotateZ(5deg);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.gravity-pulse-anim {
+  animation: gravity-pulse 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ambient-glow-pulse,
   .ambient-glow-pulse-secondary,
