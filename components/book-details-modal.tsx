@@ -47,9 +47,7 @@ export default function BookDetailsModal({
   const cardRef = useRef<HTMLDivElement>(null);
   const [coverFailureId, setCoverFailureId] = useState<number | null>(null);
   const [fetchedDetail, setFetchedDetail] = useState<{ id: number; text: string } | null>(null);
-  const [pointerTilt, setPointerTilt] = useState<{ x: number; y: number } | null>(null);
-  const [specular, setSpecular] = useState<{ x: number; y: number }>({ x: 50, y: 50 });
-  const [isHoveringBook, setIsHoveringBook] = useState(false);
+  const specular = { x: 42, y: 28 };
 
   useLayoutEffect(() => {
     const card = cardRef.current;
@@ -115,23 +113,6 @@ export default function BookDetailsModal({
     void run();
     return () => controller.abort();
   }, [book, isOpen]);
-
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width;
-    const py = (e.clientY - rect.top) / rect.height;
-    const tiltY = (px - 0.5) * 26; // -13deg to +13deg
-    const tiltX = -(py - 0.5) * 22; // -11deg to +11deg
-    setPointerTilt({ x: tiltX, y: tiltY });
-    setSpecular({ x: Math.round(px * 100), y: Math.round(py * 100) });
-    setIsHoveringBook(true);
-  };
-
-  const handlePointerLeave = () => {
-    setPointerTilt(null);
-    setIsHoveringBook(false);
-  };
 
   useEffect(() => {
     if (!isOpen) return;
@@ -201,18 +182,18 @@ export default function BookDetailsModal({
 
         <div
           ref={cardRef}
-          className="pointer-events-auto flex max-h-[min(720px,calc(100vh-2rem))] w-full max-w-[440px] origin-center flex-col overflow-hidden rounded-[28px] border border-white/20 bg-gradient-to-b from-zinc-900/90 via-[#181310]/95 to-black/95 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_30px_80px_rgba(0,0,0,0.85)] backdrop-blur-2xl"
+          className="pointer-events-auto flex max-h-[min(720px,calc(100vh-2rem))] w-full max-w-[440px] origin-center flex-col overflow-hidden rounded-[28px] border border-white/20 bg-black/80 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_30px_80px_rgba(0,0,0,0.85)] backdrop-blur-2xl"
         >
           {/* Header Bar with Quick Close & Country Badge */}
           <div className="relative flex items-center justify-between px-5 pt-4 z-20">
             {countryName ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-amber-200/90 border border-white/10 backdrop-blur-md">
-                <Globe className="h-3.5 w-3.5 text-amber-400" />
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-medium text-zinc-200 backdrop-blur-md">
+                <Globe className="h-3.5 w-3.5 text-zinc-300" />
                 {countryName}
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-zinc-300 border border-white/10">
-                <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-medium text-zinc-300">
+                <Sparkles className="h-3.5 w-3.5 text-zinc-300" />
                 Canonical Library
               </span>
             )}
@@ -231,47 +212,36 @@ export default function BookDetailsModal({
           <div
             className="relative flex items-center justify-center pt-3 pb-2 px-6"
             style={{ perspective: '1100px' }}
-            onPointerMove={handlePointerMove}
-            onPointerLeave={handlePointerLeave}
           >
             {/* Ambient Backlight Glow behind Book */}
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 flex items-center justify-center"
             >
-              <div className="h-44 w-36 rounded-full bg-amber-500/18 blur-3xl" />
+              <div className="h-44 w-36 rounded-full bg-white/10 blur-3xl" />
             </div>
 
             {/* 3D Book Object */}
             <div
-              style={{
-                transform: pointerTilt
-                  ? `rotateX(${pointerTilt.x}deg) rotateY(${pointerTilt.y}deg) scale(1.04)`
-                  : undefined,
-                transformStyle: 'preserve-3d',
-                transition: isHoveringBook
-                  ? 'transform 0.1s ease-out'
-                  : 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-              }}
-              className={`relative select-none ${!isHoveringBook ? 'modal-book-breathe' : ''}`}
+              className="relative select-none"
             >
               {/* The Hardcover Book Body */}
-              <div className="relative max-h-[38vh] aspect-[2/3] w-auto min-w-[170px] max-w-[220px] rounded-[6px] overflow-hidden bg-[#241c17] shadow-[0_24px_50px_-10px_rgba(0,0,0,0.9),0_0_25px_rgba(245,158,11,0.18)] border border-white/25">
+              <div className="relative max-h-[38vh] aspect-[2/3] w-auto min-w-[170px] max-w-[220px] overflow-hidden rounded-[6px] border border-white/25 bg-black shadow-[0_24px_50px_-10px_rgba(0,0,0,0.9)]">
                 {coverSrc && !coverFailed ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={coverSrc}
                     alt={book.title}
                     onError={() => setCoverFailureId(book.id)}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full bg-black object-cover"
                   />
                 ) : (
-                  <div className="flex h-full w-full flex-col justify-between p-4 bg-gradient-to-br from-[#382b22] via-[#241a14] to-[#120d0a] text-amber-100">
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400">
+                  <div className="flex h-full w-full flex-col justify-between bg-black p-4 text-zinc-100">
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">
                       {book.genre || 'Classic'}
                     </span>
                     <p className="text-lg font-bold leading-snug">{book.title}</p>
-                    <p className="text-xs text-amber-200/80">{book.author}</p>
+                    <p className="text-xs text-zinc-400">{book.author}</p>
                   </div>
                 )}
 
@@ -288,7 +258,7 @@ export default function BookDetailsModal({
                 {/* 3D Stacked Page Edges (Right Edge) */}
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-y-0 right-0 w-[5px] bg-gradient-to-r from-[#dfd2bf] via-[#f7f0e3] to-[#cdbca6] border-l border-black/20"
+                  className="pointer-events-none absolute inset-y-0 right-0 w-[4px] border-l border-black/20 bg-gradient-to-r from-zinc-200 to-zinc-400"
                 />
 
                 {/* Dynamic Specular Light Glint */}
@@ -303,7 +273,7 @@ export default function BookDetailsModal({
                 {/* Satin Bookmark Ribbon dangling down */}
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute -bottom-3 left-6 w-3 h-7 bg-gradient-to-b from-amber-600 via-amber-500 to-amber-700 shadow-md rounded-b-[2px] ribbon-flutter"
+                  className="pointer-events-none absolute -bottom-3 left-6 h-7 w-3 rounded-b-[2px] bg-zinc-200 shadow-md"
                 />
               </div>
 
@@ -322,7 +292,7 @@ export default function BookDetailsModal({
               <h2 className="text-balance text-2xl sm:text-3xl font-bold leading-[1.1] tracking-[-0.03em] text-white">
                 {book.title}
               </h2>
-              <p className="mt-1.5 text-base font-medium text-amber-200/90 leading-snug">
+              <p className="mt-1.5 text-base font-medium leading-snug text-zinc-300">
                 {book.author}
               </p>
 
@@ -335,12 +305,12 @@ export default function BookDetailsModal({
                   </span>
                 )}
                 {book.genre && (
-                  <span className="inline-flex items-center rounded-full bg-amber-500/15 px-2.5 py-1 text-xs font-medium text-amber-300 border border-amber-500/25">
+                  <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-xs font-medium text-zinc-200">
                     {book.genre}
                   </span>
                 )}
                 {(book.rating ?? 0) > 0 && (
-                  <div className="inline-flex items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1 text-xs font-mono text-amber-300 border border-amber-400/25">
+                  <div className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/40 px-2.5 py-1 font-mono text-xs text-zinc-200">
                     <div className="flex items-center gap-0.5">
                       {Array.from({ length: 5 }, (_, i) => {
                         const filled = (book.rating ?? 0) >= (i + 1) * 20;
@@ -348,7 +318,7 @@ export default function BookDetailsModal({
                           <Star
                             key={i}
                             className={`h-3 w-3 ${
-                              filled ? 'fill-amber-400 text-amber-400' : 'text-zinc-600'
+                              filled ? 'fill-white text-white' : 'text-zinc-600'
                             }`}
                           />
                         );
@@ -400,9 +370,9 @@ export default function BookDetailsModal({
                   href={book.openlibrary_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-200 via-amber-100 to-white px-5 py-2.5 text-sm font-semibold text-zinc-950 shadow-[0_4px_20px_rgba(255,255,255,0.2)] hover:shadow-[0_6px_25px_rgba(255,255,255,0.35)] hover:scale-[1.02] active:scale-[0.98] transition-all"
+                  className="group inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-black shadow-[0_4px_20px_rgba(255,255,255,0.12)] transition-colors hover:bg-zinc-200"
                 >
-                  <BookOpen className="h-4 w-4 text-amber-800 transition-transform group-hover:scale-110" />
+                  <BookOpen className="h-4 w-4" />
                   Read online
                   <ExternalLink className="h-3.5 w-3.5 text-zinc-700 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </a>
@@ -416,7 +386,7 @@ export default function BookDetailsModal({
                   }}
                   className="group inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/20 border border-white/15 hover:border-white/30 active:scale-[0.98] transition-all"
                 >
-                  <Globe className="h-4 w-4 text-amber-300 transition-transform duration-500 group-hover:rotate-45" />
+                  <Globe className="h-4 w-4 text-zinc-300" />
                   Globe
                 </button>
               )}

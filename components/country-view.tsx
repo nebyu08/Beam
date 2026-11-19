@@ -131,10 +131,8 @@ function WarpedGridBackground() {
         })}
       </svg>
 
-      {/* Atmospheric Radial Gradients */}
-      <div className="absolute -top-40 -left-40 h-[680px] w-[680px] rounded-full bg-gradient-to-br from-amber-600/15 via-rose-950/10 to-transparent blur-[130px]" />
-      <div className="absolute -bottom-40 right-0 h-[720px] w-[720px] rounded-full bg-gradient-to-tl from-indigo-950/20 via-amber-900/10 to-transparent blur-[140px]" />
-      <div className="absolute inset-0 bg-radial from-transparent via-black/40 to-black/90" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.045),transparent_58%)]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black" />
     </div>
   );
 }
@@ -152,15 +150,13 @@ export default function CountryView({
 
   // --- Line Mode State ---
   const [scrollOffset, setScrollOffset] = useState(0);
-  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const scrollTargetRef = useRef(0);
+  const hoveringRef = useRef(false);
 
   // --- Fun Mode Camera & Flight State ---
   const [funCamera, setFunCamera] = useState({ x: 0, y: 0, z: 0 });
   const [funFormation, setFunFormation] = useState<'free' | 'orbit' | 'vortex'>('free');
   const [isFunPulsing, setIsFunPulsing] = useState(false);
-  const [isFunPanning, setIsFunPanning] = useState(false);
-  const [hoveredFunId, setHoveredFunId] = useState<string | null>(null);
-  const [funMouseParallax, setFunMouseParallax] = useState({ x: 0, y: 0 });
   const isPanningFunRef = useRef(false);
   const panStartRef = useRef({ x: 0, y: 0, camX: 0, camY: 0 });
   const panVelocityRef = useRef({ x: 0, y: 0 });
@@ -239,7 +235,7 @@ export default function CountryView({
 
   // Measure container width
   useEffect(() => {
-    lastInteractTimeRef.current = Date.now();
+    lastInteractTimeRef.current = performance.now();
     const handleResize = () => {
       if (containerRef.current) {
         setViewWidth(containerRef.current.clientWidth);
@@ -249,11 +245,6 @@ export default function CountryView({
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  // Sync scrollOffset ref
-  useEffect(() => {
-    scrollOffsetRef.current = scrollOffset;
-  }, [scrollOffset]);
 
   // Surprise me random book - opens its details directly
   const handleSurpriseMe = useCallback(() => {
@@ -276,25 +267,35 @@ export default function CountryView({
     }, 900);
   }, []);
 
-  // --- Line Mode Auto-Drift ---
+  // One clock owns the ribbon. Input writes a target; the frame eases toward it.
+  // Hover never restarts this loop, and it never changes a card's transform.
   useEffect(() => {
     if (viewMode !== 'line' || books.length === 0) return;
 
     let animId = 0;
     let prev = performance.now();
+    let published = scrollOffsetRef.current;
 
     const tick = (now: number) => {
-      const dt = Math.min(0.05, (now - prev) / 1000);
+      const dt = Math.min(0.032, (now - prev) / 1000);
       prev = now;
 
-      const idle = Date.now() - lastInteractTimeRef.current > 1200;
-      if (idle && !isDraggingRef.current && hoveredIdx === null) {
-        const driftSpeed = 24; // px per second
-        setScrollOffset((curr) => {
-          const next = curr + driftSpeed * dt;
-          scrollOffsetRef.current = next;
-          return next;
-        });
+      const idle = now - lastInteractTimeRef.current > 1600;
+      if (idle && !isDraggingRef.current && !hoveringRef.current) {
+        scrollTargetRef.current += 14 * dt;
+      }
+
+      if (!isDraggingRef.current) {
+        const delta = scrollTargetRef.current - scrollOffsetRef.current;
+        scrollOffsetRef.current += delta * (1 - Math.exp(-dt * 8));
+        if (Math.abs(scrollTargetRef.current - scrollOffsetRef.current) < 0.05) {
+          scrollOffsetRef.current = scrollTargetRef.current;
+        }
+      }
+
+      if (Math.abs(scrollOffsetRef.current - published) > 0.05) {
+        published = scrollOffsetRef.current;
+        setScrollOffset(published);
       }
 
       animId = requestAnimationFrame(tick);
@@ -302,7 +303,7 @@ export default function CountryView({
 
     animId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(animId);
-  }, [viewMode, books.length, hoveredIdx]);
+  }, [viewMode, books.length]);
 
   // --- Fun Mode Momentum Drift ---
   useEffect(() => {
@@ -346,7 +347,7 @@ export default function CountryView({
       startX = e.clientX;
       startScroll = scrollOffsetRef.current;
       hasDraggedRef.current = false;
-      lastInteractTimeRef.current = Date.now();
+      lastInteractTimeRef.current = performance.now();
     };
 
     const onPointerMove = (e: PointerEvent) => {
@@ -355,34 +356,33 @@ export default function CountryView({
       if (Math.abs(dx) > 6) {
         hasDraggedRef.current = true;
       }
-      const next = startScroll - dx * 1.35;
+      const next = startScroll - dx;
       scrollOffsetRef.current = next;
-      setScrollOffset(next);
-      lastInteractTimeRef.current = Date.now();
+      scrollTargetRef.current = next;
+      lastInteractTimeRef.current = performance.now();
     };
 
     const onPointerUp = () => {
       if (!isDown) return;
       isDown = false;
       isDraggingRef.current = false;
-      lastInteractTimeRef.current = Date.now();
+      lastInteractTimeRef.current = performance.now();
       setTimeout(() => {
         hasDraggedRef.current = false;
       }, 50);
     };
 
     const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
       const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-      const next = scrollOffsetRef.current + delta * 0.9;
-      scrollOffsetRef.current = next;
-      setScrollOffset(next);
-      lastInteractTimeRef.current = Date.now();
+      scrollTargetRef.current += delta * 0.72;
+      lastInteractTimeRef.current = performance.now();
     };
 
     el.addEventListener('pointerdown', onPointerDown);
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', onPointerUp);
-    el.addEventListener('wheel', onWheel, { passive: true });
+    el.addEventListener('wheel', onWheel, { passive: false });
 
     return () => {
       el.removeEventListener('pointerdown', onPointerDown);
@@ -399,9 +399,13 @@ export default function CountryView({
     const onKeyDown = (e: KeyboardEvent) => {
       if (viewMode === 'line') {
         if (e.key === 'ArrowRight') {
-          setScrollOffset((c) => c + 140);
+          e.preventDefault();
+          scrollTargetRef.current += 180;
+          lastInteractTimeRef.current = performance.now();
         } else if (e.key === 'ArrowLeft') {
-          setScrollOffset((c) => c - 140);
+          e.preventDefault();
+          scrollTargetRef.current -= 180;
+          lastInteractTimeRef.current = performance.now();
         } else if (e.code === 'Space') {
           if (books.length > 0) {
             e.preventDefault();
@@ -446,7 +450,6 @@ export default function CountryView({
   const handleFunPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if ((e.target as HTMLElement)?.closest('button')) return;
     isPanningFunRef.current = true;
-    setIsFunPanning(true);
     panStartRef.current = {
       x: e.clientX,
       y: e.clientY,
@@ -461,10 +464,6 @@ export default function CountryView({
   };
 
   const handleFunPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    const nx = (e.clientX / Math.max(1, viewWidth) - 0.5) * 16;
-    const ny = (e.clientY / Math.max(1, window.innerHeight || 800) - 0.5) * 14;
-    setFunMouseParallax({ x: nx, y: -ny });
-
     if (!isPanningFunRef.current) return;
     const dx = e.clientX - panStartRef.current.x;
     const dy = e.clientY - panStartRef.current.y;
@@ -486,7 +485,6 @@ export default function CountryView({
   const handleFunPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!isPanningFunRef.current) return;
     isPanningFunRef.current = false;
-    setIsFunPanning(false);
     try {
       e.currentTarget.releasePointerCapture(e.pointerId);
     } catch {}
@@ -523,7 +521,7 @@ export default function CountryView({
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 z-20 overflow-hidden bg-[#09090b] text-white select-none touch-none"
+      className="absolute inset-0 z-20 overflow-hidden overscroll-none bg-black text-white select-none touch-none"
     >
       {/* 3D Warped Wireframe Grid Background (Active in both modes) */}
       <WarpedGridBackground />
@@ -536,7 +534,7 @@ export default function CountryView({
 
         {/* Center Minimal Branding or Title */}
         <div className="hidden sm:flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-4 py-1.5 backdrop-blur-md">
-          <Compass className="h-4 w-4 text-amber-400" />
+          <Compass className="h-4 w-4 text-zinc-300" />
           <span className="text-xs font-semibold tracking-wider uppercase text-zinc-300">
             {viewMode === 'line' ? 'Literary Motion' : 'Zero-G Canon'}
           </span>
@@ -560,10 +558,10 @@ export default function CountryView({
             <button
               type="button"
               onClick={() => setViewMode('fun')}
-              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                 viewMode === 'fun'
-                  ? 'bg-gradient-to-r from-amber-400 to-rose-400 text-black shadow-md font-bold'
-                  : 'text-zinc-400 hover:text-amber-300'
+                  ? 'bg-white text-black shadow-md font-semibold'
+                  : 'text-zinc-400 hover:text-white'
               }`}
             >
               <Sparkles className="h-3 w-3" />
@@ -574,9 +572,9 @@ export default function CountryView({
           <button
             type="button"
             onClick={handleSurpriseMe}
-            className="group hidden sm:inline-flex items-center gap-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 px-3.5 py-1.5 text-xs font-medium text-amber-200 backdrop-blur-md transition-all hover:scale-105 active:scale-95"
+            className="group hidden sm:inline-flex items-center gap-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 px-3.5 py-1.5 text-xs font-medium text-zinc-100 backdrop-blur-md transition-colors"
           >
-            <Sparkles className="h-3.5 w-3.5 text-amber-400 transition-transform group-hover:rotate-12" />
+            <Sparkles className="h-3.5 w-3.5 text-zinc-300" />
             <span>Surprise me</span>
           </button>
 
@@ -601,25 +599,21 @@ export default function CountryView({
               let relX = ((rawOffset % totalRibbonLength) + totalRibbonLength) % totalRibbonLength;
               if (relX > totalRibbonLength / 2) relX -= totalRibbonLength;
 
-              const halfW = viewWidth * 0.52;
+              const halfW = viewWidth * 0.5;
               const u = relX / halfW;
 
-              if (Math.abs(u) > 1.35) return null;
+              if (Math.abs(u) > 1.2) return null;
 
-              const curveZ = (1 - Math.abs(u)) * 110 - 50;
-              const curveScale = Math.max(0.48, 1 - Math.abs(u) * 0.45);
+              const depth = 1 - Math.min(1, Math.abs(u));
+              const curveZ = depth * 24;
+              const curveScale = 0.84 + depth * 0.16;
+              // One shallow arc shared by every cover. Scrolling slides along it
+              // instead of bobbing each book on its own wave.
+              const y = u * u * 14;
+              const baseX = relX;
+              const rotY = u * -6;
+              const opacity = Math.max(0.28, Math.min(1, 1.05 - Math.abs(u) * 0.62));
 
-              const waveY = Math.sin(u * Math.PI * 1.5) * (isWide ? 85 : 55);
-              const scatterY = ((index % 3) - 1) * (isWide ? 40 : 25);
-              const y = waveY + scatterY;
-
-              const baseX = relX + (isWide ? viewWidth * 0.16 : 0);
-
-              const rotY = -u * 22;
-              const rotZ = Math.sin(u * Math.PI + (index % 4)) * 6;
-              const opacity = Math.max(0.15, Math.min(1, 1 - Math.pow(Math.abs(u), 2.6)));
-
-              const isHovered = hoveredIdx === index;
               const coverSrc = book.cover || book.cover_url;
               const coverFailed = !coverSrc || failedCovers[book.id];
 
@@ -628,96 +622,73 @@ export default function CountryView({
                   type="button"
                   aria-label={`View details for ${book.title} by ${book.author}`}
                   key={`${book.id}-${index}`}
-                  onMouseEnter={() => setHoveredIdx(index)}
-                  onMouseLeave={() => setHoveredIdx(null)}
+                  onMouseEnter={() => {
+                    hoveringRef.current = true;
+                  }}
+                  onMouseLeave={() => {
+                    hoveringRef.current = false;
+                  }}
                   onClick={(e) => handleCardClick(book, e)}
                   style={{
                     position: 'absolute',
                     left: '50%',
                     top: '50%',
-                    transform: `translate(-50%, -50%) translate3d(${baseX}px, ${y}px, ${
-                      isHovered ? curveZ + 80 : curveZ
-                    }px) scale(${isHovered ? curveScale * 1.16 : curveScale}) rotateY(${
-                      isHovered ? 0 : rotY
-                    }deg) rotateZ(${isHovered ? 0 : rotZ}deg)`,
-                    opacity: opacity,
-                    zIndex: isHovered ? 60 : Math.round((1 - Math.abs(u)) * 30),
-                    transition: isHovered
-                      ? 'transform 0.25s cubic-bezier(0.16,1,0.3,1), opacity 0.3s'
-                      : 'opacity 0.4s',
+                    transform: `translate(-50%, -50%) translate3d(${baseX}px, ${y}px, ${curveZ}px) scale(${curveScale}) rotateY(${rotY}deg)`,
+                    opacity,
+                    zIndex: Math.round(depth * 20),
                   }}
-                  className="pointer-events-auto cursor-pointer group flex flex-col will-change-transform text-left focus:outline-none"
+                  className="pointer-events-auto cursor-pointer group flex flex-col text-left focus:outline-none"
                 >
-                  {/* Book Card Volume Container */}
-                  <div
-                    className={`relative w-[130px] sm:w-[155px] lg:w-[175px] aspect-[2/3] rounded-[6px] overflow-hidden bg-[#241c17] transition-all duration-300 ${
-                      isHovered
-                        ? 'shadow-[0_25px_50px_-8px_rgba(0,0,0,0.95),0_0_25px_rgba(245,158,11,0.35)] ring-2 ring-amber-400'
-                        : 'shadow-[0_15px_30px_-5px_rgba(0,0,0,0.8)] border border-white/15'
-                    }`}
-                  >
+                  <div className="relative aspect-[2/3] w-[130px] overflow-hidden rounded-[6px] border border-white/15 bg-black shadow-[0_16px_32px_-18px_rgba(0,0,0,0.9)] transition-[border-color,box-shadow] duration-300 group-hover:border-white group-hover:shadow-[0_0_0_1px_rgba(255,255,255,0.95),0_16px_36px_-16px_rgba(0,0,0,0.9)] group-focus-visible:border-white sm:w-[155px] lg:w-[175px]">
                     {coverFailed ? (
-                      <div className="flex h-full w-full flex-col justify-between p-3 bg-gradient-to-br from-[#382b22] via-[#241a14] to-[#120d0a] text-amber-100">
-                        <span className="text-[9px] font-mono uppercase tracking-widest text-amber-400">
+                      <div className="flex h-full w-full flex-col justify-between bg-black p-3 text-zinc-100">
+                        <span className="text-[9px] font-mono uppercase tracking-widest text-zinc-500">
                           {book.genre || 'Classic'}
                         </span>
                         <p className="text-xs font-semibold leading-tight line-clamp-3">
                           {book.title}
                         </p>
-                        <p className="text-[10px] text-amber-200/70 truncate">{book.author}</p>
+                        <p className="truncate text-[10px] text-zinc-400">{book.author}</p>
                       </div>
                     ) : (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={coverSrc}
-                        alt={book.title}
+                        alt=""
                         loading={Math.abs(u) < 0.6 ? 'eager' : 'lazy'}
                         decoding="async"
                         onError={() =>
                           setFailedCovers((prev) => (prev[book.id] ? prev : { ...prev, [book.id]: true }))
                         }
-                        className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                        className="h-full w-full bg-black object-cover"
                       />
                     )}
 
-                    {/* Hardcover Spine Ridge */}
                     <div
                       aria-hidden="true"
-                      className="pointer-events-none absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-black/80 via-black/30 via-white/10 to-transparent shadow-[inset_1px_0_0_rgba(255,255,255,0.25)]"
+                      className="pointer-events-none absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-black/80 via-black/25 to-transparent"
                     />
-
-                    {/* Right Edge Page Thickness */}
                     <div
                       aria-hidden="true"
-                      className="pointer-events-none absolute inset-y-0 right-0 w-[4px] bg-gradient-to-r from-[#dcd0be] to-[#bfae96] border-l border-black/20"
+                      className="pointer-events-none absolute inset-y-0 right-0 w-[3px] bg-gradient-to-r from-zinc-200 to-zinc-400"
                     />
 
-                    {/* Specular Glare on Hover */}
-                    <div
-                      aria-hidden="true"
-                      className="book-sheen-sweep pointer-events-none absolute inset-0 z-20"
-                    />
-
-                    {/* Floating badge on hover */}
                     {book.year && (
-                      <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <span className="rounded-full bg-black/80 backdrop-blur-md px-2 py-0.5 text-[9px] font-mono font-medium text-amber-300 border border-amber-400/30">
+                      <div className="absolute top-2 right-2 z-20 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                        <span className="rounded-full border border-white/20 bg-black/80 px-2 py-0.5 font-mono text-[9px] font-medium text-zinc-200">
                           {book.year < 0 ? `${Math.abs(book.year)} BCE` : book.year}
                         </span>
                       </div>
                     )}
                   </div>
 
-                  {/* Author / Title Below */}
                   <div
                     className={`mt-2 text-center transition-opacity duration-200 ${
-                      Math.abs(u) < 0.5 || isHovered ? 'opacity-100' : 'opacity-0'
+                      Math.abs(u) < 0.45 ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100'
                     }`}
                   >
-                    <p className="text-xs font-semibold text-zinc-100 truncate group-hover:text-amber-200">
-                      {book.title}
-                    </p>
-                    <p className="text-[10px] text-zinc-400 truncate">{book.author}</p>
+                    <p className="truncate text-xs font-semibold text-zinc-100">{book.title}</p>
+                    <p className="truncate text-[10px] text-zinc-500">{book.author}</p>
                   </div>
                 </button>
               );
@@ -739,20 +710,17 @@ export default function CountryView({
         >
           {/* Atmospheric Background: Nebula blobs + starfield */}
           <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-            <div className="absolute top-1/4 left-1/3 h-96 w-96 rounded-full bg-indigo-600/8 blur-[150px]" />
-            <div className="absolute bottom-1/3 right-1/4 h-[480px] w-[480px] rounded-full bg-amber-600/8 blur-[160px]" />
-            <div className="absolute top-2/3 left-1/5 h-72 w-72 rounded-full bg-rose-700/6 blur-[120px]" />
+            <div className="absolute top-1/3 left-1/3 h-96 w-96 rounded-full bg-white/[0.04] blur-[140px]" />
             {Array.from({ length: 48 }, (_, i) => {
               const x = (i * 2.07 + 3.1) % 100;
               const y = (i * 5.73 + 7.3) % 100;
               const size = (i % 3) === 0 ? 2 : 1;
               const opacity = 0.12 + (i % 7) * 0.08;
-              const twinkle = i % 4 === 0 ? 'animate-pulse' : '';
               return (
                 <div
                   key={`star-${i}`}
                   style={{ left: `${x}%`, top: `${y}%`, width: `${size}px`, height: `${size}px`, opacity }}
-                  className={`absolute rounded-full bg-white ${twinkle}`}
+                  className="absolute rounded-full bg-white"
                 />
               );
             })}
@@ -760,7 +728,7 @@ export default function CountryView({
 
           {/* Top Navigation Guide */}
           <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 hidden md:flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/70 border border-white/12 backdrop-blur-md text-[11px] font-mono text-zinc-400 shadow-lg pointer-events-none">
-            <span className="text-amber-400 font-semibold tracking-wide">Zero-G</span>
+            <span className="font-semibold tracking-wide text-zinc-200">Shelf</span>
             <span className="text-zinc-700">|</span>
             <span>Drag</span>
             <span className="text-zinc-700">·</span>
@@ -780,13 +748,8 @@ export default function CountryView({
             {/* World Container: Camera + Mouse Parallax */}
             <div
               style={{
-                transform: `translate3d(${-funCamera.x}px, ${-funCamera.y}px, ${
-                  funCamera.z
-                }px) rotateX(${funMouseParallax.y}deg) rotateY(${funMouseParallax.x}deg)`,
+                transform: `translate3d(${-funCamera.x}px, ${-funCamera.y}px, ${funCamera.z}px)`,
                 transformStyle: 'preserve-3d',
-                transition: isFunPanning
-                  ? 'none'
-                  : 'transform 0.12s cubic-bezier(0.16, 1, 0.3, 1)',
               }}
               className="absolute inset-0 flex items-center justify-center will-change-transform"
             >
@@ -815,7 +778,6 @@ export default function CountryView({
                   rotZ = 10;
                 }
 
-                const isHovered = hoveredFunId === item.id;
                 const coverSrc = book.cover || book.cover_url;
                 const coverFailed = !coverSrc || failedCovers[book.id];
 
@@ -823,57 +785,36 @@ export default function CountryView({
                   <button
                     type="button"
                     key={item.id}
-                    onMouseEnter={() => setHoveredFunId(item.id)}
-                    onMouseLeave={() => setHoveredFunId(null)}
                     onClick={(e) => handleCardClick(book, e)}
                     style={{
                       position: 'absolute',
                       left: '50%',
                       top: '50%',
-                      transform: `translate(-50%, -50%) translate3d(${x}px, ${y}px, ${
-                        isHovered ? z + 160 : z
-                      }px) scale(${isHovered ? 1.4 : 1}) rotateX(${
-                        isHovered ? 0 : rotX
-                      }deg) rotateY(${isHovered ? 0 : rotY}deg) rotateZ(${
-                        isHovered ? 0 : rotZ
-                      }deg)`,
-                      zIndex: isHovered ? 120 : Math.round(50 + z / 10),
-                      transition: isHovered
-                        ? 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
-                        : 'transform 0.65s cubic-bezier(0.16, 1, 0.3, 1)',
+                      transform: `translate(-50%, -50%) translate3d(${x}px, ${y}px, ${z}px) rotateX(${rotX}deg) rotateY(${rotY}deg) rotateZ(${rotZ}deg)`,
+                      zIndex: Math.round(50 + z / 10),
                     }}
-                    className={`group absolute cursor-pointer will-change-transform text-left focus:outline-none`}
+                    className="group absolute cursor-pointer text-left focus:outline-none"
                     aria-label={`${book.title} by ${book.author}`}
                   >
                     {/* Zero-G Float wrapper */}
-                    <div
-                      style={{
-                        animationDelay: `-${item.phase * 1.5}s`,
-                        animationDuration: `${5.5 + (item.index % 5) * 0.7}s`,
-                      }}
-                      className={`${isHovered ? '' : 'zero-g-float'} ${isFunPulsing ? 'gravity-pulse-anim' : ''}`}
-                    >
+                    <div>
                       {/* Book cover */}
                       <div
-                        className={`relative w-[120px] sm:w-[145px] lg:w-[162px] aspect-[2/3] rounded-[7px] overflow-hidden bg-[#241c17] transition-shadow duration-300 ${
-                          isHovered
-                            ? 'shadow-[0_35px_80px_rgba(0,0,0,0.98),0_0_40px_rgba(245,158,11,0.55)] ring-2 ring-amber-400/90'
-                            : 'shadow-[0_12px_30px_rgba(0,0,0,0.8)] border border-white/12'
-                        }`}
+                        className="relative aspect-[2/3] w-[120px] overflow-hidden rounded-[7px] border border-white/15 bg-black shadow-[0_12px_30px_rgba(0,0,0,0.8)] transition-[border-color,box-shadow] duration-300 group-hover:border-white group-hover:shadow-[0_0_0_1px_#fff,0_18px_40px_-16px_rgba(0,0,0,0.9)] sm:w-[145px] lg:w-[162px]"
                       >
                         {coverFailed ? (
-                          <div className="flex h-full w-full flex-col justify-between p-3.5 bg-gradient-to-br from-[#382b22] via-[#241a14] to-[#120d0a] text-amber-100">
-                            <span className="text-[9px] font-mono uppercase tracking-widest text-amber-400">
+                          <div className="flex h-full w-full flex-col justify-between bg-black p-3.5 text-zinc-100">
+                            <span className="text-[9px] font-mono uppercase tracking-widest text-zinc-500">
                               {book.genre || 'Classic'}
                             </span>
                             <p className="text-xs font-semibold leading-tight line-clamp-3">{book.title}</p>
-                            <p className="text-[10px] text-amber-200/70 truncate">{book.author}</p>
+                            <p className="truncate text-[10px] text-zinc-400">{book.author}</p>
                           </div>
                         ) : (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={coverSrc}
-                            alt={book.title}
+                            alt=""
                             loading="lazy"
                             decoding="async"
                             onError={() =>
@@ -881,7 +822,7 @@ export default function CountryView({
                                 prev[book.id] ? prev : { ...prev, [book.id]: true }
                               )
                             }
-                            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.06]"
+                            className="h-full w-full bg-black object-cover"
                           />
                         )}
 
@@ -893,18 +834,13 @@ export default function CountryView({
                         {/* Page edge */}
                         <div
                           aria-hidden="true"
-                          className="pointer-events-none absolute inset-y-0 right-0 w-[4px] bg-gradient-to-r from-[#dcd0be] to-[#bfae96] border-l border-black/20"
+                          className="pointer-events-none absolute inset-y-0 right-0 w-[3px] bg-gradient-to-r from-zinc-200 to-zinc-400"
                         />
                         {/* Specular sheen */}
-                        <div
-                          aria-hidden="true"
-                          className="book-sheen-sweep pointer-events-none absolute inset-0 z-20"
-                        />
-
-                        {/* Year badge — always visible for near/hovered books */}
+                        {/* Year badge */}
                         {book.year && (
                           <div className="absolute top-2 left-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            <span className="rounded-full bg-black/80 backdrop-blur-sm px-1.5 py-0.5 text-[9px] font-mono text-amber-300 border border-amber-400/30">
+                            <span className="rounded-full border border-white/20 bg-black/80 px-1.5 py-0.5 font-mono text-[9px] text-zinc-200">
                               {book.year < 0 ? `${Math.abs(book.year)} BCE` : book.year}
                             </span>
                           </div>
@@ -912,18 +848,16 @@ export default function CountryView({
                       </div>
 
                       {/* Hover tooltip — richer info panel */}
-                      {isHovered && (
-                        <div className="absolute -bottom-[72px] left-1/2 -translate-x-1/2 z-50 w-56 p-2.5 rounded-xl bg-black/95 border border-amber-400/40 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.9)] animate-in fade-in zoom-in-95 duration-150 pointer-events-none">
-                          <p className="text-xs font-bold text-white truncate leading-snug">{book.title}</p>
-                          <p className="text-[10px] text-amber-200/80 truncate mt-0.5">{book.author}</p>
+                      <div className="pointer-events-none absolute -bottom-[72px] left-1/2 z-50 w-56 -translate-x-1/2 rounded-xl border border-white/15 bg-black/95 p-2.5 opacity-0 shadow-[0_20px_50px_rgba(0,0,0,0.9)] transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
+                          <p className="truncate text-xs font-semibold leading-snug text-white">{book.title}</p>
+                          <p className="mt-0.5 truncate text-[10px] text-zinc-400">{book.author}</p>
                           <div className="mt-1.5 flex items-center justify-between gap-1.5">
-                            <span className="text-[9px] font-mono text-zinc-500">{book.genre || 'Classic'}</span>
-                            <span className="text-[9px] font-semibold text-amber-400 tracking-wide uppercase">
-                              Click to open →
+                            <span className="font-mono text-[9px] text-zinc-500">{book.genre || 'Classic'}</span>
+                            <span className="text-[9px] font-semibold uppercase tracking-wide text-zinc-300">
+                              Click to open
                             </span>
                           </div>
                         </div>
-                      )}
                     </div>
                   </button>
                 );
@@ -934,9 +868,9 @@ export default function CountryView({
           {/* Radar Minimap (Bottom Left) */}
           <div className="absolute bottom-5 left-5 z-40 hidden sm:flex flex-col items-center gap-1 p-2 rounded-2xl bg-black/85 border border-white/12 backdrop-blur-xl shadow-xl">
             <div className="flex items-center justify-between w-full px-0.5 mb-0.5">
-              <span className="text-[9px] font-mono uppercase tracking-widest text-amber-400 font-semibold flex items-center gap-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
-                RADAR
+              <span className="flex items-center gap-1 text-[9px] font-mono font-semibold uppercase tracking-widest text-zinc-300">
+                <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                Radar
               </span>
               <span className="text-[9px] font-mono text-zinc-500">{funBooks.length}</span>
             </div>
@@ -947,7 +881,7 @@ export default function CountryView({
               <div className="absolute h-full w-[1px] bg-white/8" />
               <div className="absolute w-full h-[1px] bg-white/8" />
               {/* Radar sweep */}
-              <div className="absolute inset-0 rounded-full animate-spin [animation-duration:3.5s] border-r border-emerald-400/25 bg-gradient-to-tr from-transparent via-transparent to-emerald-400/8 pointer-events-none" />
+              <div className="pointer-events-none absolute inset-0 rounded-full border-r border-white/25" />
               {/* Book dots */}
               {funBooks.slice(0, 24).map((b) => {
                 const relX = (b.baseX - funCamera.x) / 18;
@@ -958,12 +892,12 @@ export default function CountryView({
                   <div
                     key={`radar-${b.id}`}
                     style={{ transform: `translate(${relX}px, ${relY}px)` }}
-                    className="absolute h-1 w-1 rounded-full bg-amber-400/80"
+                    className="absolute h-1 w-1 rounded-full bg-white/80"
                   />
                 );
               })}
               {/* Player reticle */}
-              <div className="absolute h-2 w-2 rounded-full border border-emerald-400 bg-emerald-400/30 shadow-[0_0_5px_rgba(16,185,129,0.7)]" />
+              <div className="absolute h-2 w-2 rounded-full border border-white bg-white/40" />
             </div>
           </div>
 
@@ -978,7 +912,7 @@ export default function CountryView({
                   onClick={() => setFunFormation(f)}
                   className={`px-3 py-1 rounded-full text-[11px] font-mono capitalize transition-all ${
                     funFormation === f
-                      ? 'bg-amber-400 text-black font-bold shadow-sm'
+                      ? 'bg-white text-black font-semibold shadow-sm'
                       : 'text-zinc-400 hover:text-white'
                   }`}
                 >
@@ -993,14 +927,14 @@ export default function CountryView({
             <button
               type="button"
               onClick={triggerFunPulse}
-              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono border transition-all hover:scale-105 active:scale-95 ${
+              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 font-mono text-[11px] transition-colors ${
                 isFunPulsing
-                  ? 'bg-amber-400/30 border-amber-400/60 text-amber-200'
-                  : 'bg-white/8 border-amber-400/20 text-amber-300 hover:bg-white/15'
+                  ? 'border-white/50 bg-white/20 text-white'
+                  : 'border-white/15 bg-white/8 text-zinc-300 hover:bg-white/15 hover:text-white'
               }`}
-              title="Gravity shockwave (Space)"
+              title="Pulse (Space)"
             >
-              <Zap className={`h-3 w-3 ${isFunPulsing ? 'fill-amber-200' : 'fill-amber-300'} text-amber-300`} />
+              <Zap className="h-3 w-3 text-zinc-200" />
               <span>Pulse</span>
             </button>
 
@@ -1010,7 +944,7 @@ export default function CountryView({
             <button
               type="button"
               onClick={() => setFunCamera({ x: 0, y: 0, z: 0 })}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/8 hover:bg-white/15 text-zinc-300 hover:text-white text-[11px] font-mono border border-white/8 transition-all hover:scale-105 active:scale-95"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/8 bg-white/8 px-3 py-1 font-mono text-[11px] text-zinc-300 transition-colors hover:bg-white/15 hover:text-white"
               title="Reset to center (R)"
             >
               <Compass className="h-3 w-3" />

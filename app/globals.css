@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #08080a;
+  --background: #000000;
   --foreground: #ededed;
 }
 
@@ -13,7 +13,7 @@
 }
 
 body {
-  background: #08080a;
+  background: #000000;
   color: #ededed;
   overflow: hidden;
   user-select: none;
@@ -27,16 +27,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0d0d12;
+  background: #0a0a0a;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #272733;
+  background: #2a2a2a;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f50;
+  background: #3a3a3a;
 }
 
 @keyframes shelf-rise {
@@ -86,8 +86,8 @@ body {
 }
 
 .book-face {
-  background: #efe6d6;
-  color: #1c1814;
+  background: #0a0a0a;
+  color: #f4f4f5;
   border: 1px solid rgba(255, 255, 255, 0.9);
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.28),
@@ -207,7 +207,7 @@ body {
 .dust-mote {
   position: absolute;
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(251, 191, 36, 0.7) 0%, rgba(251, 191, 36, 0) 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 70%);
   pointer-events: none;
 }
 
