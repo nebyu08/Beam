@@ -791,16 +791,33 @@ export default function CountryView({
                       left: '50%',
                       top: '50%',
                       transform: `translate(-50%, -50%) translate3d(${x}px, ${y}px, ${z}px) rotateX(${rotX}deg) rotateY(${rotY}deg) rotateZ(${rotZ}deg)`,
-                      zIndex: Math.round(50 + z / 10),
-                    }}
-                    className="group absolute cursor-pointer text-left focus:outline-none"
+                      transformStyle: 'preserve-3d',
+                      transition: 'transform 760ms cubic-bezier(0.16, 1, 0.3, 1)',
+                      '--fun-z': Math.round(50 + z / 10),
+                    } as React.CSSProperties}
+                    className="fun-card group absolute cursor-pointer text-left focus:outline-none"
                     aria-label={`${book.title} by ${book.author}`}
                   >
-                    {/* Zero-G Float wrapper */}
-                    <div>
+                    <div className={isFunPulsing ? 'gravity-pulse-anim' : undefined} style={{ transformStyle: 'preserve-3d' }}>
+                    <div
+                      className="fun-float relative"
+                      style={{
+                        animationDelay: `-${item.phase.toFixed(2)}s`,
+                        animationDuration: `${6 + (item.index % 5) * 0.55}s`,
+                      }}
+                    >
+                      <div
+                        className="fun-arrive"
+                        style={{ animationDelay: `${Math.min(item.index, 16) * 36}ms` }}
+                      >
+                      <div className="fun-pop relative">
+                      <div
+                        aria-hidden="true"
+                        className="pointer-events-none absolute left-1/2 top-1/2 h-44 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/0 blur-2xl transition-all duration-500 group-hover:bg-white/25"
+                      />
                       {/* Book cover */}
                       <div
-                        className="relative aspect-[2/3] w-[120px] overflow-hidden rounded-[7px] border border-white/15 bg-black shadow-[0_12px_30px_rgba(0,0,0,0.8)] transition-[border-color,box-shadow] duration-300 group-hover:border-white group-hover:shadow-[0_0_0_1px_#fff,0_18px_40px_-16px_rgba(0,0,0,0.9)] sm:w-[145px] lg:w-[162px]"
+                        className="relative aspect-[2/3] w-[120px] overflow-hidden rounded-[7px] border border-white/15 bg-black shadow-[0_12px_30px_rgba(0,0,0,0.8)] transition-[border-color,box-shadow,transform] duration-500 group-hover:border-white group-hover:shadow-[0_0_0_1px_#fff,0_28px_50px_-12px_rgba(0,0,0,0.95)] sm:w-[145px] lg:w-[162px]"
                       >
                         {coverFailed ? (
                           <div className="flex h-full w-full flex-col justify-between bg-black p-3.5 text-zinc-100">
@@ -822,7 +839,7 @@ export default function CountryView({
                                 prev[book.id] ? prev : { ...prev, [book.id]: true }
                               )
                             }
-                            className="h-full w-full bg-black object-cover"
+                            className="h-full w-full bg-black object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                           />
                         )}
 
@@ -836,18 +853,18 @@ export default function CountryView({
                           aria-hidden="true"
                           className="pointer-events-none absolute inset-y-0 right-0 w-[3px] bg-gradient-to-r from-zinc-200 to-zinc-400"
                         />
-                        {/* Specular sheen */}
-                        {/* Year badge */}
+                        <div aria-hidden="true" className="book-sheen-sweep pointer-events-none absolute inset-0 z-20" />
                         {book.year && (
-                          <div className="absolute top-2 left-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          <div className="absolute top-2 left-2 z-20 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                             <span className="rounded-full border border-white/20 bg-black/80 px-1.5 py-0.5 font-mono text-[9px] text-zinc-200">
                               {book.year < 0 ? `${Math.abs(book.year)} BCE` : book.year}
                             </span>
                           </div>
                         )}
                       </div>
+                      </div>
+                      </div>
 
-                      {/* Hover tooltip — richer info panel */}
                       <div className="pointer-events-none absolute -bottom-[72px] left-1/2 z-50 w-56 -translate-x-1/2 rounded-xl border border-white/15 bg-black/95 p-2.5 opacity-0 shadow-[0_20px_50px_rgba(0,0,0,0.9)] transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
                           <p className="truncate text-xs font-semibold leading-snug text-white">{book.title}</p>
                           <p className="mt-0.5 truncate text-[10px] text-zinc-400">{book.author}</p>
@@ -858,6 +875,7 @@ export default function CountryView({
                             </span>
                           </div>
                         </div>
+                    </div>
                     </div>
                   </button>
                 );

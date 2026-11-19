@@ -291,6 +291,62 @@ body {
   animation: spin-slow 12s linear infinite;
 }
 
+/* Fun mode: each cover drifts on its own, then pops forward under the pointer. */
+@keyframes fun-float {
+  0% {
+    transform: translate3d(0, -10px, 0) rotateX(-4deg) rotateY(6deg) rotateZ(-2deg);
+  }
+  100% {
+    transform: translate3d(0, 14px, 0) rotateX(5deg) rotateY(-7deg) rotateZ(2.5deg);
+  }
+}
+
+.fun-card {
+  z-index: var(--fun-z, 1);
+}
+
+.fun-card:hover,
+.fun-card:focus-visible {
+  z-index: 240;
+}
+
+.fun-float {
+  transform-style: preserve-3d;
+  animation: fun-float 6.4s ease-in-out infinite alternate;
+}
+
+.group:hover .fun-float,
+.group:focus-visible .fun-float {
+  animation-play-state: paused;
+}
+
+@keyframes fun-arrive {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 28px, -80px) scale(0.72);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.fun-arrive {
+  transform-style: preserve-3d;
+  animation: fun-arrive 680ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.fun-pop {
+  transform: translate3d(0, 0, 0) scale(1);
+  transform-style: preserve-3d;
+  transition: transform 520ms cubic-bezier(0.22, 1.45, 0.36, 1);
+}
+
+.group:hover .fun-pop,
+.group:focus-visible .fun-pop {
+  transform: translate3d(0, -22px, 150px) scale(1.24);
+}
+
 /* Zero-G Floating Universe Keyframes for Fun Mode */
 @keyframes zero-g-drift {
   0%, 100% {
@@ -332,10 +388,20 @@ body {
   .modal-book-breathe,
   .ribbon-flutter,
   .animate-spin-slow,
+  .fun-float,
+  .fun-arrive,
+  .gravity-pulse-anim,
   .group:hover .book-sheen-sweep::after,
   .group:focus-visible .book-sheen-sweep::after {
     animation: none !important;
     transition: none !important;
+  }
+
+  .fun-pop,
+  .group:hover .fun-pop,
+  .group:focus-visible .fun-pop {
+    transform: none;
+    transition: none;
   }
 }
 
